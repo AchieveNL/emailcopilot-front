@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { leadsApi } from "@/lib/api";
@@ -25,7 +26,7 @@ function Badge({ status }: { status: LeadStatus }) {
   return <span className={map[status]}>{status}</span>;
 }
 
-export default function LeadsPage() {
+function LeadsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -103,8 +104,8 @@ export default function LeadsPage() {
             key={tab.value}
             onClick={() => setStatus(tab.value)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${activeTab === tab.value
-                ? "border-emerald-500 text-emerald-400"
-                : "border-transparent text-zinc-500 hover:text-zinc-300"
+              ? "border-emerald-500 text-emerald-400"
+              : "border-transparent text-zinc-500 hover:text-zinc-300"
               }`}
           >
             {tab.label}
@@ -225,5 +226,13 @@ export default function LeadsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function LeadsPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading leads...</div>}>
+      <LeadsContent />
+    </Suspense>
   );
 }
