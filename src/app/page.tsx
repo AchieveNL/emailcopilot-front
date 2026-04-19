@@ -152,19 +152,19 @@ export default function OverviewPage() {
         <div className="card">
           <h2 style={{ marginBottom: '1.25rem' }}>Quick actions</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <button onClick={handleSendNow} disabled={sending} className="btn-primary" style={{ justifyContent: 'center' }}>
+            <button onClick={handleSendNow} disabled={sending} className="btn btn-primary flex ali" style={{ justifyContent: 'center' }}>
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path d="m22 2-7 20-4-9-9-4 20-7z" />
               </svg>
               {sending ? "Triggering..." : "Send emails now"}
             </button>
-            <Link href="/scraper" className="btn-secondary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
+            <Link href="/scraper" className="btn btn-secondary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
               Run scrape job
             </Link>
-            <Link href="/leads?status=replied" className="btn-secondary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
+            <Link href="/leads?status=replied" className="btn btn-secondary" style={{ justifyContent: 'center', textDecoration: 'none' }}>
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>

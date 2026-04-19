@@ -82,7 +82,7 @@ export default function ScraperPage() {
           <button
             onClick={trigger}
             disabled={triggering}
-            className="btn-primary shrink-0"
+            className="btn btn-primary shrink-0"
           >
             {triggering ? "Starting..." : "Run scrape"}
           </button>

@@ -228,7 +228,7 @@ export default function SettingsPage() {
 
         {/* Save button */}
         <div className="flex items-center gap-3">
-          <button onClick={save} disabled={saving} className="btn-primary px-6">
+          <button onClick={save} disabled={saving} className="btn btn-primary px-6">
             {saving ? "Saving..." : "Save settings"}
           </button>
           {saved && <span className="text-sm text-emerald-400">Saved!</span>}
