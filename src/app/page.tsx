@@ -46,24 +46,24 @@ export default function OverviewPage() {
       label: "Replied",
       value: stats?.replied ?? "—",
       icon: "💬",
-      color: "#34d399",
-      glow: "rgba(52,211,153,0.15)",
+      color: "#059669",
+      glow: "rgba(5,150,105,0.12)",
       delta: stats && stats.sent > 0 ? `${Math.round((stats.replied / stats.sent) * 100)}% reply rate` : null,
     },
     {
       label: "Emails sent",
       value: stats?.sent ?? "—",
       icon: "📨",
-      color: "#60a5fa",
-      glow: "rgba(96,165,250,0.15)",
+      color: "#2563eb",
+      glow: "rgba(37,99,235,0.12)",
       delta: null,
     },
     {
       label: "New leads",
       value: stats?.new ?? "—",
       icon: "✨",
-      color: "#f59e0b",
-      glow: "rgba(245,158,11,0.15)",
+      color: "#d97706",
+      glow: "rgba(217,119,6,0.12)",
       delta: "Ready to email",
     },
   ];
@@ -73,7 +73,7 @@ export default function OverviewPage() {
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
         <h1>Dashboard</h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: 4 }}>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
           Here is today&apos;s pipeline overview
         </p>
       </div>
@@ -89,7 +89,7 @@ export default function OverviewPage() {
               background: s.glow, filter: 'blur(20px)', pointerEvents: 'none',
             }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>{s.label}</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>{s.label}</span>
               <div style={{
                 width: 32, height: 32, borderRadius: 8,
                 background: s.glow, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -100,7 +100,7 @@ export default function OverviewPage() {
               {s.value}
             </div>
             {s.delta && (
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 6 }}>{s.delta}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: 6 }}>{s.delta}</div>
             )}
           </div>
         ))}
@@ -114,7 +114,7 @@ export default function OverviewPage() {
             <h2>Scheduler status</h2>
             <span style={{
               fontSize: '0.65rem', fontWeight: 600,
-              color: '#34d399', background: 'rgba(52,211,153,0.1)',
+              color: '#059669', background: 'rgba(5,150,105,0.1)',
               padding: '2px 8px', borderRadius: 20, textTransform: 'uppercase', letterSpacing: '0.06em',
             }}>Live</span>
           </div>
@@ -128,17 +128,17 @@ export default function OverviewPage() {
               return (
                 <div key={key} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0.625rem 0.875rem', borderRadius: 10, background: 'var(--bg-elevated)'
+                  padding: '0.625rem 0.875rem', borderRadius: 10, background: 'var(--color-bg-elevated)'
                 }}>
-                  <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>{label}</span>
+                  <span style={{ fontSize: '0.825rem', color: 'var(--color-text-secondary)' }}>{label}</span>
                   <span style={{
                     display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', fontWeight: 500,
-                    color: active ? '#34d399' : 'var(--text-muted)'
+                    color: active ? '#059669' : 'var(--color-text-muted)'
                   }}>
                     <span style={{
                       width: 6, height: 6, borderRadius: '50%',
-                      background: active ? '#34d399' : 'var(--text-muted)',
-                      boxShadow: active ? '0 0 6px #34d399' : 'none'
+                      background: active ? '#059669' : 'var(--color-text-muted)',
+                      boxShadow: active ? '0 0 6px rgba(5,150,105,0.5)' : 'none'
                     }} />
                     {active ? 'Active' : 'Inactive'}
                   </span>
@@ -152,7 +152,7 @@ export default function OverviewPage() {
         <div className="card">
           <h2 style={{ marginBottom: '1.25rem' }}>Quick actions</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <button onClick={handleSendNow} disabled={sending} className="btn btn-primary flex ali" style={{ justifyContent: 'center' }}>
+            <button onClick={handleSendNow} disabled={sending} className="btn btn-primary" style={{ justifyContent: 'center' }}>
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path d="m22 2-7 20-4-9-9-4 20-7z" />
               </svg>
@@ -172,7 +172,7 @@ export default function OverviewPage() {
             </Link>
           </div>
           {sendMsg && (
-            <p style={{ marginTop: 12, fontSize: '0.75rem', color: '#34d399' }}>{sendMsg}</p>
+            <p style={{ marginTop: 12, fontSize: '0.75rem', color: '#059669' }}>{sendMsg}</p>
           )}
         </div>
 
@@ -182,17 +182,17 @@ export default function OverviewPage() {
           <div style={{ display: 'flex', gap: 8 }}>
             {[
               { label: "New", value: stats?.new ?? 0, color: '#94a3b8', total: stats?.total || 1 },
-              { label: "Queued", value: stats?.queued ?? 0, color: '#f59e0b', total: stats?.total || 1 },
-              { label: "Sent", value: stats?.sent ?? 0, color: '#60a5fa', total: stats?.total || 1 },
-              { label: "Replied", value: stats?.replied ?? 0, color: '#34d399', total: stats?.total || 1 },
-              { label: "Disqualified", value: stats?.disqualified ?? 0, color: '#f87171', total: stats?.total || 1 },
+              { label: "Queued", value: stats?.queued ?? 0, color: '#d97706', total: stats?.total || 1 },
+              { label: "Sent", value: stats?.sent ?? 0, color: '#2563eb', total: stats?.total || 1 },
+              { label: "Replied", value: stats?.replied ?? 0, color: '#059669', total: stats?.total || 1 },
+              { label: "Disqualified", value: stats?.disqualified ?? 0, color: '#dc2626', total: stats?.total || 1 },
             ].map((s) => (
               <div key={s.label} style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{s.label}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{s.label}</span>
                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: s.color }}>{s.value}</span>
                 </div>
-                <div style={{ height: 4, borderRadius: 99, background: 'var(--bg-elevated)', overflow: 'hidden' }}>
+                <div style={{ height: 4, borderRadius: 99, background: 'var(--color-bg-elevated)', overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: 99,
                     background: s.color,

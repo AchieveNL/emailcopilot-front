@@ -10,21 +10,32 @@ export default function EmailsPage() {
   const [tab, setTab] = useState<Tab>("logs");
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
+    <div style={{ padding: '2rem 2.5rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <h1>Emails</h1>
-        <p className="text-sm text-zinc-500 mt-1">Send logs and email templates</p>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
+          Send logs and email templates
+        </p>
       </div>
 
-      <div className="flex gap-1 mb-6 border-b border-zinc-800">
+      <div style={{ display: 'flex', gap: 4, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)' }}>
         {(["logs", "templates"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px capitalize ${tab === t
-                ? "border-emerald-500 text-emerald-400"
-                : "border-transparent text-zinc-500 hover:text-zinc-300"
-              }`}
+            style={{
+              padding: '0.625rem 1rem',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              border: 'none',
+              borderBottom: `2px solid ${tab === t ? 'var(--color-accent)' : 'transparent'}`,
+              marginBottom: -1,
+              color: tab === t ? 'var(--color-accent)' : 'var(--color-text-muted)',
+              background: 'none',
+              cursor: 'pointer',
+              textTransform: 'capitalize',
+              transition: 'color 0.15s',
+            }}
           >
             {t}
           </button>
@@ -50,7 +61,7 @@ function LogsTab() {
   }, []);
 
   return (
-    <div className="card p-0 overflow-hidden">
+    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
       <div className="table-wrapper">
         <table>
           <thead>
@@ -64,21 +75,21 @@ function LogsTab() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="text-center py-12 text-zinc-600">Loading...</td></tr>
+              <tr><td colSpan={5} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>Loading...</td></tr>
             ) : logs.length === 0 ? (
-              <tr><td colSpan={5} className="text-center py-12 text-zinc-600">No emails sent yet</td></tr>
+              <tr><td colSpan={5} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>No emails sent yet</td></tr>
             ) : (
               logs.map((log) => (
                 <tr key={log.id}>
-                  <td className="font-medium text-zinc-100">{log.lead?.companyName}</td>
-                  <td className="text-zinc-400 font-mono text-xs">{log.lead?.email}</td>
-                  <td className="text-zinc-400 max-w-[240px] truncate">{log.subject}</td>
+                  <td style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>{log.lead?.companyName}</td>
+                  <td style={{ color: 'var(--color-text-muted)', fontFamily: 'monospace', fontSize: '0.75rem' }}>{log.lead?.email}</td>
+                  <td style={{ color: 'var(--color-text-secondary)', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.subject}</td>
                   <td>
                     <span className={log.status === "sent" ? "badge-sent" : "badge-failed"}>
                       {log.status}
                     </span>
                   </td>
-                  <td className="text-zinc-500 text-xs">
+                  <td style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                     {new Date(log.sentAt).toLocaleString()}
                   </td>
                 </tr>
@@ -152,39 +163,41 @@ function TemplatesTab() {
   const showForm = editing || creating;
 
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
       {/* Template list */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2>Templates</h2>
-          <button onClick={startCreate} className="btn-primary text-xs py-1.5 px-3">
+          <button onClick={startCreate} className="btn btn-primary" style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem' }}>
             + New
           </button>
         </div>
 
         {templates.length === 0 ? (
-          <div className="card text-sm text-zinc-500 text-center py-8">No templates yet</div>
+          <div className="card" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+            No templates yet
+          </div>
         ) : (
           templates.map((t) => (
-            <div key={t.id} className="card cursor-pointer hover:border-zinc-700 transition-colors">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium text-zinc-100">{t.name}</span>
+            <div key={t.id} className="card" style={{ cursor: 'pointer' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>{t.name}</span>
                     {t.isActive && <span className="badge-replied">active</span>}
                   </div>
-                  <p className="text-xs text-zinc-500 truncate">{t.subject}</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}</p>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   {!t.isActive && (
-                    <button onClick={() => setActive(t.id)} className="btn-ghost text-xs py-1 px-2 text-emerald-400">
+                    <button onClick={() => setActive(t.id)} className="btn btn-ghost" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', color: '#059669' }}>
                       Set active
                     </button>
                   )}
-                  <button onClick={() => startEdit(t)} className="btn-ghost text-xs py-1 px-2">
+                  <button onClick={() => startEdit(t)} className="btn btn-ghost" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>
                     Edit
                   </button>
-                  <button onClick={() => deleteTemplate(t.id)} className="btn-ghost text-xs py-1 px-2 text-red-500">
+                  <button onClick={() => deleteTemplate(t.id)} className="btn btn-ghost" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', color: '#dc2626' }}>
                     Delete
                   </button>
                 </div>
@@ -197,8 +210,8 @@ function TemplatesTab() {
       {/* Editor */}
       {showForm ? (
         <div className="card">
-          <h2 className="mb-4">{creating ? "New template" : "Edit template"}</h2>
-          <div className="space-y-4">
+          <h2 style={{ marginBottom: '1rem' }}>{creating ? "New template" : "Edit template"}</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <label className="label">Name</label>
               <input
@@ -220,28 +233,29 @@ function TemplatesTab() {
             <div>
               <label className="label">Body</label>
               <textarea
-                className="input font-mono text-xs resize-none"
+                className="input"
+                style={{ fontFamily: 'monospace', fontSize: '0.75rem', resize: 'none' }}
                 rows={12}
                 value={form.body}
                 onChange={(e) => setForm({ ...form, body: e.target.value })}
                 placeholder={"Hi,\n\nI came across {{companyName}}...\n\nBest,\n[Your name]"}
               />
-              <p className="text-xs text-zinc-600 mt-1">
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
                 Available placeholders: {"{{companyName}}"} {"{{email}}"} {"{{website}}"} {"{{phone}}"}
               </p>
             </div>
-            <div className="flex gap-2 pt-1">
-              <button onClick={save} disabled={saving} className="btn-primary">
+            <div style={{ display: 'flex', gap: 8, paddingTop: 4 }}>
+              <button onClick={save} disabled={saving} className="btn btn-primary">
                 {saving ? "Saving..." : "Save template"}
               </button>
-              <button onClick={() => { setEditing(null); setCreating(false); }} className="btn-secondary">
+              <button onClick={() => { setEditing(null); setCreating(false); }} className="btn btn-secondary">
                 Cancel
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="card flex items-center justify-center text-zinc-600 text-sm">
+        <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
           Select a template to edit or create a new one
         </div>
       )}

@@ -1,22 +1,21 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 @import "tailwindcss";
 
 @theme {
   --color-accent: #7c3aed;
   --color-accent-light: #8b5cf6;
-  --color-accent-glow: rgba(124, 58, 237, 0.15);
+  --color-accent-glow: rgba(124, 58, 237, 0.12);
 
-  --color-bg-base: #0d0d12;
-  --color-bg-card: #13131a;
-  --color-bg-card-hover: #16161f;
-  --color-bg-elevated: #1a1a25;
+  --color-bg-base: #f5f5f7;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #fafafa;
+  --color-bg-elevated: #f0f0f4;
 
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-strong: rgba(255, 255, 255, 0.1);
+  --color-border: rgba(0, 0, 0, 0.07);
+  --color-border-strong: rgba(0, 0, 0, 0.12);
 
-  --color-text-primary: #f0f0f5;
-  --color-text-secondary: #8b8b9e;
-  --color-text-muted: #4a4a5e;
+  --color-text-primary: #111118;
+  --color-text-secondary: #52525e;
+  --color-text-muted: #a0a0b0;
 
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
 }
@@ -49,20 +48,21 @@
 }
 
 @layer components {
-  /* ── Card ── */
   .card {
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: 14px;
     padding: 1.25rem;
     transition: border-color 0.2s;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.03);
 
     &:hover {
       border-color: var(--color-border-strong);
     }
   }
 
-  /* ── Buttons ── */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -72,7 +72,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     transition: all 0.15s;
-
+    cursor: pointer;
     &:disabled {
       opacity: 0.4;
       cursor: not-allowed;
@@ -83,70 +83,66 @@
     composes: btn;
     color: white;
     background: var(--color-accent);
+    border: none;
     box-shadow: 0 0 20px var(--color-accent-glow);
-
-    &:hover {
+    &:hover:not(:disabled) {
       background: var(--color-accent-light);
-      box-shadow: 0 0 28px rgba(124, 58, 237, 0.3);
+      box-shadow: 0 0 28px rgba(124, 58, 237, 0.2);
     }
   }
 
   .btn-secondary {
     composes: btn;
-    color: oklch(81.9% 0.006 264.5); /* zinc-300 */
-    background: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-card);
     border: 1px solid var(--color-border-strong);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.07);
-      color: white;
+    &:hover:not(:disabled) {
+      background: var(--color-bg-elevated);
+      color: var(--color-text-primary);
     }
   }
 
   .btn-danger {
     composes: btn;
-    color: oklch(70.4% 0.191 22.2); /* red-400 */
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-
-    &:hover {
-      background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.06);
+    border: 1px solid rgba(220, 38, 38, 0.15);
+    &:hover:not(:disabled) {
+      background: rgba(220, 38, 38, 0.1);
     }
   }
 
   .btn-ghost {
     composes: btn;
     color: var(--color-text-muted);
-
-    &:hover {
+    background: transparent;
+    border: none;
+    &:hover:not(:disabled) {
       background: var(--color-bg-elevated);
       color: var(--color-text-primary);
     }
   }
 
-  /* ── Input ── */
   .input {
     width: 100%;
     border-radius: 0.5rem;
     padding: 0.625rem 0.875rem;
     font-size: 0.875rem;
     transition: all 0.15s;
-    background: var(--color-bg-elevated);
+    background: var(--color-bg-card);
     border: 1px solid var(--color-border-strong);
     color: var(--color-text-primary);
     outline: none;
-
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     &::placeholder {
       color: var(--color-text-muted);
     }
-
     &:focus {
       border-color: var(--color-accent-light);
       box-shadow: 0 0 0 3px var(--color-accent-glow);
     }
   }
 
-  /* ── Label ── */
   .label {
     display: block;
     font-size: 0.8rem;
@@ -156,7 +152,6 @@
     letter-spacing: 0.01em;
   }
 
-  /* ── Badges ── */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -165,7 +160,6 @@
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 500;
-
     &::before {
       content: "";
       display: inline-block;
@@ -179,46 +173,45 @@
 
   .badge-new {
     composes: badge;
-    color: #94a3b8;
-    background: rgba(148, 163, 184, 0.1);
+    color: #64748b;
+    background: rgba(100, 116, 139, 0.1);
   }
   .badge-queued {
     composes: badge;
-    color: #f59e0b;
-    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.1);
   }
   .badge-sent {
     composes: badge;
-    color: #60a5fa;
-    background: rgba(96, 165, 250, 0.1);
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
   }
   .badge-replied {
     composes: badge;
-    color: #34d399;
-    background: rgba(52, 211, 153, 0.1);
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
   }
   .badge-disqualified {
     composes: badge;
-    color: #f87171;
-    background: rgba(248, 113, 113, 0.1);
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
   }
   .badge-running {
     composes: badge;
-    color: #f59e0b;
-    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.1);
   }
   .badge-done {
     composes: badge;
-    color: #34d399;
-    background: rgba(52, 211, 153, 0.1);
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
   }
   .badge-failed {
     composes: badge;
-    color: #f87171;
-    background: rgba(248, 113, 113, 0.1);
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
   }
 
-  /* ── Table ── */
   .table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -232,6 +225,7 @@
 
   thead tr {
     border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-base);
   }
 
   thead th {
@@ -247,11 +241,9 @@
   tbody tr {
     border-bottom: 1px solid var(--color-border);
     transition: background 0.15s;
-
     &:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--color-bg-base);
     }
-
     &:last-child {
       border-bottom: none;
     }

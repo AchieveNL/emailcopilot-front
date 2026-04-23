@@ -46,7 +46,6 @@ export default function SettingsPage() {
     setTesting(true);
     setSmtpMsg(null);
     try {
-      // save first so the test uses the latest credentials
       const payload: Record<string, string> = { ...settings as Record<string, string> };
       if (smtpPass) payload.smtp_pass = smtpPass;
       await settingsApi.update(payload);
@@ -65,25 +64,27 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 text-zinc-600 text-sm">Loading settings...</div>
+      <div style={{ padding: '2rem 2.5rem', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+        Loading settings...
+      </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-2xl">
-      <div className="mb-8">
+    <div style={{ padding: '2rem 2.5rem', maxWidth: 672 }}>
+      <div style={{ marginBottom: '2rem' }}>
         <h1>Settings</h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
           Configure SMTP, scraping, and sending schedule
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {/* SMTP */}
         <section className="card">
-          <h2 className="mb-5">SMTP configuration</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <h2 style={{ marginBottom: '1.25rem' }}>SMTP configuration</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
                 <label className="label">Host</label>
                 <input
@@ -131,12 +132,12 @@ export default function SettingsPage() {
                 placeholder="John from Acme"
               />
             </div>
-            <div className="flex items-center gap-3 pt-1">
-              <button onClick={testSmtp} disabled={testing} className="btn-secondary">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingTop: '0.25rem' }}>
+              <button onClick={testSmtp} disabled={testing} className="btn btn-secondary">
                 {testing ? "Testing..." : "Test connection"}
               </button>
               {smtpMsg && (
-                <span className={`text-sm ${smtpMsg.ok ? "text-emerald-400" : "text-red-400"}`}>
+                <span style={{ fontSize: '0.875rem', color: smtpMsg.ok ? '#059669' : '#dc2626' }}>
                   {smtpMsg.text}
                 </span>
               )}
@@ -146,18 +147,19 @@ export default function SettingsPage() {
 
         {/* Sending */}
         <section className="card">
-          <h2 className="mb-5">Sending limits</h2>
+          <h2 style={{ marginBottom: '1.25rem' }}>Sending limits</h2>
           <div>
             <label className="label">Daily email limit</label>
             <input
-              className="input max-w-[160px]"
+              className="input"
+              style={{ maxWidth: 160 }}
               type="number"
               min={1}
               max={500}
               value={settings.daily_send_limit || "10"}
               onChange={(e) => set("daily_send_limit", e.target.value)}
             />
-            <p className="text-xs text-zinc-600 mt-1.5">
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
               Maximum emails sent per day across all accounts
             </p>
           </div>
@@ -165,31 +167,33 @@ export default function SettingsPage() {
 
         {/* Schedule */}
         <section className="card">
-          <h2 className="mb-5">Schedule</h2>
-          <div className="space-y-4">
+          <h2 style={{ marginBottom: '1.25rem' }}>Schedule</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <label className="label">Send hour (24h)</label>
               <input
-                className="input max-w-[160px]"
+                className="input"
+                style={{ maxWidth: 160 }}
                 type="number"
                 min={0}
                 max={23}
                 value={settings.send_hour || "9"}
                 onChange={(e) => set("send_hour", e.target.value)}
               />
-              <p className="text-xs text-zinc-600 mt-1.5">
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
                 Hour to run the daily email send job (e.g. 9 = 09:00)
               </p>
             </div>
             <div>
               <label className="label">Scrape hours (comma-separated, 24h)</label>
               <input
-                className="input max-w-[240px]"
+                className="input"
+                style={{ maxWidth: 240 }}
                 value={settings.scrape_hours || "8,14"}
                 onChange={(e) => set("scrape_hours", e.target.value)}
                 placeholder="8,14"
               />
-              <p className="text-xs text-zinc-600 mt-1.5">
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
                 Hours to run automatic scrape jobs (e.g. 8,14 = 08:00 and 14:00). Changing this restarts the scheduler immediately.
               </p>
             </div>
@@ -198,8 +202,8 @@ export default function SettingsPage() {
 
         {/* Scraper */}
         <section className="card">
-          <h2 className="mb-5">Scraper</h2>
-          <div className="space-y-4">
+          <h2 style={{ marginBottom: '1.25rem' }}>Scraper</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <label className="label">Default search query</label>
               <input
@@ -208,14 +212,15 @@ export default function SettingsPage() {
                 onChange={(e) => set("scrape_query", e.target.value)}
                 placeholder='e.g. "dentists in Amsterdam"'
               />
-              <p className="text-xs text-zinc-600 mt-1.5">
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
                 Used by automatic scrape jobs and as default in the Scraper page
               </p>
             </div>
             <div>
               <label className="label">Results per run</label>
               <input
-                className="input max-w-[160px]"
+                className="input"
+                style={{ maxWidth: 160 }}
                 type="number"
                 min={1}
                 max={50}
@@ -227,11 +232,11 @@ export default function SettingsPage() {
         </section>
 
         {/* Save button */}
-        <div className="flex items-center gap-3">
-          <button onClick={save} disabled={saving} className="btn btn-primary px-6">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button onClick={save} disabled={saving} className="btn btn-primary" style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
             {saving ? "Saving..." : "Save settings"}
           </button>
-          {saved && <span className="text-sm text-emerald-400">Saved!</span>}
+          {saved && <span style={{ fontSize: '0.875rem', color: '#059669' }}>Saved!</span>}
         </div>
       </div>
     </div>

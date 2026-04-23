@@ -89,24 +89,32 @@ function LeadsContent() {
   const activeTab = statusParam || "all";
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
+    <div style={{ padding: '2rem 2.5rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <h1>Leads</h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
           {data ? `${data.meta.total} total leads` : "Loading..."}
         </p>
       </div>
 
       {/* Status tabs */}
-      <div className="flex gap-1 mb-6 border-b border-zinc-800">
+      <div style={{ display: 'flex', gap: 4, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)' }}>
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setStatus(tab.value)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${activeTab === tab.value
-              ? "border-emerald-500 text-emerald-400"
-              : "border-transparent text-zinc-500 hover:text-zinc-300"
-              }`}
+            style={{
+              padding: '0.625rem 1rem',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              marginBottom: -1,
+              color: activeTab === tab.value ? 'var(--color-accent)' : 'var(--color-text-muted)',
+              background: 'none',
+              border: 'none',
+              borderBottom: `2px solid ${activeTab === tab.value ? 'var(--color-accent)' : 'transparent'}`,
+              cursor: 'pointer',
+              transition: 'color 0.15s',
+            }}
           >
             {tab.label}
           </button>
@@ -114,7 +122,7 @@ function LeadsContent() {
       </div>
 
       {/* Table */}
-      <div className="card p-0 overflow-hidden">
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-wrapper">
           <table>
             <thead>
@@ -130,48 +138,49 @@ function LeadsContent() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-zinc-600">
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
                     Loading...
                   </td>
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-zinc-600">
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
                     No leads found
                   </td>
                 </tr>
               ) : (
                 data?.data.map((lead) => (
                   <tr key={lead.id}>
-                    <td className="font-medium text-zinc-100">{lead.companyName}</td>
-                    <td className="text-zinc-400 font-mono text-xs">{lead.email}</td>
+                    <td style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>{lead.companyName}</td>
+                    <td style={{ color: 'var(--color-text-muted)', fontFamily: 'monospace', fontSize: '0.75rem' }}>{lead.email}</td>
                     <td>
                       {lead.website ? (
                         <a
                           href={lead.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-400 hover:underline text-xs truncate max-w-[160px] block"
+                          style={{ color: '#2563eb', fontSize: '0.75rem', textDecoration: 'none', display: 'block', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                         >
                           {lead.website.replace(/^https?:\/\//, "")}
                         </a>
                       ) : (
-                        <span className="text-zinc-700">—</span>
+                        <span style={{ color: 'var(--color-text-muted)' }}>—</span>
                       )}
                     </td>
                     <td>
                       <Badge status={lead.status} />
                     </td>
-                    <td className="text-zinc-500 text-xs">
+                    <td style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                       {new Date(lead.scrapedAt).toLocaleDateString()}
                     </td>
                     <td>
-                      <div className="flex items-center gap-1">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         {lead.status === "sent" && (
                           <button
                             disabled={updatingId === lead.id}
                             onClick={() => updateStatus(lead.id, "replied")}
-                            className="btn-ghost text-xs py-1 px-2 text-emerald-400 hover:text-emerald-300"
+                            className="btn btn-ghost"
+                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', color: '#059669' }}
                           >
                             Mark replied
                           </button>
@@ -180,14 +189,16 @@ function LeadsContent() {
                           <button
                             disabled={updatingId === lead.id}
                             onClick={() => updateStatus(lead.id, "disqualified")}
-                            className="btn-ghost text-xs py-1 px-2"
+                            className="btn btn-ghost"
+                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                           >
                             Disqualify
                           </button>
                         )}
                         <button
                           onClick={() => deleteLead(lead.id)}
-                          className="btn-ghost text-xs py-1 px-2 text-red-500 hover:text-red-400"
+                          className="btn btn-ghost"
+                          style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', color: '#dc2626' }}
                         >
                           Delete
                         </button>
@@ -202,22 +213,24 @@ function LeadsContent() {
 
         {/* Pagination */}
         {data && data.meta.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-800">
-            <span className="text-xs text-zinc-500">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1.25rem', borderTop: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
               Page {data.meta.page} of {data.meta.totalPages}
             </span>
-            <div className="flex gap-2">
+            <div style={{ display: 'flex', gap: 8 }}>
               <button
                 disabled={data.meta.page <= 1}
                 onClick={() => router.push(`/leads?${new URLSearchParams({ ...(statusParam ? { status: statusParam } : {}), page: String(data.meta.page - 1) })}`)}
-                className="btn-secondary text-xs py-1 px-3"
+                className="btn btn-secondary"
+                style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem' }}
               >
                 Previous
               </button>
               <button
                 disabled={data.meta.page >= data.meta.totalPages}
                 onClick={() => router.push(`/leads?${new URLSearchParams({ ...(statusParam ? { status: statusParam } : {}), page: String(data.meta.page + 1) })}`)}
-                className="btn-secondary text-xs py-1 px-3"
+                className="btn btn-secondary"
+                style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem' }}
               >
                 Next
               </button>
@@ -231,7 +244,7 @@ function LeadsContent() {
 
 export default function LeadsPage() {
   return (
-    <Suspense fallback={<div className="p-8">Loading leads...</div>}>
+    <Suspense fallback={<div style={{ padding: '2rem 2.5rem' }}>Loading leads...</div>}>
       <LeadsContent />
     </Suspense>
   );

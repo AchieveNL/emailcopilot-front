@@ -3,7 +3,6 @@
 import "./globals.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import clsx from "clsx";
 
 const nav = [
   {
@@ -69,46 +68,46 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <div className="flex min-h-screen">
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
           {/* Sidebar */}
           <aside style={{
             width: 230,
             position: 'fixed',
             top: 0, left: 0, height: '100%',
-            background: 'var(--bg-card)',
-            borderRight: '1px solid var(--border)',
+            background: '#ffffff',
+            borderRight: '1px solid rgba(0,0,0,0.07)',
             display: 'flex',
             flexDirection: 'column',
             zIndex: 10,
           }}>
             {/* Logo */}
-            <div style={{ padding: '1.5rem 1.25rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ padding: '1.5rem 1.25rem 1.25rem', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 10,
                   background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 0 16px rgba(124,58,237,0.4)',
+                  boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
                 }}>
                   <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2.2}>
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.29 6.29l1.12-.45a2 2 0 0 1 2.11.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 17.92z" />
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>Outreach</div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 1 }}>Lead generation</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111118', letterSpacing: '-0.01em' }}>Outreach</div>
+                  <div style={{ fontSize: '0.65rem', color: '#a0a0b0', marginTop: 1 }}>Lead generation</div>
                 </div>
               </div>
             </div>
 
-            {/* Nav section label */}
+            {/* Nav label */}
             <div style={{ padding: '1.25rem 1.25rem 0.5rem' }}>
-              <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <span style={{ fontSize: '0.65rem', fontWeight: 600, color: '#a0a0b0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 Main menu
               </span>
             </div>
 
-            {/* Navigation */}
+            {/* Nav items */}
             <nav style={{ flex: 1, padding: '0.25rem 0.75rem' }}>
               {nav.map((item) => {
                 const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -126,9 +125,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       fontSize: '0.875rem',
                       fontWeight: active ? 600 : 400,
                       textDecoration: 'none',
-                      color: active ? 'white' : 'var(--text-muted)',
-                      background: active ? 'linear-gradient(135deg, rgba(124,58,237,0.25), rgba(168,85,247,0.1))' : 'transparent',
-                      border: active ? '1px solid rgba(139,92,246,0.2)' : '1px solid transparent',
+                      color: active ? '#7c3aed' : '#52525e',
+                      background: active ? 'rgba(124,58,237,0.07)' : 'transparent',
+                      border: active ? '1px solid rgba(124,58,237,0.12)' : '1px solid transparent',
                       transition: 'all 0.15s',
                       position: 'relative',
                     }}
@@ -137,11 +136,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <span style={{
                         position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
                         width: 3, height: '60%', borderRadius: '0 3px 3px 0',
-                        background: 'var(--accent-light)',
-                        boxShadow: '0 0 8px var(--accent-light)',
+                        background: '#7c3aed',
                       }} />
                     )}
-                    <span style={{ color: active ? '#a78bfa' : 'var(--text-muted)', marginLeft: 4 }}>
+                    <span style={{ color: active ? '#7c3aed' : '#a0a0b0', marginLeft: 4 }}>
                       {item.icon}
                     </span>
                     {item.label}
@@ -151,8 +149,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </nav>
 
             {/* Footer */}
-            <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>v1.0.0 · outreach system</div>
+            <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(0,0,0,0.07)' }}>
+              <div style={{ fontSize: '0.7rem', color: '#a0a0b0' }}>v1.0.0 · outreach system</div>
             </div>
           </aside>
 

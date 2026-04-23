@@ -33,11 +33,9 @@ export default function ScraperPage() {
 
   useEffect(() => {
     loadJobs();
-    // load default query from settings
     settingsApi.get().then((s) => setQuery(s.scrape_query || "")).catch(console.error);
   }, [loadJobs]);
 
-  // poll every 5s to pick up job status changes while running
   useEffect(() => {
     const interval = setInterval(() => {
       if (jobs.some((j) => j.status === "running")) loadJobs();
@@ -60,20 +58,21 @@ export default function ScraperPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="mb-6">
+    <div style={{ padding: '2rem 2.5rem', maxWidth: 896 }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <h1>Scraper</h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
           Find companies on Google Maps and extract their emails
         </p>
       </div>
 
       {/* Trigger card */}
-      <div className="card mb-6">
-        <h2 className="mb-4">Run a scrape job</h2>
-        <div className="flex gap-3">
+      <div className="card" style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ marginBottom: '1rem' }}>Run a scrape job</h2>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
           <input
-            className="input flex-1"
+            className="input"
+            style={{ flex: 1 }}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder='e.g. "dentists in Amsterdam"'
@@ -82,25 +81,26 @@ export default function ScraperPage() {
           <button
             onClick={trigger}
             disabled={triggering}
-            className="btn btn-primary shrink-0"
+            className="btn btn-primary"
+            style={{ flexShrink: 0 }}
           >
             {triggering ? "Starting..." : "Run scrape"}
           </button>
         </div>
         {msg && (
-          <p className={`mt-3 text-sm ${msg.includes("Failed") ? "text-red-400" : "text-emerald-400"}`}>
+          <p style={{ marginTop: '0.75rem', fontSize: '0.875rem', color: msg.includes("Failed") ? '#dc2626' : '#059669' }}>
             {msg}
           </p>
         )}
-        <p className="mt-3 text-xs text-zinc-600">
+        <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
           Leave query blank to use the default from Settings. The job runs in the
           background — this page polls automatically while a job is running.
         </p>
       </div>
 
       {/* Job history */}
-      <div className="card p-0 overflow-hidden">
-        <div className="px-5 py-4 border-b border-zinc-800">
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--color-border)' }}>
           <h2>Job history</h2>
         </div>
         <div className="table-wrapper">
@@ -116,9 +116,9 @@ export default function ScraperPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5} className="text-center py-12 text-zinc-600">Loading...</td></tr>
+                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>Loading...</td></tr>
               ) : jobs.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-12 text-zinc-600">No scrape jobs yet</td></tr>
+                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>No scrape jobs yet</td></tr>
               ) : (
                 jobs.map((job) => {
                   const duration =
@@ -131,21 +131,21 @@ export default function ScraperPage() {
                       : null;
                   return (
                     <tr key={job.id}>
-                      <td className="font-medium text-zinc-100 max-w-[240px] truncate">
+                      <td style={{ fontWeight: 500, color: 'var(--color-text-primary)', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {job.query}
                       </td>
                       <td><JobBadge status={job.status} /></td>
-                      <td className="text-zinc-300">
+                      <td style={{ color: 'var(--color-text-secondary)' }}>
                         {job.status === "running" ? (
-                          <span className="text-amber-400 animate-pulse">Running...</span>
+                          <span style={{ color: '#d97706' }}>Running...</span>
                         ) : (
                           job.leadsFound
                         )}
                       </td>
-                      <td className="text-zinc-500 text-xs">
+                      <td style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                         {new Date(job.ranAt).toLocaleString()}
                       </td>
-                      <td className="text-zinc-500 text-xs">
+                      <td style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                         {duration !== null ? `${duration}s` : "—"}
                       </td>
                     </tr>
