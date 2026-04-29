@@ -44,7 +44,6 @@ export default function SignInPage() {
                         <div style={{ fontSize: "0.65rem", color: "#a0a0b0", marginTop: 1 }}>Lead generation</div>
                     </div>
                 </div>
-
                 <SignIn />
             </div>
         </div>
