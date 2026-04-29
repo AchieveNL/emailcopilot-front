@@ -38,10 +38,10 @@ export default function ScraperPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (jobs.some((j) => j.status === "running")) loadJobs();
+      loadJobs();
     }, 5000);
     return () => clearInterval(interval);
-  }, [jobs, loadJobs]);
+  }, [loadJobs]);
 
   async function trigger() {
     setTriggering(true);
