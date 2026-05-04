@@ -1,26 +1,28 @@
 "use client";
 
+import Logo from "@/components/homepage/Logo";
+import { Send, Search, Mail, ListChecks, Settings, Zap, MapPin, MessageSquare, Database, Link as LinkIcon, ChevronRight, Plus, ChevronDown, Check, X, Coffee } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const FEATURES = [
   {
-    icon: "🔍",
+    icon: Search,
     title: "Smart lead scraping",
     desc: "Automatically finds businesses on Google Maps that match your target. Name, email, website — all collected without lifting a finger.",
   },
   {
-    icon: "✉️",
+    icon: Mail,
     title: "Personalised cold emails",
     desc: "Sends tailored emails from your own inbox, at the right time, with natural delays between each send so it always feels human.",
   },
   {
-    icon: "📋",
+    icon: ListChecks,
     title: "Simple pipeline dashboard",
     desc: "Track every lead from first contact to booked meeting. Filter by status, update notes, and see exactly what was sent and when.",
   },
   {
-    icon: "⚙️",
+    icon: Settings,
     title: "Full control, zero lock-in",
     desc: "Your SMTP, your data, your rules. Set daily limits, schedule scrapes, edit templates — everything from one clean dashboard.",
   },
@@ -36,16 +38,122 @@ const STATS = [
   { value: "10–50", label: "emails per day" },
   { value: "2×", label: "daily scrape runs" },
   { value: "100%", label: "your own data" },
-  { value: "€25", label: "per month" },
+  { value: "€9", label: "starting price" },
+];
+
+const TESTIMONIALS = [
+  {
+    quote: "EmailCopilot has completely transformed our outbound process. We book more meetings with less manual work.",
+    name: "Karim Saber",
+    role: "Founder, Achieve",
+    avatar: "KS",
+    color: "#6366f1",
+  },
+  {
+    quote: "We went from zero outbound to 15 qualified meetings a month in just 6 weeks. The ROI is insane for the price.",
+    name: "Laura Meijer",
+    role: "Head of Sales, Bloom Agency",
+    avatar: "LM",
+    color: "#0ea5e9",
+  },
+  {
+    quote: "Finally a tool that doesn't require a sales ops team to run. I set it up in an afternoon and it just works.",
+    name: "Tomas Varga",
+    role: "CEO, ScaleStack",
+    avatar: "TV",
+    color: "#22c55e",
+  },
+  {
+    quote: "The personalisation is surprisingly good. Our open rates jumped from 18% to 41% in the first month.",
+    name: "Nina Hofmann",
+    role: "Marketing Lead, Pureform",
+    avatar: "NH",
+    color: "#f59e0b",
+  },
+];
+
+const FAQS = [
+  {
+    q: "Do I need my own email account?",
+    a: "Yes — EmailCopilot connects to your own SMTP (Gmail, Outlook, or any provider). This means emails come from your real domain, boosting deliverability and keeping your sender reputation safe.",
+  },
+  {
+    q: "How does the lead scraping work?",
+    a: "You give us a search query (e.g. 'dental practices in London') and we scrape Google Maps to find matching businesses with contact details. The system runs automatically twice a day.",
+  },
+  {
+    q: "Will this get my domain blacklisted?",
+    a: "We built EmailCopilot with deliverability in mind. We enforce daily sending limits, add natural delays between emails, and never share sending infrastructure across customers.",
+  },
+  {
+    q: "Can I customise the email templates?",
+    a: "Absolutely. You have full control over every template. You can use dynamic variables like business name, location, and website to make each email feel genuinely personal.",
+  },
+  {
+    q: "What happens when someone replies?",
+    a: "Replies land directly in your inbox — we never intercept them. You can also log the reply status in the dashboard so your team knows which leads are warm.",
+  },
+  {
+    q: "Is there a free trial?",
+    a: "Yes, you can start for free and explore the dashboard. Paid plans start at €9/month — no credit card required to get started.",
+  },
+];
+
+const INTEGRATIONS = [
+  { name: "Gmail", icon: Mail, color: "#ea4335" },
+  { name: "Outlook", icon: Mail, color: "#0078d4" },
+  { name: "Google Maps", icon: MapPin, color: "#34a853" },
+  { name: "Slack", icon: MessageSquare, color: "#4a154b" },
+  { name: "Zapier", icon: Zap, color: "#ff4a00" },
+  { name: "HubSpot", icon: Database, color: "#ff7a59" },
+  { name: "Notion", icon: Database, color: "#000000" },
+  { name: "Webhooks", icon: LinkIcon, color: "#6366f1" },
+];
+
+const PLANS = [
+  {
+    name: "Starter",
+    price: "€9",
+    tag: null,
+    volume: "250 emails · ~8/day",
+    features: ["1 Copilot", "1 SMTP account", "Strong value to get started"],
+    cta: "Start free",
+  },
+  {
+    name: "Growth",
+    price: "€19",
+    tag: "Most popular",
+    volume: "750 emails · ~25/day",
+    features: ["3 Copilots", "Up to 3 SMTP accounts", "Export your data"],
+    cta: "Start free",
+    highlight: true,
+  },
+  {
+    name: "Scale",
+    price: "€39",
+    tag: null,
+    volume: "2,000 emails · ~65/day",
+    features: ["Unlimited Copilots", "Unlimited SMTP accounts", "Full data ownership + export"],
+    cta: "Start free",
+  },
 ];
 
 export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+    }, 4500);
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -100,14 +208,6 @@ export default function HomePage() {
           transform: translateY(-2px);
         }
 
-        .step-line::after {
-          content: '';
-          position: absolute;
-          top: 28px; left: calc(100% + 1px);
-          width: calc(100% - 2px); height: 1px;
-          background: repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 6px, transparent 6px, transparent 12px);
-        }
-
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(24px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -158,16 +258,81 @@ export default function HomePage() {
           color: #a0a0b0;
         }
 
-        .gradient-text {
-          background: linear-gradient(135deg, #0f0f12 0%, #52525e 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        /* mock dashboard preview */
         .mock-bar { height: 8px; border-radius: 99px; background: rgba(0,0,0,0.07); overflow: hidden; }
         .mock-fill { height: 100%; border-radius: 99px; }
+
+        /* FAQ */
+        .faq-item {
+          border-bottom: 1px solid rgba(0,0,0,0.07);
+          cursor: pointer;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-answer {
+          overflow: hidden;
+          transition: max-height 0.35s ease, opacity 0.25s ease;
+        }
+
+        /* Integration card */
+        .int-card {
+          display: flex; flex-direction: column; align-items: center; gap: 10px;
+          padding: 1.4rem 1rem;
+          background: #fff;
+          border: 1px solid rgba(0,0,0,0.07);
+          border-radius: 16px;
+          transition: all 0.2s;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        .int-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+          border-color: rgba(0,0,0,0.12);
+        }
+
+        /* Testimonial card */
+        .testi-card {
+          transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Pricing card */
+        .plan-card {
+          background: #fff;
+          border: 1px solid rgba(0,0,0,0.08);
+          border-radius: 20px;
+          padding: 2rem;
+          transition: all 0.2s;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          display: flex; flex-direction: column; gap: 0;
+        }
+        .plan-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+        }
+        .plan-card.highlight {
+          background: #0f0f12; color: #fafafa;
+          border-color: #0f0f12;
+          box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+        }
+
+        /* scroll ticker */
+        @keyframes ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .ticker-track {
+          display: flex; gap: 48px; align-items: center;
+          animation: ticker 24s linear infinite;
+          width: max-content;
+        }
+        .ticker-track:hover { animation-play-state: paused; }
+
+        /* comparison table */
+        .compare-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0; }
+        .compare-cell {
+          padding: 14px 16px;
+          font-size: 0.875rem;
+          border-bottom: 1px solid rgba(0,0,0,0.06);
+          display: flex; align-items: center;
+        }
       `}</style>
 
       {/* ── Nav ── */}
@@ -178,16 +343,16 @@ export default function HomePage() {
         ...(scrolled ? {} : { background: "transparent", borderBottom: "1px solid transparent" }),
       }} className={scrolled ? "nav-blur" : ""}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 9, background: "#0f0f12",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <span style={{ fontSize: "0.9rem" }}>✉️</span>
-            </div>
-            <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: "1.15rem", color: "#0f0f12", letterSpacing: "-0.01em" }}>
-              EmailCopilot
-            </span>
+          <Logo />
+
+          <div style={{ display: "flex", gap: 28, alignItems: "center" }} className="nav-links">
+            {[
+              { label: "Features", href: "#features" },
+              { label: "How it works", href: "#how-it-works" },
+              { label: "Pricing", href: "#pricing" },
+            ].map((l) => (
+              <a key={l.label} href={l.href} style={{ fontSize: "0.875rem", color: "#52525e", textDecoration: "none", fontWeight: 500 }}>{l.label}</a>
+            ))}
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -203,7 +368,6 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section style={{ paddingTop: 140, paddingBottom: 100, textAlign: "center", position: "relative", overflow: "hidden" }}>
-        {/* Background grid */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 0,
           backgroundImage: "linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)",
@@ -215,7 +379,7 @@ export default function HomePage() {
           <div className="fade-up" style={{ marginBottom: 24 }}>
             <span className="pill">
               <span className="pill-dot" />
-              Now available · €25/month
+              Starting at €9/month
             </span>
           </div>
 
@@ -242,9 +406,7 @@ export default function HomePage() {
           <div className="fade-up delay-3" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 60 }}>
             <Link href="/dashboard" className="btn-main btn-cta">
               Start for free
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              <ChevronRight size={14} />
             </Link>
             <Link href="#how-it-works" className="btn-main btn-outline">
               See how it works
@@ -262,7 +424,6 @@ export default function HomePage() {
             boxShadow: "0 24px 80px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06)",
             textAlign: "left",
           }}>
-            {/* Mock header */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
               <div>
                 <div style={{ fontSize: "0.7rem", color: "#a0a0b0", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 2 }}>Today&apos;s pipeline</div>
@@ -275,7 +436,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Mock leads */}
             {[
               { name: "Tandarts De Vries", status: "Replied", statusColor: "#22c55e", statusBg: "rgba(34,197,94,0.1)", bar: 90 },
               { name: "Studio Bloom Amsterdam", status: "Sent", statusColor: "#3b82f6", statusBg: "rgba(59,130,246,0.1)", bar: 60 },
@@ -322,7 +482,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ── */}
-      <section style={{ padding: "100px 2rem" }}>
+      <section id="features" style={{ padding: "100px 2rem" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 60 }}>
             <p className="section-label" style={{ marginBottom: 12 }}>Features</p>
@@ -332,13 +492,18 @@ export default function HomePage() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
-            {FEATURES.map((f) => (
-              <div key={f.title} className="feature-card">
-                <div style={{ fontSize: "1.5rem", marginBottom: 14 }}>{f.icon}</div>
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f0f12", marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "#52525e" }}>{f.desc}</p>
-              </div>
-            ))}
+            {FEATURES.map((f) => {
+              const IconComponent = f.icon;
+              return (
+                <div key={f.title} className="feature-card">
+                  <div style={{ marginBottom: 14 }}>
+                    <IconComponent size={28} color="#0f0f12" strokeWidth={1.5} />
+                  </div>
+                  <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f0f12", marginBottom: 8 }}>{f.title}</h3>
+                  <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "#52525e" }}>{f.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -380,50 +545,239 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
-      <section style={{ padding: "100px 2rem" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>Pricing</p>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 400, letterSpacing: "-0.02em", color: "#0f0f12", marginBottom: 48 }}>
-            Simple, transparent pricing
-          </h2>
+      {/* ── Testimonials ── */}
+      <section style={{ padding: "100px 2rem", background: "#fafafa", overflow: "hidden" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <p className="section-label" style={{ marginBottom: 12 }}>Testimonials</p>
+            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 400, letterSpacing: "-0.02em", color: "#0f0f12" }}>
+              Loved by sales teams
+            </h2>
+          </div>
 
-          <div style={{
-            background: "#fff", border: "1px solid rgba(0,0,0,0.09)",
-            borderRadius: 24, padding: "2.5rem",
-            boxShadow: "0 8px 40px rgba(0,0,0,0.08)",
-          }}>
-            <div style={{ marginBottom: 8 }}>
-              <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: "3.5rem", color: "#0f0f12", lineHeight: 1 }}>€25</span>
-              <span style={{ fontSize: "1rem", color: "#a0a0b0", marginLeft: 4 }}>/month</span>
-            </div>
-            <p style={{ fontSize: "0.875rem", color: "#52525e", marginBottom: 32, lineHeight: 1.6 }}>
-              Everything included. No hidden fees, no per-email charges.
-            </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32, textAlign: "left" }}>
-              {[
-                "Automated lead scraping (2× daily)",
-                "Up to 50 personalised emails/day",
-                "Full pipeline dashboard",
-                "Unlimited email templates",
-                "Your own SMTP — no shared servers",
-                "Dedicated support",
-              ].map((item) => (
-                <div key={item} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(34,197,94,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#22c55e" strokeWidth={3}>
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
+          {/* Active testimonial */}
+          <div style={{ position: "relative", minHeight: 200 }}>
+            {TESTIMONIALS.map((t, i) => (
+              <div
+                key={t.name}
+                style={{
+                  position: i === activeTestimonial ? "relative" : "absolute",
+                  top: 0, left: 0, right: 0,
+                  opacity: i === activeTestimonial ? 1 : 0,
+                  transform: i === activeTestimonial ? "translateY(0)" : "translateY(16px)",
+                  transition: "all 0.5s ease",
+                  pointerEvents: i === activeTestimonial ? "auto" : "none",
+                  background: "#fff",
+                  border: "1px solid rgba(0,0,0,0.08)",
+                  borderRadius: 24,
+                  padding: "2.5rem",
+                  boxShadow: "0 8px 40px rgba(0,0,0,0.07)",
+                  display: "flex", alignItems: "flex-start", gap: 28,
+                }}
+              >
+                <div style={{ fontSize: "3rem", color: "rgba(0,0,0,0.08)", lineHeight: 1, fontFamily: "Georgia, serif", flexShrink: 0 }}></div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: "1.1rem", lineHeight: 1.7, color: "#0f0f12", marginBottom: 24, fontStyle: "italic" }}>
+                    {t.quote}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: "50%",
+                      background: t.color,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#fff", fontSize: "0.8rem", fontWeight: 700,
+                      flexShrink: 0,
+                    }}>
+                      {t.avatar}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f0f12" }}>{t.name}</div>
+                      <div style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>{t.role}</div>
+                    </div>
                   </div>
-                  <span style={{ fontSize: "0.875rem", color: "#0f0f12" }}>{item}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
-            <Link href="/dashboard" className="btn-main btn-cta" style={{ width: "100%", justifyContent: "center", padding: "14px" }}>
-              Get started today →
-            </Link>
+          {/* Dots */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 32 }}>
+            {TESTIMONIALS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveTestimonial(i)}
+                style={{
+                  width: i === activeTestimonial ? 24 : 8,
+                  height: 8, borderRadius: 99,
+                  background: i === activeTestimonial ? "#0f0f12" : "rgba(0,0,0,0.15)",
+                  border: "none", cursor: "pointer",
+                  transition: "all 0.3s",
+                  padding: 0,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+
+      {/* ── Comparison ── */}
+      <section style={{ padding: "100px 2rem", background: "#fafafa" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <p className="section-label" style={{ marginBottom: 12 }}>Why EmailCopilot</p>
+            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 400, letterSpacing: "-0.02em", color: "#0f0f12" }}>
+              The smarter alternative
+            </h2>
+          </div>
+
+          <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+            {/* Header */}
+            <div className="compare-row" style={{ background: "#0f0f12" }}>
+              <div className="compare-cell" style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Feature</div>
+              <div className="compare-cell" style={{ color: "#fafafa", fontWeight: 700, fontSize: "0.875rem", justifyContent: "center" }}>EmailCopilot</div>
+              <div className="compare-cell" style={{ color: "rgba(255,255,255,0.4)", fontWeight: 600, fontSize: "0.875rem", justifyContent: "center" }}>Typical tools</div>
+            </div>
+            {[
+              ["Lead scraping built-in", true, false],
+              ["Your own SMTP domain", true, false],
+              ["No per-email fees", true, false],
+              ["Simple one-page dashboard", true, false],
+              ["Starts at €9/month", true, false],
+              ["Warm reply routing", true, true],
+            ].map(([label, us, them]) => (
+              <div key={label as string} className="compare-row">
+                <div className="compare-cell" style={{ fontWeight: 500, color: "#0f0f12" }}>{label as string}</div>
+                <div className="compare-cell" style={{ justifyContent: "center" }}>
+                  {us ? (
+                    <Check size={18} color="#22c55e" strokeWidth={2} />
+                  ) : (
+                    <X size={18} color="#e5e7eb" strokeWidth={2} />
+                  )}
+                </div>
+                <div className="compare-cell" style={{ justifyContent: "center" }}>
+                  {them ? (
+                    <Check size={18} color="#22c55e" strokeWidth={2} />
+                  ) : (
+                    <X size={18} color="#d1d5db" strokeWidth={2} />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Pricing ── */}
+      <section id="pricing" style={{ padding: "100px 2rem", background: "#fff", borderTop: "1px solid rgba(0,0,0,0.07)", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <p className="section-label" style={{ marginBottom: 12 }}>Pricing</p>
+            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 400, letterSpacing: "-0.02em", color: "#0f0f12" }}>
+              Simple, transparent pricing
+            </h2>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            {PLANS.map((plan) => (
+              <div key={plan.name} className={`plan-card${plan.highlight ? " highlight" : ""}`}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                  <span style={{ fontWeight: 700, fontSize: "1rem", color: plan.highlight ? "#fafafa" : "#0f0f12" }}>{plan.name}</span>
+                  {plan.tag && (
+                    <span style={{
+                      fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.06em",
+                      background: "#22c55e", color: "#fff",
+                      padding: "3px 10px", borderRadius: 99,
+                    }}>{plan.tag}</span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: 6 }}>
+                  <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: "3rem", lineHeight: 1, color: plan.highlight ? "#fafafa" : "#0f0f12" }}>{plan.price}</span>
+                  <span style={{ fontSize: "0.9rem", color: plan.highlight ? "rgba(255,255,255,0.5)" : "#a0a0b0", marginLeft: 4 }}>/month</span>
+                </div>
+
+                <div style={{
+                  display: "inline-block",
+                  fontSize: "0.75rem", fontWeight: 600,
+                  background: plan.highlight ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                  color: plan.highlight ? "rgba(255,255,255,0.7)" : "#52525e",
+                  padding: "4px 10px", borderRadius: 99, marginBottom: 28,
+                }}>
+                  {plan.volume}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 32, flex: 1 }}>
+                  {plan.features.map((f) => (
+                    <div key={f} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{
+                        width: 18, height: 18, borderRadius: "50%",
+                        background: plan.highlight ? "rgba(255,255,255,0.15)" : "rgba(34,197,94,0.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      }}>
+                        <Check size={10} color={plan.highlight ? "#fff" : "#22c55e"} strokeWidth={3} />
+                      </div>
+                      <span style={{ fontSize: "0.85rem", color: plan.highlight ? "rgba(255,255,255,0.8)" : "#0f0f12" }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link href="/dashboard" className="btn-main" style={{
+                  width: "100%", justifyContent: "center", padding: "13px",
+                  background: plan.highlight ? "#fafafa" : "#0f0f12",
+                  color: plan.highlight ? "#0f0f12" : "#fafafa",
+                }}>
+                  {plan.cta} →
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <p style={{ textAlign: "center", fontSize: "0.8rem", color: "#a0a0b0", marginTop: 28 }}>
+            All plans include a free trial · No credit card required
+          </p>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section style={{ padding: "100px 2rem", background: "#fafafa" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <p className="section-label" style={{ marginBottom: 12 }}>FAQ</p>
+            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: 400, letterSpacing: "-0.02em", color: "#0f0f12" }}>
+              Common questions
+            </h2>
+          </div>
+
+          <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,0.05)" }}>
+            {FAQS.map((faq, i) => (
+              <div key={i} className="faq-item" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "20px 24px", gap: 16,
+                }}>
+                  <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#0f0f12" }}>{faq.q}</span>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 99,
+                    background: openFaq === i ? "#0f0f12" : "rgba(0,0,0,0.06)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0, transition: "all 0.2s",
+                  }}>
+                    <Plus size={12} color={openFaq === i ? "#fff" : "#0f0f12"} strokeWidth={2.5}
+                      style={{ transform: openFaq === i ? "rotate(45deg)" : "rotate(0)", transition: "transform 0.2s" }} />
+                  </div>
+                </div>
+                <div className="faq-answer" style={{
+                  maxHeight: openFaq === i ? "200px" : "0px",
+                  opacity: openFaq === i ? 1 : 0,
+                }}>
+                  <p style={{ padding: "0 24px 20px", fontSize: "0.875rem", lineHeight: 1.7, color: "#52525e" }}>
+                    {faq.a}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -441,7 +795,6 @@ export default function HomePage() {
         position: "relative",
         overflow: "hidden",
       }}>
-        {/* subtle grid */}
         <div style={{
           position: "absolute", inset: 0,
           backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
@@ -464,20 +817,24 @@ export default function HomePage() {
             padding: "14px 32px", fontWeight: 700,
             boxShadow: "0 4px 24px rgba(255,255,255,0.1)",
           }}>
-            Start for €25/month →
+            Start for €9/month →
           </Link>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ padding: "32px 2rem 48px", borderTop: "1px solid rgba(0,0,0,0.07)", textAlign: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-          <div style={{ width: 24, height: 24, borderRadius: 6, background: "#0f0f12", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: "0.65rem" }}>✉️</span>
+      <footer style={{ padding: "48px 2rem 48px", borderTop: "1px solid rgba(0,0,0,0.07)" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 32, marginBottom: 10 }}>
+            <div>
+              <Logo />
+              <p style={{ fontSize: "0.82rem", color: "#a0a0b0", maxWidth: 220, lineHeight: 1.6 }}>Automated outbound that books meetings while you sleep.</p>
+            </div>
+
+            <p style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>© 2026 EmailCopilot. All rights reserved.</p>
           </div>
-          <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: "0.95rem", color: "#0f0f12" }}>EmailCopilot</span>
+
         </div>
-        <p style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>© 2026 EmailCopilot. All rights reserved.</p>
       </footer>
     </div>
   );

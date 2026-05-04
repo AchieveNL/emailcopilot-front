@@ -1,0 +1,163 @@
+"use client";
+
+import { create } from "zustand";
+
+export type Step = 1 | 2 | 3 | 4;
+
+// Matches schema: copilots table + settings jsonb
+export interface CopilotData {
+  name: string;
+  description: string;
+  emailProfileId: number | null;
+  scrapeProfileId: number | null;
+  templateId: number | null;
+  settings: {
+    dailyLimit: number;
+    sendingSpeed: string;
+    timezone: string;
+  };
+}
+
+// Matches schema: emailProfiles table
+export interface EmailProfile {
+  id: number; // serial PK — number, not string
+  name: string;
+  email: string;
+  provider: "gmail" | "outlook" | "smtp"; // matches emailProviderEnum
+  status: "active" | "inactive" | "error"; // matches emailProfileStatusEnum
+  dailyLimit: number;
+  sentToday: number;
+}
+
+// Matches schema: scrapeProfiles table
+export interface ScrapeProfile {
+  id: number; // serial PK — number, not string
+  name: string;
+  url: string;          // was wrongly "category" + "location"
+  selector: string;     // was missing
+  fields: string[];     // was missing (jsonb string[])
+  status: "idle" | "running" | "done" | "error"; // matches scrapeStatusEnum
+  resultsCount: number; // was wrongly "count"
+  lastRun: string | null;
+}
+
+interface CopilotStore {
+  currentStep: Step;
+  copilotData: CopilotData; // renamed from "settings" to match page.tsx usage
+  launched: boolean;
+
+  setStep: (step: Step) => void;
+  updateCopilotData: (data: Partial<CopilotData>) => void;
+  updateSettings: (settings: Partial<CopilotData["settings"]>) => void;
+  setLaunched: (launched: boolean) => void;
+  resetStore: () => void; // renamed from "reset" to match page.tsx usage
+}
+
+const defaultCopilotData: CopilotData = {
+  name: "Dental Practices — California",
+  description:
+    "AI-powered outreach to dental practices in California to introduce our services and book more appointments.",
+  emailProfileId: null,
+  scrapeProfileId: null,
+  templateId: null,
+  settings: {
+    dailyLimit: 100,
+    sendingSpeed: "Normal (Recommended)",
+    timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+  },
+};
+
+export const useCopilotStore = create<CopilotStore>((set) => ({
+  currentStep: 1,
+  copilotData: defaultCopilotData,
+  launched: false,
+
+  setStep: (step) => set({ currentStep: step }),
+
+  updateCopilotData: (data) =>
+    set((state) => ({
+      copilotData: { ...state.copilotData, ...data },
+    })),
+
+  updateSettings: (settings) =>
+    set((state) => ({
+      copilotData: {
+        ...state.copilotData,
+        settings: { ...state.copilotData.settings, ...settings },
+      },
+    })),
+
+  setLaunched: (launched) => set({ launched }),
+
+  resetStore: () =>
+    set({
+      currentStep: 1,
+      copilotData: defaultCopilotData,
+      launched: false,
+    }),
+}));
+
+// ─── Mock data (aligned with schema types) ───────────────────────────────────
+
+export const mockEmailProfiles: EmailProfile[] = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john@company.com",
+    provider: "gmail",
+    status: "active",
+    dailyLimit: 100,
+    sentToday: 12,
+  },
+  {
+    id: 2,
+    name: "Sarah Smith",
+    email: "sarah@company.com",
+    provider: "outlook",
+    status: "active",
+    dailyLimit: 150,
+    sentToday: 0,
+  },
+  {
+    id: 3,
+    name: "Marketing Team",
+    email: "marketing@company.com",
+    provider: "gmail",
+    status: "inactive",
+    dailyLimit: 200,
+    sentToday: 0,
+  },
+];
+
+export const mockScrapeProfiles: ScrapeProfile[] = [
+  {
+    id: 1,
+    name: "Dental CA - Google Maps",
+    url: "https://maps.google.com/?q=dentist+california",
+    selector: ".place-result",
+    fields: ["name", "phone", "address", "website"],
+    status: "done",
+    resultsCount: 2840,
+    lastRun: "2024-05-01T10:00:00Z",
+  },
+  {
+    id: 2,
+    name: "Clinics - New York",
+    url: "https://maps.google.com/?q=medical+clinic+new+york",
+    selector: ".place-result",
+    fields: ["name", "phone", "address"],
+    status: "done",
+    resultsCount: 1520,
+    lastRun: "2024-04-28T08:30:00Z",
+  },
+  {
+    id: 3,
+    name: "Lawyers - Texas",
+    url: "https://maps.google.com/?q=law+firm+texas",
+    selector: ".place-result",
+    fields: ["name", "phone", "email", "website"],
+    status: "idle",
+    resultsCount: 3100,
+    lastRun: null,
+  },
+];

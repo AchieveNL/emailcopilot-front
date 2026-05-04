@@ -1,102 +1,138 @@
 import axios from "axios";
-import type {
-    Lead,
-    LeadStatus,
-    LeadStats,
-    EmailLog,
-    EmailTemplate,
-    ScrapeJob,
-    Settings,
-    PaginatedResponse,
-} from "./types";
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
-    headers: {
-        "x-api-key": process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || "",
-        "Content-Type": "application/json",
-    },
+  baseURL: "http://localhost:3001",
+  headers: {
+    "x-api-key": process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || "",
+    "Content-Type": "application/json",
+  },
+  timeout: 10000,
 });
 
-// ─── Leads ────────────────────────────────────────────────────────────────────
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
 
-export const leadsApi = {
-    list: (params?: { status?: LeadStatus; page?: number; limit?: number }) =>
-        api.get<PaginatedResponse<Lead>>("/leads", { params }).then((r) => r.data),
+export default api;
 
-    get: (id: number) =>
-        api.get<Lead>(`/leads/${id}`).then((r) => r.data),
+// ─── Email Profiles ───────────────────────────────────────────────────────────
+// Schema: emailProfiles — provider: "gmail"|"outlook"|"smtp", status: "active"|"inactive"|"error"
 
-    update: (id: number, data: { status?: LeadStatus; notes?: string }) =>
-        api.patch<Lead>(`/leads/${id}`, data).then((r) => r.data),
-
-    delete: (id: number) =>
-        api.delete(`/leads/${id}`).then((r) => r.data),
-
-    stats: () =>
-        api.get<LeadStats>("/leads/stats/summary").then((r) => r.data),
+export const emailProfilesApi = {
+  getAll: () => api.get("/email-profiles"),
+  getById: (id: number) => api.get(`/email-profiles/${id}`),
+  create: (data: Record<string, unknown>) => api.post("/email-profiles", data),
+  update: (id: number, data: Record<string, unknown>) =>
+    api.put(`/email-profiles/${id}`, data),
+  delete: (id: number) => api.delete(`/email-profiles/${id}`),
+  verify: (id: number) => api.post(`/email-profiles/${id}/verify`),
 };
 
-// ─── Emails ───────────────────────────────────────────────────────────────────
+// ─── Scrape Profiles ──────────────────────────────────────────────────────────
+// Schema: scrapeProfiles — status: "idle"|"running"|"done"|"error"
 
-export const emailsApi = {
-    logs: (params?: { page?: number; limit?: number }) =>
-        api.get<PaginatedResponse<EmailLog>>("/emails/logs", { params }).then((r) => r.data),
-
-    templates: () =>
-        api.get<EmailTemplate[]>("/emails/templates").then((r) => r.data),
-
-    createTemplate: (data: { name: string; subject: string; body: string }) =>
-        api.post<EmailTemplate>("/emails/templates", data).then((r) => r.data),
-
-    updateTemplate: (
-        id: number,
-        data: Partial<{ name: string; subject: string; body: string; isActive: boolean }>
-    ) =>
-        api.patch<EmailTemplate>(`/emails/templates/${id}`, data).then((r) => r.data),
-
-    deleteTemplate: (id: number) =>
-        api.delete(`/emails/templates/${id}`).then((r) => r.data),
+export const scrapeProfilesApi = {
+  getAll: () => api.get("/scrape-profiles"),
+  getById: (id: number) => api.get(`/scrape-profiles/${id}`),
+  create: (data: Record<string, unknown>) => api.post("/scrape-profiles", data),
+  update: (id: number, data: Record<string, unknown>) =>
+    api.put(`/scrape-profiles/${id}`, data),
+  delete: (id: number) => api.delete(`/scrape-profiles/${id}`),
+  run: (id: number) => api.post(`/scrape-profiles/${id}/run`),
 };
 
-// ─── Scraper ──────────────────────────────────────────────────────────────────
+// ─── Templates ────────────────────────────────────────────────────────────────
+// Schema: templates — category: "Cold Outreach"|"Follow-up"|"Re-engagement"|"Partnership"|"Other"
 
-export const scraperApi = {
-    jobs: (params?: { page?: number; limit?: number }) =>
-        api.get<PaginatedResponse<ScrapeJob>>("/scraper/jobs", { params }).then((r) => r.data),
+export const templatesApi = {
+  getAll: () => api.get("/templates"),
+  getById: (id: number) => api.get(`/templates/${id}`),
+  create: (data: Record<string, unknown>) => api.post("/templates", data),
+  update: (id: number, data: Record<string, unknown>) =>
+    api.put(`/templates/${id}`, data),
+  delete: (id: number) => api.delete(`/templates/${id}`),
+  duplicate: (id: number) => api.post(`/templates/${id}/duplicate`),
+};
 
-    trigger: (query?: string) =>
-        api.post("/scraper/trigger", { query }).then((r) => r.data),
+// ─── Copilots ─────────────────────────────────────────────────────────────────
+// Schema: copilots — status: "draft"|"active"|"paused"|"archived"
+// Was missing entirely — page.tsx calls copilotsApi.create / update / updateStatus
 
-    job: (id: number) =>
-        api.get<ScrapeJob>(`/scraper/jobs/${id}`).then((r) => r.data),
+export const copilotsApi = {
+  getAll: () => api.get("/copilots"),
+  getById: (id: number) => api.get(`/copilots/${id}`),
+  create: (data: Record<string, unknown>) => api.post("/copilots", data),
+  update: (id: number, data: Record<string, unknown>) =>
+    api.put(`/copilots/${id}`, data),
+  delete: (id: number) => api.delete(`/copilots/${id}`),
+  updateStatus: (
+    id: number,
+    status: "draft" | "active" | "paused" | "archived" // matches copilotStatusEnum
+  ) => api.patch(`/copilots/${id}/status`, { status }),
 };
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
+// Schema: users table (theme: "light"|"dark"|"system", notifyOnReply, notifyOnBounce, notifyWeeklyReport)
 
 export const settingsApi = {
-    get: () =>
-        api.get<Settings>("/settings").then((r) => r.data),
-
-    update: (data: Partial<Settings> & Record<string, string>) =>
-        api.patch("/settings", data).then((r) => r.data),
-
-    testSmtp: () =>
-        api.post<{ success: boolean; message?: string; error?: string }>(
-            "/settings/test-smtp"
-        ).then((r) => r.data),
+  get: () => api.get("/settings"),
+  update: (data: Record<string, unknown>) => api.put("/settings", data),
+  updatePassword: (data: Record<string, unknown>) =>
+    api.put("/settings/password", data),
+  deleteAccount: () => api.delete("/settings/account"),
 };
 
-// ─── Scheduler ────────────────────────────────────────────────────────────────
+// ─── Integrations ─────────────────────────────────────────────────────────────
+// Schema: integrations — provider enum: "google"|"microsoft"|"sendgrid"|"hunter"|
+//         "apollo"|"clearbit"|"hubspot"|"salesforce"|"slack"|"webhook"
 
-export const schedulerApi = {
-    status: () =>
-        api.get<{
-            sendJob: { active: boolean };
-            scrapeJobAM: { active: boolean };
-            scrapeJobPM: { active: boolean };
-        }>("/scheduler/status").then((r) => r.data),
+export type IntegrationProvider =
+  | "google"
+  | "microsoft"
+  | "sendgrid"
+  | "hunter"
+  | "apollo"
+  | "clearbit"
+  | "hubspot"
+  | "salesforce"
+  | "slack"
+  | "webhook";
 
-    sendNow: () =>
-        api.post("/send-now").then((r) => r.data),
+export const integrationsApi = {
+  getAll: () => api.get("/integrations"),
+  connect: (provider: IntegrationProvider, data: Record<string, unknown>) =>
+    api.post(`/integrations/${provider}/connect`, data),
+  disconnect: (provider: IntegrationProvider) =>
+    api.delete(`/integrations/${provider}`),
+  getStatus: (provider: IntegrationProvider) =>
+    api.get(`/integrations/${provider}/status`),
+};
+
+// ─── Billing ──────────────────────────────────────────────────────────────────
+// Schema: subscriptions — status: "active"|"canceled"|"past_due"|"trialing"
+//         invoices — status: "paid"|"pending"|"failed", amount in cents
+
+export const billingApi = {
+  getSubscription: () => api.get("/billing/subscription"),
+  getInvoices: () => api.get("/billing/invoices"),
+  getPlans: () => api.get("/billing/plans"),
+  subscribe: (planId: string) => api.post("/billing/subscribe", { planId }),
+  cancel: () => api.post("/billing/cancel"),
+  updatePaymentMethod: (data: Record<string, unknown>) =>
+    api.put("/billing/payment-method", data),
+};
+
+export const usersApi = {
+  create: (data: Record<string, unknown>) => api.post("/users", data),
+  getById: (id: number) => api.get(`/users/${id}`),
+  delete: (id: number) => api.delete(`/users/${id}`),
+  getCurrent: () => api.get("/users"),
+  updateUser: (
+    id: number,
+    data: Record<string, unknown>
+  ) => api.put(`/users/${id}`, data),
 };
