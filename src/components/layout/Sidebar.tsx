@@ -19,13 +19,13 @@ import clsx from "clsx";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/copilots", label: "Copilots", icon: Send },
-  { href: "/email-profiles", label: "Email Profiles", icon: Mail, badge: 3 },
-  { href: "/scrape-profiles", label: "Scrape Profiles", icon: Database, badge: 4 },
-  { href: "/templates", label: "Templates", icon: FileText },
-  { href: "/settings", label: "Settings", icon: Settings },
-  /* { href: "/integrations", label: "Integrations", icon: Plug }, */
-  { href: "/billing", label: "Billing", icon: CreditCard },
+  { href: "/dashboard/copilots", label: "Copilots", icon: Send },
+  { href: "/dashboard/email-profiles", label: "Email Profiles", icon: Mail, badge: 3 },
+  { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database, badge: 4 },
+  { href: "/dashboard/templates", label: "Templates", icon: FileText },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
 ];
 
 export default function Sidebar() {
@@ -43,7 +43,7 @@ export default function Sidebar() {
         {/* Create Button */}
         <div className="px-4 mb-4">
           <Link
-            href="/copilots/new"
+            href="/dashboard/copilots/new"
             className="w-full bg-gray-900 text-white rounded-lg py-2.5 px-4 font-medium flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors text-sm"
           >
             <Plus size={15} />

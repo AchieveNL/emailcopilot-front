@@ -171,7 +171,7 @@ export default function CopilotsPage() {
           <p className="text-gray-500 text-sm mt-1">Manage your automated outreach campaigns.</p>
         </div>
         <Link
-          href="/copilots/new"
+          href="/dashboard/copilots/new"
           className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
         >
           <Plus size={15} /> Create New Copilot
@@ -253,7 +253,7 @@ export default function CopilotsPage() {
             Build your first copilot to start sending personalized emails at scale.
           </p>
           <Link
-            href="/copilots/new"
+            href="/dashboard/copilots/new"
             className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
           >
             <Plus size={15} /> Create New Copilot
