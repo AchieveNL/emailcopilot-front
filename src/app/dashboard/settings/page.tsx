@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { User, Lock, Bell, Palette, Save, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { settingsApi } from "@/lib/api";
+import { useUser } from "@clerk/nextjs";
 
 type Settings = {
   firstName: string;
@@ -31,6 +32,8 @@ export default function SettingsPage() {
   const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
   const [showPw, setShowPw] = useState(false);
   const [pwSaving, setPwSaving] = useState(false);
+
+  const { user } = useUser()
 
 
 

@@ -12,6 +12,7 @@ import Step3ScrapeProfile from "@/components/ui/Step3ScrapeProfile";
 import Step4Launch from "@/components/ui/Step4Launch";
 import { useCopilotStore } from "@/store/copilotStore";
 import { copilotsApi, emailProfilesApi, scrapeProfilesApi, templatesApi } from "@/lib/api";
+import { useUser } from "@clerk/nextjs";
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
 type RemoteOption = { id: number; name: string };
@@ -38,6 +39,8 @@ export default function NewCopilotPage() {
   const [scrapeProfiles, setScrapeProfiles] = useState<RemoteOption[]>([]);
   const [templates, setTemplates] = useState<RemoteOption[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
+
+  const { user } = useUser()
 
   // Load dropdown options once on mount
   useEffect(() => {
@@ -98,7 +101,7 @@ export default function NewCopilotPage() {
     try {
       setLaunching(true);
       // status "active" matches copilotStatusEnum in schema
-      const payload = { ...copilotData, userId: "4", status: "active" as const };
+      const payload = { ...copilotData, userId: user?.id, status: "active" as const };
 
       if (draftId) {
         await copilotsApi.update(draftId, payload);

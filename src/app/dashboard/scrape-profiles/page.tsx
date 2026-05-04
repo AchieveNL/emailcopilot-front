@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Globe, Trash2, Play, Clock, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { scrapeProfilesApi } from "@/lib/api";
+import { useUser } from "@clerk/nextjs";
 
 type ScrapeProfile = {
   id: number;
@@ -24,6 +25,8 @@ export default function ScrapeProfilesPage() {
   const [saving, setSaving] = useState(false);
   const [runningId, setRunningId] = useState<number | null>(null);
 
+  const { user } = useUser()
+
 
   useEffect(() => { fetchProfiles(); }, []);
 
@@ -38,7 +41,7 @@ export default function ScrapeProfilesPage() {
   async function handleCreate() {
     try {
       setSaving(true);
-      await scrapeProfilesApi.create({ ...form, userId: "4" });
+      await scrapeProfilesApi.create({ ...form, userId: user?.id });
       setShowModal(false);
       setForm({ name: "", searchQuery: "", resultsPerRun: "" });
       fetchProfiles();

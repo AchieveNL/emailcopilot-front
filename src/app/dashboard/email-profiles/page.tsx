@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Mail, Trash2, CheckCircle2, XCircle, RefreshCw, AlertCircle } from "lucide-react";
 import { emailProfilesApi } from "@/lib/api";
+import { useUser } from "@clerk/nextjs";
 
 type EmailProfile = {
   id: number;
@@ -23,6 +24,8 @@ export default function EmailProfilesPage() {
   const [saving, setSaving] = useState(false);
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
+  const { user } = useUser()
+
   useEffect(() => {
     fetchProfiles();
   }, []);
@@ -42,7 +45,7 @@ export default function EmailProfilesPage() {
   async function handleCreate() {
     try {
       setSaving(true);
-      await emailProfilesApi.create({ ...form, userId: "4" });
+      await emailProfilesApi.create({ ...form, userId: user?.id });
       setShowModal(false);
       setForm({ name: "", email: "", provider: "smtp", smtpHost: "", smtpPort: "587", username: "", password: "", dailyLimit: "100" });
       fetchProfiles();
