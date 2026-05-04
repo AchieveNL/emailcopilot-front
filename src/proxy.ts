@@ -5,6 +5,8 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+  console.log('middleware hit:', req.nextUrl.pathname, 'userId:', userId);
   if (isProtectedRoute(req)) await auth.protect()  // ← async + await
 })
 
