@@ -1,147 +1,18 @@
 "use client";
 
 import Logo from "@/components/homepage/Logo";
-import { Send, Search, Mail, ListChecks, Settings, Zap, MapPin, MessageSquare, Database, Link as LinkIcon, ChevronRight, Plus, ChevronDown, Check, X, Coffee } from "lucide-react";
+import { FAQS, FEATURES, PLANS, STATS, STEPS, TESTIMONIALS, } from "@/store/hompageData";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { ChevronRight, Plus, Check, X, Menu } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
-const FEATURES = [
-  {
-    icon: Search,
-    title: "Smart lead scraping",
-    desc: "Automatically finds businesses on Google Maps that match your target. Name, email, website — all collected without lifting a finger.",
-  },
-  {
-    icon: Mail,
-    title: "Personalised cold emails",
-    desc: "Sends tailored emails from your own inbox, at the right time, with natural delays between each send so it always feels human.",
-  },
-  {
-    icon: ListChecks,
-    title: "Simple pipeline dashboard",
-    desc: "Track every lead from first contact to booked meeting. Filter by status, update notes, and see exactly what was sent and when.",
-  },
-  {
-    icon: Settings,
-    title: "Full control, zero lock-in",
-    desc: "Your SMTP, your data, your rules. Set daily limits, schedule scrapes, edit templates — everything from one clean dashboard.",
-  },
-];
-
-const STEPS = [
-  { num: "01", title: "Set your target", desc: "Tell EmailCopilot what kind of businesses to find. A search query is all it takes." },
-  { num: "02", title: "We find & contact them", desc: "The system scrapes leads and sends personalised cold emails automatically — every day." },
-  { num: "03", title: "You close the meetings", desc: "Replies land in your inbox. Your team qualifies and books. You focus on what matters." },
-];
-
-const STATS = [
-  { value: "10–50", label: "emails per day" },
-  { value: "2×", label: "daily scrape runs" },
-  { value: "100%", label: "your own data" },
-  { value: "€9", label: "starting price" },
-];
-
-const TESTIMONIALS = [
-  {
-    quote: "EmailCopilot has completely transformed our outbound process. We book more meetings with less manual work.",
-    name: "Karim Saber",
-    role: "Founder, Achieve",
-    avatar: "KS",
-    color: "#6366f1",
-  },
-  {
-    quote: "We went from zero outbound to 15 qualified meetings a month in just 6 weeks. The ROI is insane for the price.",
-    name: "Laura Meijer",
-    role: "Head of Sales, Bloom Agency",
-    avatar: "LM",
-    color: "#0ea5e9",
-  },
-  {
-    quote: "Finally a tool that doesn't require a sales ops team to run. I set it up in an afternoon and it just works.",
-    name: "Tomas Varga",
-    role: "CEO, ScaleStack",
-    avatar: "TV",
-    color: "#22c55e",
-  },
-  {
-    quote: "The personalisation is surprisingly good. Our open rates jumped from 18% to 41% in the first month.",
-    name: "Nina Hofmann",
-    role: "Marketing Lead, Pureform",
-    avatar: "NH",
-    color: "#f59e0b",
-  },
-];
-
-const FAQS = [
-  {
-    q: "Do I need my own email account?",
-    a: "Yes — EmailCopilot connects to your own SMTP (Gmail, Outlook, or any provider). This means emails come from your real domain, boosting deliverability and keeping your sender reputation safe.",
-  },
-  {
-    q: "How does the lead scraping work?",
-    a: "You give us a search query (e.g. 'dental practices in London') and we scrape Google Maps to find matching businesses with contact details. The system runs automatically twice a day.",
-  },
-  {
-    q: "Will this get my domain blacklisted?",
-    a: "We built EmailCopilot with deliverability in mind. We enforce daily sending limits, add natural delays between emails, and never share sending infrastructure across customers.",
-  },
-  {
-    q: "Can I customise the email templates?",
-    a: "Absolutely. You have full control over every template. You can use dynamic variables like business name, location, and website to make each email feel genuinely personal.",
-  },
-  {
-    q: "What happens when someone replies?",
-    a: "Replies land directly in your inbox — we never intercept them. You can also log the reply status in the dashboard so your team knows which leads are warm.",
-  },
-  {
-    q: "Is there a free trial?",
-    a: "Yes, you can start for free and explore the dashboard. Paid plans start at €9/month — no credit card required to get started.",
-  },
-];
-
-const INTEGRATIONS = [
-  { name: "Gmail", icon: Mail, color: "#ea4335" },
-  { name: "Outlook", icon: Mail, color: "#0078d4" },
-  { name: "Google Maps", icon: MapPin, color: "#34a853" },
-  { name: "Slack", icon: MessageSquare, color: "#4a154b" },
-  { name: "Zapier", icon: Zap, color: "#ff4a00" },
-  { name: "HubSpot", icon: Database, color: "#ff7a59" },
-  { name: "Notion", icon: Database, color: "#000000" },
-  { name: "Webhooks", icon: LinkIcon, color: "#6366f1" },
-];
-
-const PLANS = [
-  {
-    name: "Starter",
-    price: "€9",
-    tag: null,
-    volume: "250 emails · ~8/day",
-    features: ["1 Copilot", "1 SMTP account", "Strong value to get started"],
-    cta: "Start free",
-  },
-  {
-    name: "Growth",
-    price: "€19",
-    tag: "Most popular",
-    volume: "750 emails · ~25/day",
-    features: ["3 Copilots", "Up to 3 SMTP accounts", "Export your data"],
-    cta: "Start free",
-    highlight: true,
-  },
-  {
-    name: "Scale",
-    price: "€39",
-    tag: null,
-    volume: "2,000 emails · ~65/day",
-    features: ["Unlimited Copilots", "Unlimited SMTP accounts", "Full data ownership + export"],
-    cta: "Start free",
-  },
-];
 
 export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -333,12 +204,157 @@ export default function HomePage() {
           border-bottom: 1px solid rgba(0,0,0,0.06);
           display: flex; align-items: center;
         }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+          display: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 8px;
+          color: #0f0f12;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .nav-links {
+            display: none !important;
+          }
+          
+          .mobile-menu-btn {
+            display: block;
+          }
+
+          .nav-buttons {
+            gap: 8px !important;
+          }
+
+          .btn-main {
+            padding: 10px 16px;
+            font-size: 0.8rem;
+          }
+
+          /* Hero section */
+          .hero-buttons {
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .hero-buttons .btn-main {
+            width: 100%;
+            justify-content: center;
+          }
+
+          /* Stats grid */
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+
+          .stat-card {
+            padding: 1.5rem 1rem !important;
+          }
+
+          /* Features grid */
+          .features-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+
+          /* Steps grid */
+          .steps-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+
+          .step-connector {
+            display: none !important;
+          }
+
+          /* Testimonials */
+          .testimonial-card {
+            flex-direction: column !important;
+            gap: 16px !important;
+            padding: 1.5rem !important;
+          }
+
+          .quote-icon {
+            display: none;
+          }
+
+          /* Comparison table */
+          .compare-row {
+            grid-template-columns: 1fr !important;
+          }
+
+          .compare-cell {
+            padding: 10px 12px !important;
+            font-size: 0.8rem !important;
+            justify-content: space-between !important;
+          }
+
+          /* Pricing grid */
+          .pricing-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+
+          .plan-card {
+            padding: 1.5rem !important;
+          }
+
+          /* Sections */
+          section {
+            padding: 60px 1rem !important;
+          }
+
+          .hero-section {
+            padding-top: 100px !important;
+            padding-bottom: 60px !important;
+          }
+
+          .cta-section {
+            margin: 0 1rem 60px !important;
+            padding: 50px 1.5rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .stats-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .btn-main {
+            padding: 9px 14px;
+            font-size: 0.75rem;
+          }
+
+          .mock-preview {
+            padding: 1rem !important;
+          }
+
+          .feature-card {
+            padding: 1.5rem !important;
+          }
+
+          .plan-card {
+            padding: 1.2rem !important;
+          }
+
+          section {
+            padding: 50px 1rem !important;
+          }
+
+          .hero-section {
+            padding-top: 80px !important;
+          }
+        }
       `}</style>
 
       {/* ── Nav ── */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        padding: "0 2rem",
+        padding: "0 1.5rem",
         transition: "all 0.3s",
         ...(scrolled ? {} : { background: "transparent", borderBottom: "1px solid transparent" }),
       }} className={scrolled ? "nav-blur" : ""}>
@@ -355,19 +371,116 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Link href="/dashboard" className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
-              Sign in
-            </Link>
-            <Link href="/dashboard" className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
-              Get started →
-            </Link>
+          {/* Mobile Menu Button */}
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{ zIndex: 51 }}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
+          {/* Desktop Auth Buttons */}
+          <div style={{ alignItems: "center", gap: 12 }} className="nav-buttons hidden md:flex">
+            <Show when="signed-out">
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <SignInButton>
+                  <button className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                    Sign In
+                  </button>
+                </SignInButton>
+                <SignUpButton>
+                  <button className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                    Sign Up
+                  </button>
+                </SignUpButton>
+                <Link href="#pricing" className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                  Get started →
+                </Link>
+              </div>
+            </Show>
+            <Show when="signed-in">
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <UserButton />
+                <Link href="/dashboard" className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                  Dashboard →
+                </Link>
+              </div>
+            </Show>
           </div>
         </div>
       </nav>
 
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 40,
+            top: 64,
+          }}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div style={{
+          position: "fixed",
+          top: 64,
+          left: 0,
+          right: 0,
+          background: "#fafafa",
+          zIndex: 45,
+          padding: "1.5rem",
+          borderBottom: "1px solid rgba(0,0,0,0.07)",
+        }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {[
+              { label: "Features", href: "#features" },
+              { label: "How it works", href: "#how-it-works" },
+              { label: "Pricing", href: "#pricing" },
+            ].map((l) => (
+              <a
+                key={l.label}
+                href={l.href}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ fontSize: "0.875rem", color: "#52525e", textDecoration: "none", fontWeight: 500, padding: "10px 0" }}
+              >
+                {l.label}
+              </a>
+            ))}
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.07)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+              <Show when="signed-out">
+                <SignInButton>
+                  <button className="btn-main btn-outline" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                    Sign In
+                  </button>
+                </SignInButton>
+                <SignUpButton>
+                  <button className="btn-main btn-outline" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                    Sign Up
+                  </button>
+                </SignUpButton>
+                <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="btn-main btn-cta" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                  Get started →
+                </Link>
+              </Show>
+              <Show when="signed-in">
+                <UserButton />
+                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="btn-main btn-cta" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                  Dashboard →
+                </Link>
+              </Show>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Hero ── */}
-      <section style={{ paddingTop: 140, paddingBottom: 100, textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <section style={{ paddingTop: 140, paddingBottom: 100, textAlign: "center", position: "relative", overflow: "hidden" }} className="hero-section">
         <div style={{
           position: "absolute", inset: 0, zIndex: 0,
           backgroundImage: "linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)",
@@ -375,7 +488,7 @@ export default function HomePage() {
           maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%)",
         }} />
 
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "0 2rem" }}>
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "0 1.5rem" }}>
           <div className="fade-up" style={{ marginBottom: 24 }}>
             <span className="pill">
               <span className="pill-dot" />
@@ -403,7 +516,7 @@ export default function HomePage() {
             EmailCopilot finds your ideal clients, sends personalised cold emails, and hands warm replies straight to your team — every single day.
           </p>
 
-          <div className="fade-up delay-3" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 60 }}>
+          <div className="fade-up delay-3 hero-buttons" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 60 }}>
             <Link href="/dashboard" className="btn-main btn-cta">
               Start for free
               <ChevronRight size={14} />
@@ -414,7 +527,7 @@ export default function HomePage() {
           </div>
 
           {/* Mock dashboard preview */}
-          <div className="fade-up delay-4 float" style={{
+          <div className="fade-up delay-4 float mock-preview" style={{
             background: "#fff",
             border: "1px solid rgba(0,0,0,0.09)",
             borderRadius: 20,
@@ -469,7 +582,7 @@ export default function HomePage() {
 
       {/* ── Stats ── */}
       <section style={{ padding: "60px 2rem", background: "#fff", borderTop: "1px solid rgba(0,0,0,0.07)", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} className="stats-grid">
           {STATS.map((s) => (
             <div key={s.label} className="stat-card">
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: "2.2rem", color: "#0f0f12", marginBottom: 4 }}>
@@ -491,7 +604,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }} className="features-grid">
             {FEATURES.map((f) => {
               const IconComponent = f.icon;
               return (
@@ -518,11 +631,11 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 32 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 32 }} className="steps-grid">
             {STEPS.map((step, i) => (
               <div key={step.num} style={{ position: "relative" }}>
                 {i < STEPS.length - 1 && (
-                  <div style={{
+                  <div className="step-connector" style={{
                     position: "absolute", top: 20, left: "calc(100% - 16px)",
                     width: "calc(100% - 32px)", height: 1, zIndex: 0,
                     backgroundImage: "repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 6px, transparent 6px, transparent 12px)",
@@ -560,6 +673,7 @@ export default function HomePage() {
             {TESTIMONIALS.map((t, i) => (
               <div
                 key={t.name}
+                className="testimonial-card"
                 style={{
                   position: i === activeTestimonial ? "relative" : "absolute",
                   top: 0, left: 0, right: 0,
@@ -575,7 +689,7 @@ export default function HomePage() {
                   display: "flex", alignItems: "flex-start", gap: 28,
                 }}
               >
-                <div style={{ fontSize: "3rem", color: "rgba(0,0,0,0.08)", lineHeight: 1, fontFamily: "Georgia, serif", flexShrink: 0 }}></div>
+                <div className="quote-icon" style={{ fontSize: "3rem", color: "rgba(0,0,0,0.08)", lineHeight: 1, fontFamily: "Georgia, serif", flexShrink: 0 }}></div>
                 <div style={{ flex: 1 }}>
                   <p style={{ fontSize: "1.1rem", lineHeight: 1.7, color: "#0f0f12", marginBottom: 24, fontStyle: "italic" }}>
                     {t.quote}
@@ -679,7 +793,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="pricing-grid">
             {PLANS.map((plan) => (
               <div key={plan.name} className={`plan-card${plan.highlight ? " highlight" : ""}`}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
@@ -784,7 +898,7 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section style={{
-        margin: "0 2rem 80px",
+        margin: "0 1.5rem 80px",
         background: "#0f0f12",
         borderRadius: 24,
         padding: "80px 2rem",
@@ -794,7 +908,7 @@ export default function HomePage() {
         marginRight: "auto",
         position: "relative",
         overflow: "hidden",
-      }}>
+      }} className="cta-section">
         <div style={{
           position: "absolute", inset: 0,
           backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",

@@ -1,12 +1,19 @@
 import Sidebar from "@/components/layout/Sidebar";
+import MobileMenu from "@/components/layout/MobileMenu";
 import { ApiProvider } from "@/lib/provider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <ApiProvider>
       <div className="flex h-screen overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-gray-50">{children}</main>
+        {/* Desktop Sidebar - Hidden on mobile */}
+        <div className="hidden md:block">
+          <Sidebar />
+        </div>
+        {/* Mobile Menu */}
+        <MobileMenu />
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 w-full md:w-auto">{children}</main>
       </div>
     </ApiProvider>
   );
