@@ -16,7 +16,7 @@ import {
   Plus,
 } from "lucide-react";
 import clsx from "clsx";
-import { useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -24,7 +24,7 @@ const navItems = [
   { href: "/dashboard/email-profiles", label: "Email Profiles", icon: Mail, badge: 3 },
   { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database, badge: 4 },
   { href: "/dashboard/templates", label: "Templates", icon: FileText },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
 ];
@@ -107,9 +107,7 @@ export default function Sidebar() {
         {/* User */}
         <div className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200 transition-all">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-xs font-bold">
-              {user?.firstName?.[0]}{user?.lastName?.[0]}
-            </div>
+            <UserButton />
             <div>
               <div className="text-sm font-bold leading-none mb-1">{user?.firstName} {user?.lastName}</div>
               <div className="text-xs text-gray-500 leading-none">{user?.emailAddresses?.[0].emailAddress}</div>
