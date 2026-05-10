@@ -14,15 +14,18 @@ import {
   Crown,
   ChevronDown,
   Plus,
+  AlertTriangle,
 } from "lucide-react";
 import clsx from "clsx";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { useBilling } from "@/lib/useBilling";
+import UserCard from "../ui/UserCard";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/copilots", label: "Copilots", icon: Send },
-  { href: "/dashboard/email-profiles", label: "Email Profiles", icon: Mail, badge: 3 },
-  { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database, badge: 4 },
+  { href: "/dashboard/email-profiles", label: "Email Profiles", icon: Mail },
+  { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database },
   { href: "/dashboard/templates", label: "Templates", icon: FileText },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
@@ -34,88 +37,84 @@ export default function Sidebar() {
   //get user from Clerk to show in sidebar 
   const { user } = useUser()
   console.log("User in Sidebar:", user); // Debugging line to check user object
+
+  const {
+    limits,
+  } = useBilling();
+  console.log("Limits in Sidebar:", limits); // Debugging line to check limits value
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
-      <div>
-        {/* Logo */}
-        <div className="px-6 py-5 flex items-center gap-3">
-          <Send size={20} className="text-gray-900" />
-          <span className="text-xl font-bold tracking-tight">Emailcopilot.io</span>
-        </div>
+    <>
+      {!limits ? (
+        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
+          <div>
+            {/* Logo */}
+            <div className="px-6 py-5 flex items-center gap-3">
+              <Send size={20} className="text-gray-900" />
+              <span className="text-xl font-bold tracking-tight">Emailcopilot.io</span>
+            </div>
 
-        {/* Create Button */}
-        <div className="px-4 mb-4">
-          <Link
-            href="/dashboard/copilots/new"
-            className="w-full bg-gray-900 text-white rounded-lg py-2.5 px-4 font-medium flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors text-sm"
-          >
-            <Plus size={15} />
-            Create New Copilot
-          </Link>
-        </div>
-
-        {/* Nav */}
-        <nav className="px-3 space-y-0.5">
-          {navItems.map(({ href, label, icon: Icon, badge }) => {
-            const active = pathname === href || pathname.startsWith(href + "/");
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={clsx(
-                  "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
-                  active
-                    ? "bg-gray-100 text-gray-900 font-semibold"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon size={16} className={active ? "text-gray-800" : "text-gray-400"} />
-                  <span className="font-medium">{label}</span>
-                </div>
-                {badge && (
-                  <span className="bg-gray-900 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {badge}
-                  </span>
-                )}
+            <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+              <AlertTriangle size={48} className="mb-4" />
+              <p className="text-center">No active subscription found. Please choose a plan to access the dashboard.</p>
+              <Link href={"/dashboard/billing"} className="mt-4 inline-block bg-gray-900 text-white rounded-lg py-2 px-4 font-medium hover:bg-gray-700 transition-colors">
+                View Plans
               </Link>
-            );
-          })}
-        </nav>
-      </div>
+            </div>
 
-      <div className="p-4 space-y-3">
-        {/* Plan Card */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Crown size={14} className="text-gray-700" />
-            <span className="font-bold text-sm">Starter Plan</span>
-          </div>
-          <div className="mb-3">
-            <div className="text-xs text-gray-500 mb-1.5">
-              <span className="font-bold text-gray-900">3,249</span> / 10,000 emails used
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div className="bg-gray-900 h-1.5 rounded-full" style={{ width: "32%" }} />
-            </div>
-          </div>
-          <button className="w-full bg-gray-900 text-white text-sm font-medium py-2 rounded-lg hover:bg-gray-700 transition-colors">
-            Upgrade Plan
-          </button>
-        </div>
 
-        {/* User */}
-        <div className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200 transition-all">
-          <div className="flex items-center gap-3">
-            <UserButton />
-            <div>
-              <div className="text-sm font-bold leading-none mb-1">{user?.firstName} {user?.lastName}</div>
-              <div className="text-xs text-gray-500 leading-none">{user?.emailAddresses?.[0].emailAddress}</div>
-            </div>
           </div>
-          <ChevronDown size={12} className="text-gray-400" />
-        </div>
-      </div>
-    </aside>
+          <UserCard user={user} isActive={false} />
+        </aside>
+      ) : (
+        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
+          <div>
+            {/* Logo */}
+            <div className="px-6 py-5 flex items-center gap-3">
+              <Send size={20} className="text-gray-900" />
+              <span className="text-xl font-bold tracking-tight">Emailcopilot.io</span>
+            </div>
+
+
+            {/* Create Button */}
+            <div className="px-4 mb-4">
+              <Link
+                href="/dashboard/copilots/new"
+                className="w-full bg-gray-900 text-white rounded-lg py-2.5 px-4 font-medium flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors text-sm"
+              >
+                <Plus size={15} />
+                Create New Copilot
+              </Link>
+            </div>
+
+            {/* Nav */}
+            <nav className="px-3 space-y-0.5">
+              {navItems.map(({ href, label, icon: Icon }) => {
+                const active = pathname === href || pathname.startsWith(href + "/");
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={clsx(
+                      "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-gray-100 text-gray-900 font-semibold"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon size={16} className={active ? "text-gray-800" : "text-gray-400"} />
+                      <span className="font-medium">{label}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <UserCard user={user} isActive={true} />
+
+        </aside>
+      )}
+    </>
   );
 }

@@ -1,17 +1,24 @@
-import { BarChart3, Send, Users, TrendingUp } from "lucide-react";
+"use client";
+import { useBilling } from "@/lib/useBilling";
+import { useUser } from "@clerk/nextjs";
+import { BarChart3, Send, Users } from "lucide-react";
 
-const stats = [
-  { label: "Emails Sent", value: "3,249", change: "+12%", icon: Send },
-  { label: "Active Copilots", value: "28.4%", change: "+3.1%", icon: BarChart3 },
-  { label: "New Leads", value: "142", change: "+22%", icon: Users },
-];
 
 export default function DashboardPage() {
+  const { subscription, limits, isActive } = useBilling();
+  const { user } = useUser()
+
+  const stats = [
+    { label: "Emails Sent", value: limits?.usage?.emailsSent, icon: Send },
+    { label: "Active Copilots", value: limits?.usage?.copilotsCount, icon: BarChart3 },
+    { label: "Email Profiles", value: limits?.usage?.emailProfilesCount, change: `${limits?.usage?.emailProfilesCount}/${limits?.limits?.emailProfiles}`, icon: Users },
+  ];
+
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Welcome back, John. Here&apos;s your overview.</p>
+        <p className="text-gray-500 text-sm mt-1">Welcome back, {user?.firstName || "there"}. Here&apos;s your overview.</p>
       </div>
 
       <div className="grid grid-cols-4 gap-5 mb-8">
@@ -23,8 +30,14 @@ export default function DashboardPage() {
               </span>
               <s.icon size={15} className="text-gray-400" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-            <div className="text-xs text-green-600 font-medium mt-1">{s.change} this month</div>
+            {s.change ? (
+              <>
+                <div className="text-2xl font-bold text-gray-900">{s.value}</div>
+                <div className="text-xs text-green-600 font-medium mt-1">{s.change} this month</div>
+              </>
+            ) : (
+              <div className="text-2xl font-bold text-gray-900">{s.value}</div>
+            )}
           </div>
         ))}
       </div>

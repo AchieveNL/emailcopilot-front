@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { billingApi } from "./api";
+import { LimitsResponse } from "./types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ export interface Subscription {
 export interface Invoice {
     id: number;
     molliePaymentId: string | null;
-    amount: number;         // cents
+    amount: number; // cents
     currency: string;
     status: "paid" | "pending" | "failed";
     downloadUrl: string | null;
@@ -43,97 +44,128 @@ export interface Invoice {
     createdAt: string;
 }
 
+// ─── Query Keys ───────────────────────────────────────────────────────────────
+// Centralised so invalidations are never a typo away.
+
+export const billingKeys = {
+    all: ["billing"] as const,
+    plans: () => [...billingKeys.all, "plans"] as const,
+    subscription: () => [...billingKeys.all, "subscription"] as const,
+    invoices: () => [...billingKeys.all, "invoices"] as const,
+    limits: () => [...billingKeys.all, "limits"] as const,
+};
+
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useBilling() {
-    const [plans, setPlans] = useState<Plan[]>([]);
-    const [subscription, setSubscription] = useState<Subscription | null>(null);
-    const [invoices, setInvoices] = useState<Invoice[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
-    // ── Fetch helpers ───────────────────────────────────────────────────────────
-    const fetchPlans = useCallback(async () => {
-        const { data } = await billingApi.getPlans();
-        setPlans(data);
-    }, []);
+    // ── Queries ─────────────────────────────────────────────────────────────────
 
-    const fetchSubscription = useCallback(async () => {
-        try {
-            const { data } = await billingApi.getSubscription();
-            setSubscription(data);
-        } catch (err: any) {
-            if (err?.response?.status === 404) {
-                setSubscription(null);
-            } else {
+    const plansQuery = useQuery<Plan[]>({
+        queryKey: billingKeys.plans(),
+        queryFn: () => billingApi.getPlans().then((r) => r.data),
+        staleTime: 5 * 60 * 1000, // plans rarely change — cache for 5 min
+    });
+
+    const subscriptionQuery = useQuery<Subscription | null>({
+        queryKey: billingKeys.subscription(),
+        queryFn: async () => {
+            try {
+                const { data } = await billingApi.getSubscription();
+                return data;
+            } catch (err: any) {
+                if (err?.response?.status === 404) return null; // no subscription yet — not an error
                 throw err;
             }
-        }
-    }, []);
+        },
+    });
 
-    const fetchInvoices = useCallback(async () => {
-        const { data } = await billingApi.getInvoices();
-        setInvoices(data);
-    }, []);
+    const invoicesQuery = useQuery<Invoice[]>({
+        queryKey: billingKeys.invoices(),
+        queryFn: () => billingApi.getInvoices().then((r) => r.data),
+    });
 
-    // ── Load all on mount ───────────────────────────────────────────────────────
-    useEffect(() => {
-        setLoading(true);
-        setError(null);
-        Promise.all([fetchPlans(), fetchSubscription(), fetchInvoices()])
-            .catch((err) => setError(err.message))
-            .finally(() => setLoading(false));
-    }, []);
+    const limitsQuery = useQuery<LimitsResponse>({
+        queryKey: billingKeys.limits(),
+        queryFn: () => billingApi.getLimits().then((r) => r.data),
+    });
 
-    // ── Subscribe ───────────────────────────────────────────────────────────────
-    // Redirects to Mollie checkout. The page will navigate away.
-    async function subscribe(planId: PlanId) {
-        setError(null);
-        try {
-            const { data } = await billingApi.subscribe(planId);
+    // ── Mutations ────────────────────────────────────────────────────────────────
+
+    // Redirects to Mollie checkout on success — page navigates away.
+    const subscribeMutation = useMutation({
+        mutationFn: (planId: PlanId) => billingApi.subscribe(planId).then((r) => r.data),
+        onSuccess: (data) => {
             if (data.checkoutUrl) {
-                window.location.href = data.checkoutUrl; // redirect to Mollie
+                window.location.href = data.checkoutUrl;
             }
-        } catch (err: any) {
-            const message = err?.response?.data?.error ?? err.message ?? "Subscribe failed";
-            setError(message);
-            throw err;
-        }
-    }
+        },
+    });
 
-    // ── Cancel ──────────────────────────────────────────────────────────────────
-    async function cancel() {
-        setError(null);
-        try {
-            const { data } = await billingApi.cancel();
-            await fetchSubscription(); // refresh local state
-            return data;
-        } catch (err: any) {
-            const message = err?.response?.data?.error ?? err.message ?? "Cancel failed";
-            setError(message);
-            throw err;
-        }
-    }
+    const cancelMutation = useMutation({
+        mutationFn: () => billingApi.cancel().then((r) => r.data),
+        onSuccess: () => {
+            // Refresh subscription state after cancellation
+            queryClient.invalidateQueries({ queryKey: billingKeys.subscription() });
+        },
+    });
 
-    // ── Refresh ──────────────────────────────────────────────────────────────────
-    async function refresh() {
-        await Promise.all([fetchSubscription(), fetchInvoices()]);
-    }
+    // ── Derived state ────────────────────────────────────────────────────────────
+
+    const subscription = subscriptionQuery.data ?? null;
+    const plans = plansQuery.data ?? [];
+
+    // Unified loading — true until all four queries have settled at least once
+    const loading =
+        plansQuery.isLoading ||
+        subscriptionQuery.isLoading ||
+        invoicesQuery.isLoading ||
+        limitsQuery.isLoading;
+
+    // Surface the first error across all queries/mutations
+    const error =
+        (plansQuery.error as Error)?.message ??
+        (subscriptionQuery.error as Error)?.message ??
+        (invoicesQuery.error as Error)?.message ??
+        (limitsQuery.error as Error)?.message ??
+        subscribeMutation.error?.message ??
+        cancelMutation.error?.message ??
+        null;
 
     return {
+        // ── Data ──────────────────────────────────────────────────────────────────
         plans,
         subscription,
-        invoices,
+        invoices: invoicesQuery.data ?? [],
+        limits: limitsQuery.data ?? null,
+
+        // ── State ─────────────────────────────────────────────────────────────────
         loading,
         error,
-        subscribe,
-        cancel,
-        refresh,
-        // helpers
+
+        // ── Actions ───────────────────────────────────────────────────────────────
+        subscribe: (planId: PlanId) => subscribeMutation.mutateAsync(planId),
+        cancel: () => cancelMutation.mutateAsync(),
+
+        // Explicit refresh for e.g. post-Mollie redirect return pages
+        refresh: () =>
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: billingKeys.subscription() }),
+                queryClient.invalidateQueries({ queryKey: billingKeys.invoices() }),
+            ]),
+
+        // Mutation loading states — useful for disabling buttons
+        isSubscribing: subscribeMutation.isPending,
+        isCanceling: cancelMutation.isPending,
+
+        // ── Helpers ───────────────────────────────────────────────────────────────
         isActive: subscription?.status === "active",
         isPending: subscription?.status === "pending",
         currentPlan: plans.find((p) => p.id === subscription?.planId) ?? null,
         amountDue: (cents: number) =>
-            new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(cents / 100),
+            new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(
+                cents / 100
+            ),
     };
 }

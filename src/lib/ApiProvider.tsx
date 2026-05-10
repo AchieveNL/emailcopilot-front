@@ -6,13 +6,15 @@ import { useEffect, useRef } from "react";
 import api from "./api";
 
 export function ApiProvider({ children }: { children: React.ReactNode }) {
-    const { getToken } = useAuth();
+    const { getToken, isLoaded, isSignedIn } = useAuth();
+    console.log("Auth loaded:", isLoaded, "Signed in:", isSignedIn); // Debugging line to check auth state
     const interceptorRef = useRef<number | null>(null);
 
     useEffect(() => {
         interceptorRef.current = api.interceptors.request.use(
             async (config) => {
                 const token = await getToken();
+                console.log("Attaching token to request:", token); // Debugging line to check token value
                 if (token) config.headers.Authorization = `Bearer ${token}`;
                 return config;
             },

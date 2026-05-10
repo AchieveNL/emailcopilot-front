@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, User, Database, Send, CircleCheck, Info } from "lucide-react";
+import { Settings, User, Database, Send, FileText, CircleCheck, Info } from "lucide-react";
 import clsx from "clsx";
 import { useCopilotStore } from "@/store/copilotStore";
 
@@ -19,9 +19,15 @@ export default function CopilotSummary({
 }: CopilotSummaryProps) {
   const { copilotData, launched } = useCopilotStore();
 
-  // Find names from IDs
-  const emailProfileName = emailProfiles.find((p) => p.id === copilotData.emailProfileId)?.name;
-  const scrapeProfileName = scrapeProfiles.find((p) => p.id === copilotData.scrapeProfileId)?.name;
+  const emailProfileName = emailProfiles.find(
+    (p) => p.id === copilotData.emailProfileId
+  )?.name;
+  const scrapeProfileName = scrapeProfiles.find(
+    (p) => p.id === copilotData.scrapeProfileId
+  )?.name;
+  const templateName = templates?.find(
+    (t) => t.id === copilotData.templateId
+  )?.name;
 
   const items = [
     {
@@ -35,6 +41,12 @@ export default function CopilotSummary({
       label: "Email Profile",
       status: emailProfileName || "Not selected",
       done: !!emailProfileName,
+    },
+    {
+      icon: FileText,
+      label: "Template",
+      status: templateName || "Not selected",
+      done: !!templateName,
     },
     {
       icon: Database,
@@ -96,7 +108,7 @@ export default function CopilotSummary({
         <ul className="space-y-3 text-sm text-gray-600">
           {[
             "Set your copilot settings",
-            "Choose an email profile (sender)",
+            "Choose an email profile (sender) and template",
             "Select a scrape profile (Google My Business)",
             "Review and launch your copilot",
           ].map((text) => (

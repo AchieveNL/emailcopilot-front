@@ -119,6 +119,7 @@ export const billingApi = {
   getSubscription: () => api.get("/billing/subscription"),
   getInvoices: () => api.get("/billing/invoices"),
   getPlans: () => api.get("/billing/plans"),
+  getLimits: () => api.get("/billing/limits"),
   subscribe: (planId: string) => api.post("/billing/subscribe", { planId }),
   cancel: () => api.post("/billing/cancel"),
   updatePaymentMethod: (data: Record<string, unknown>) =>

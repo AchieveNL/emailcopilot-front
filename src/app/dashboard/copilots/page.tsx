@@ -90,14 +90,14 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-9 bg-white border border-gray-200 rounded-xl shadow-lg z-20 w-44 py-1 overflow-hidden">
-            <Link
+            {/*   <Link
               href={`/copilots/${copilot.id}/settings`}
               className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               onClick={() => setOpen(false)}
             >
               <Settings2 size={13} /> Settings
             </Link>
-            {/* <button
+            <button
               onClick={handleDuplicate}
               className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
@@ -305,8 +305,6 @@ export default function CopilotsPage() {
                   <div className="hidden md:flex items-center gap-6 flex-shrink-0">
                     {[
                       { label: "Sent", value: copilot.emailsSent.toLocaleString() },
-                      { label: "Open rate", value: or },
-                      { label: "Reply rate", value: rr },
                     ].map(s => (
                       <div key={s.label} className="text-center">
                         <p className="text-base font-bold text-gray-900">{s.value}</p>
@@ -317,13 +315,13 @@ export default function CopilotsPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <Link
+                    {/* <Link
                       href={`/copilots/${copilot.id}`}
                       className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600 font-medium"
                     >
                       <TrendingUp size={13} className="inline mr-1 -mt-0.5" />
                       View
-                    </Link>
+                    </Link> */}
                     <CopilotMenu copilot={copilot} onRefresh={fetchCopilots} />
                   </div>
                 </div>

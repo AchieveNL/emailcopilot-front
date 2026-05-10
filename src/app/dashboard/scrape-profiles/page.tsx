@@ -21,7 +21,7 @@ export default function ScrapeProfilesPage() {
   const [profiles, setProfiles] = useState<ScrapeProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: "", searchQuery: "", resultsPerRun: "" });
+  const [form, setForm] = useState({ name: "", searchQuery: "", resultsPerRun: 0 });
   const [saving, setSaving] = useState(false);
   const [runningId, setRunningId] = useState<number | null>(null);
 
@@ -43,7 +43,7 @@ export default function ScrapeProfilesPage() {
       setSaving(true);
       await scrapeProfilesApi.create({ ...form, userId: user?.id });
       setShowModal(false);
-      setForm({ name: "", searchQuery: "", resultsPerRun: "" });
+      setForm({ name: "", searchQuery: "", resultsPerRun: 0 });
       fetchProfiles();
     } catch { alert("Failed to create scrape profile."); } finally { setSaving(false); }
   }
@@ -120,7 +120,7 @@ export default function ScrapeProfilesPage() {
                     </div>
 
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => handleRun(profile.id)}
                       disabled={runningId === profile.id || profile.status === "running"}
@@ -155,7 +155,7 @@ export default function ScrapeProfilesPage() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Results per Run</label>
-                <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" placeholder="10" value={form.resultsPerRun} onChange={e => setForm({ ...form, resultsPerRun: e.target.value })} />
+                <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" placeholder="10" value={form.resultsPerRun} onChange={e => setForm({ ...form, resultsPerRun: parseInt(e.target.value) || 0 })} />
               </div>
 
 

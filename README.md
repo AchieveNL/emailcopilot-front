@@ -34,3 +34,36 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+emailcopilot/
+├── src/
+├── app/
+│ ├── layout.tsx # Root layout (no font imports — system fonts)
+│ ├── page.tsx # Redirects to /copilots
+│ ├── globals.css # Tailwind base + custom scrollbar
+│ └── dashboard/ # Route group with sidebar layout
+│ ├── layout.tsx # Wraps all pages with <Sidebar />
+│ ├── copilots/
+│ │ ├── page.tsx # Copilots list
+│ │ └── new/
+│ │ ├── page.tsx # Step 4
+│ ├── email-profiles/page.tsx
+│ ├── scrape-profiles/page.tsx
+│ ├── templates/page.tsx
+│ ├── billing/page.tsx
+│ ├── sign-in/
+│ ├── sign-up/
+├── components/
+│ ├── layout/
+│ │ └── Sidebar.tsx # Main nav sidebar (client component)
+│ └── ui/
+│ ├── Stepper.tsx  
+ │ └── CopilotSummary.tsx  
+ ├── lib/
+│ ├── api.ts  
+ │ ├── hooks.ts  
+ │ ├── providers.tsx  
+ │ ├── useBilling.ts
+├── tailwind.config.ts
+├── next.config.mjs
+└── tsconfig.json

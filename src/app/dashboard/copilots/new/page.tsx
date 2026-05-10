@@ -111,7 +111,7 @@ export default function NewCopilotPage() {
       }
 
       resetStore(); // renamed from reset() to resetStore() in store
-      router.push("/copilots");
+      router.push("/dashboard/copilots");
     } catch {
       alert("Failed to launch copilot. Please try again.");
     } finally {
@@ -132,7 +132,7 @@ export default function NewCopilotPage() {
       <header className="flex items-start justify-between mb-8">
         <div>
           <div className="flex items-center gap-2 text-xl font-bold mb-1">
-            <Link href="/copilots" className="text-gray-400 hover:text-gray-600 transition-colors">
+            <Link href="/dashboard/copilots" className="text-gray-400 hover:text-gray-600 transition-colors">
               Copilots
             </Link>
             <ChevronRight size={16} className="text-gray-300" />
@@ -166,7 +166,7 @@ export default function NewCopilotPage() {
               <button
                 onClick={() => {
                   resetStore();
-                  router.push("/copilots");
+                  router.push("/dashboard/copilots");
                 }}
                 className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
               >

@@ -20,7 +20,7 @@ export default function EmailProfilesPage() {
   const [profiles, setProfiles] = useState<EmailProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", provider: "gmail", smtpHost: "", smtpPort: "587", username: "", password: "", dailyLimit: "100" });
+  const [form, setForm] = useState({ name: "", email: "", provider: "smtp", smtpHost: "", smtpPort: 587, password: "", dailyLimit: 100 });
   const [saving, setSaving] = useState(false);
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
@@ -47,7 +47,7 @@ export default function EmailProfilesPage() {
       setSaving(true);
       await emailProfilesApi.create({ ...form, userId: user?.id });
       setShowModal(false);
-      setForm({ name: "", email: "", provider: "smtp", smtpHost: "", smtpPort: "587", username: "", password: "", dailyLimit: "100" });
+      setForm({ name: "", email: "", provider: "smtp", smtpHost: "", smtpPort: 587, password: "", dailyLimit: 100 });
       fetchProfiles();
     } catch {
       alert("Failed to create profile.");
@@ -194,7 +194,7 @@ export default function EmailProfilesPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Port</label>
-                  <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="587" value={form.smtpPort} onChange={e => setForm({ ...form, smtpPort: e.target.value })} />
+                  <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="587" value={form.smtpPort} onChange={e => setForm({ ...form, smtpPort: parseInt(e.target.value) })} />
                 </div>
               </div>
 
@@ -204,7 +204,7 @@ export default function EmailProfilesPage() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Daily Send Limit</label>
-                <input type="number" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="100" value={form.dailyLimit} onChange={e => setForm({ ...form, dailyLimit: e.target.value })} />
+                <input type="number" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="100" value={form.dailyLimit} onChange={e => setForm({ ...form, dailyLimit: parseInt(e.target.value) || 0 })} />
               </div>
             </div>
             <div className="flex gap-3 mt-6">
