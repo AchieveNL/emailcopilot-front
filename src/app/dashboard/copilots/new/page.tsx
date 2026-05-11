@@ -54,7 +54,7 @@ export default function NewCopilotPage() {
         ]);
         // id is number (serial PK), name is varchar — matches schema
         setEmailProfiles(
-          ep.data.map((e: { id: number; name: string }) => ({ id: e.id, name: e.name }))
+          ep.data.map((e: { id: number; profileName: string }) => ({ id: e.id, name: e.profileName }))
         );
         setScrapeProfiles(
           sp.data.map((s: { id: number; name: string }) => ({ id: s.id, name: s.name }))

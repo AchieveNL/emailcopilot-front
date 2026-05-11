@@ -1,5 +1,6 @@
 "use client";
 
+import HeroSection from "@/components/homepage/HeroSection";
 import Logo from "@/components/homepage/Logo";
 import { FAQS, FEATURES, PLANS, STATS, STEPS, TESTIMONIALS, } from "@/store/hompageData";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
@@ -28,7 +29,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: "#fafafa", color: "#0f0f12", overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: "#fafafa", color: "#0f0f12", overflowX: "hidden" }} className="flex flex-col gap-0 items-center">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
 
@@ -356,6 +357,7 @@ export default function HomePage() {
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
         padding: "0 1.5rem",
         transition: "all 0.3s",
+        marginBottom: "66px",
         ...(scrolled ? {} : { background: "transparent", borderBottom: "1px solid transparent" }),
       }} className={scrolled ? "nav-blur" : ""}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
@@ -480,105 +482,7 @@ export default function HomePage() {
       )}
 
       {/* ── Hero ── */}
-      <section style={{ paddingTop: 140, paddingBottom: 100, textAlign: "center", position: "relative", overflow: "hidden" }} className="hero-section">
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 0,
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%)",
-        }} />
-
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "0 1.5rem" }}>
-          <div className="fade-up" style={{ marginBottom: 24 }}>
-            <span className="pill">
-              <span className="pill-dot" />
-              Starting at €9/month
-            </span>
-          </div>
-
-          <h1 className="fade-up delay-1" style={{
-            fontFamily: "'DM Serif Display', serif",
-            fontSize: "clamp(2.8rem, 6vw, 4.5rem)",
-            fontWeight: 400,
-            lineHeight: 1.1,
-            letterSpacing: "-0.02em",
-            color: "#0f0f12",
-            marginBottom: 24,
-          }}>
-            Your outbound sales,<br />
-            <em style={{ fontStyle: "italic", color: "#52525e" }}>on autopilot</em>
-          </h1>
-
-          <p className="fade-up delay-2" style={{
-            fontSize: "1.1rem", lineHeight: 1.7,
-            color: "#52525e", marginBottom: 40, maxWidth: 520, margin: "0 auto 40px",
-          }}>
-            EmailCopilot finds your ideal clients, sends personalised cold emails, and hands warm replies straight to your team — every single day.
-          </p>
-
-          <div className="fade-up delay-3 hero-buttons" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 60 }}>
-            <Link href="/dashboard" className="btn-main btn-cta">
-              Start for free
-              <ChevronRight size={14} />
-            </Link>
-            <Link href="#how-it-works" className="btn-main btn-outline">
-              See how it works
-            </Link>
-          </div>
-
-          {/* Mock dashboard preview */}
-          <div className="fade-up delay-4 float mock-preview" style={{
-            background: "#fff",
-            border: "1px solid rgba(0,0,0,0.09)",
-            borderRadius: 20,
-            padding: "1.5rem",
-            maxWidth: 560,
-            margin: "0 auto",
-            boxShadow: "0 24px 80px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06)",
-            textAlign: "left",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-              <div>
-                <div style={{ fontSize: "0.7rem", color: "#a0a0b0", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 2 }}>Today&apos;s pipeline</div>
-                <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#0f0f12" }}>8 emails queued</div>
-              </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                {["#22c55e", "#3b82f6", "#f59e0b"].map((c) => (
-                  <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-                ))}
-              </div>
-            </div>
-
-            {[
-              { name: "Tandarts De Vries", status: "Replied", statusColor: "#22c55e", statusBg: "rgba(34,197,94,0.1)", bar: 90 },
-              { name: "Studio Bloom Amsterdam", status: "Sent", statusColor: "#3b82f6", statusBg: "rgba(59,130,246,0.1)", bar: 60 },
-              { name: "Garage Hendriks", status: "New", statusColor: "#a0a0b0", statusBg: "rgba(160,160,176,0.1)", bar: 30 },
-            ].map((lead) => (
-              <div key={lead.name} style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "10px 12px", borderRadius: 10,
-                background: "rgba(0,0,0,0.02)", marginBottom: 8, gap: 12,
-              }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#0f0f12", marginBottom: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {lead.name}
-                  </div>
-                  <div className="mock-bar" style={{ width: "100%" }}>
-                    <div className="mock-fill" style={{ width: `${lead.bar}%`, background: lead.statusColor, opacity: 0.6 }} />
-                  </div>
-                </div>
-                <span style={{
-                  fontSize: "0.68rem", fontWeight: 600, whiteSpace: "nowrap",
-                  color: lead.statusColor, background: lead.statusBg,
-                  padding: "3px 10px", borderRadius: 99,
-                }}>
-                  {lead.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* ── Stats ── */}
       <section style={{ padding: "60px 2rem", background: "#fff", borderTop: "1px solid rgba(0,0,0,0.07)", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>

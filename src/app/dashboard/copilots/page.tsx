@@ -7,7 +7,7 @@ import {
   Search, ChevronDown, Trash2, Settings2, Copy
 } from "lucide-react";
 import Link from "next/link";
-import { copilotsApi } from "@/lib/api";
+import { copilotsApi, scrapeProfilesApi } from "@/lib/api";
 
 type Copilot = {
   id: number;
@@ -19,6 +19,7 @@ type Copilot = {
   emailsReplied: number;
   emailProfileName: string | null;
   templateName: string | null;
+  scrapeProfileId: number | null; // added
   createdAt: string;
   updatedAt: string;
 };
@@ -43,6 +44,7 @@ function replyRate(sent: number, replied: number) {
 
 function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () => void }) {
   const [open, setOpen] = useState(false);
+  const [runningScrape, setRunningScrape] = useState(false);
 
   async function toggleStatus(next: "active" | "paused") {
     try {
@@ -52,13 +54,15 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
     setOpen(false);
   }
 
-  /*   async function handleDuplicate() {
-      try {
-        await copilotsApi.duplicate(copilot.id);
-        onRefresh();
-      } catch { alert("Failed to duplicate."); }
-      setOpen(false);
-    } */
+  async function handleRunScrape() {
+    if (!copilot.scrapeProfileId) return;
+    try {
+      setRunningScrape(true);
+      await scrapeProfilesApi.run(copilot.scrapeProfileId);
+      onRefresh();
+    } catch { alert("Failed to run scrape."); } finally { setRunningScrape(false); }
+    setOpen(false);
+  }
 
   async function handleArchive() {
     if (!confirm("Archive this copilot?")) return;
@@ -90,19 +94,16 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-9 bg-white border border-gray-200 rounded-xl shadow-lg z-20 w-44 py-1 overflow-hidden">
-            {/*   <Link
-              href={`/copilots/${copilot.id}/settings`}
-              className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              <Settings2 size={13} /> Settings
-            </Link>
-            <button
-              onClick={handleDuplicate}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <Copy size={13} /> Duplicate
-            </button> */}
+            {copilot.scrapeProfileId && (
+              <button
+                onClick={handleRunScrape}
+                disabled={runningScrape}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                <Play size={13} className={runningScrape ? "animate-pulse" : ""} />
+                {runningScrape ? "Running..." : "Run Scrape"}
+              </button>
+            )}
             {copilot.status === "active" ? (
               <button onClick={() => toggleStatus("paused")} className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                 <Pause size={13} /> Pause
@@ -156,7 +157,6 @@ export default function CopilotsPage() {
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
 
-  // Aggregate stats
   const totalSent = copilots.reduce((s, c) => s + c.emailsSent, 0);
   const totalOpened = copilots.reduce((s, c) => s + c.emailsOpened, 0);
   const totalReplied = copilots.reduce((s, c) => s + c.emailsReplied, 0);
@@ -272,7 +272,6 @@ export default function CopilotsPage() {
             return (
               <div key={copilot.id} className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
                 <div className="p-5 flex items-center gap-5">
-                  {/* Status dot + info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 mb-1">
                       <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${cfg.bg} ${cfg.color}`}>
@@ -315,13 +314,6 @@ export default function CopilotsPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* <Link
-                      href={`/copilots/${copilot.id}`}
-                      className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600 font-medium"
-                    >
-                      <TrendingUp size={13} className="inline mr-1 -mt-0.5" />
-                      View
-                    </Link> */}
                     <CopilotMenu copilot={copilot} onRefresh={fetchCopilots} />
                   </div>
                 </div>

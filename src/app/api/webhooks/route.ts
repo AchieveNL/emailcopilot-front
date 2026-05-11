@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
     try {
+        console.log('Received webhook request' + req)
         const evt = await verifyWebhook(req)
 
         // Do something with payload

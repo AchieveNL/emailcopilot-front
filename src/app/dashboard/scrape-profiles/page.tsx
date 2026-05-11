@@ -121,14 +121,7 @@ export default function ScrapeProfilesPage() {
 
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => handleRun(profile.id)}
-                      disabled={runningId === profile.id || profile.status === "running"}
-                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600 disabled:opacity-50"
-                    >
-                      <Play size={12} className={runningId === profile.id ? "animate-pulse" : ""} />
-                      {runningId === profile.id ? "Running..." : "Run Now"}
-                    </button>
+
                     <button onClick={() => handleDelete(profile.id)} className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors text-gray-400">
                       <Trash2 size={14} />
                     </button>
