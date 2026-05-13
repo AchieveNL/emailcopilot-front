@@ -28,7 +28,6 @@ export default function TemplatesPage() {
   const [form, setForm] = useState({ name: "", subject: "", body: "", category: "Cold Outreach" });
   const [saving, setSaving] = useState(false);
 
-  const { user } = useUser()
 
   useEffect(() => { fetchTemplates(); }, []);
 
@@ -45,9 +44,9 @@ export default function TemplatesPage() {
       setSaving(true);
       const vars = [...form.body.matchAll(/\{\{(\w+)\}\}/g)].map(m => m[1]);
       if (editingTemplate) {
-        await templatesApi.update(editingTemplate.id, { ...form, variables: vars, userId: user?.id, usageCount: editingTemplate.usageCount, createdAt: editingTemplate.createdAt });
+        await templatesApi.update(editingTemplate.id, { ...form, variables: vars, usageCount: editingTemplate.usageCount, createdAt: editingTemplate.createdAt });
       } else {
-        await templatesApi.create({ ...form, variables: vars, userId: user?.id });
+        await templatesApi.create({ ...form, variables: vars });
       }
       setShowModal(false);
       setEditingTemplate(null);

@@ -58,7 +58,7 @@ export const templatesApi = {
 };
 
 // ─── Copilots ─────────────────────────────────────────────────────────────────
-// Schema: copilots — status: "draft"|"active"|"paused"|"archived"
+// Schema: copilots — status: "draft"|"active"|"paused"|"archived"|"running"
 // Was missing entirely — page.tsx calls copilotsApi.create / update / updateStatus
 
 export const copilotsApi = {
@@ -70,8 +70,9 @@ export const copilotsApi = {
   delete: (id: number) => api.delete(`/copilots/${id}`),
   updateStatus: (
     id: number,
-    status: "draft" | "active" | "paused" | "archived" // matches copilotStatusEnum
+    status: "draft" | "active" | "paused" | "archived" | "running"  // matches copilotStatusEnum
   ) => api.patch(`/copilots/${id}/status`, { status }),
+  run: (id: number) => api.post(`/copilots/${id}/run`),
 };
 
 // ─── Settings ─────────────────────────────────────────────────────────────────

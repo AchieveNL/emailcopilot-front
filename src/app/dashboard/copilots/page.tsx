@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from "react";
 import {
-  Plus, Send, Play, Pause, Archive, MoreVertical,
-  TrendingUp, Mail, MousePointerClick, MessageSquare,
-  Search, ChevronDown, Trash2, Settings2, Copy
+  Plus, Send, Play, Pause, Archive, MoreVertical, Mail, MousePointerClick, MessageSquare,
+  Search, ChevronDown, Trash2
 } from "lucide-react";
 import Link from "next/link";
-import { copilotsApi, scrapeProfilesApi } from "@/lib/api";
+import { copilotsApi } from "@/lib/api";
 
 type Copilot = {
   id: number;
   name: string;
   description: string;
-  status: "draft" | "active" | "paused" | "archived";
+  status: "draft" | "active" | "paused" | "archived" | "running";
   emailsSent: number;
   emailsOpened: number;
   emailsReplied: number;
@@ -29,9 +28,10 @@ const STATUS_CONFIG = {
   paused: { label: "Paused", color: "text-amber-700", bg: "bg-amber-50", dot: "bg-amber-400" },
   draft: { label: "Draft", color: "text-gray-500", bg: "bg-gray-100", dot: "bg-gray-400" },
   archived: { label: "Archived", color: "text-gray-400", bg: "bg-gray-50", dot: "bg-gray-300" },
+  running: { label: "Running", color: "text-blue-700", bg: "bg-blue-50", dot: "bg-blue-500" },
 };
 
-const FILTERS = ["All", "Active", "Paused", "Draft", "Archived"] as const;
+const FILTERS = ["All", "Active", "Paused", "Running", "Draft", "Archived"] as const;
 
 function openRate(sent: number, opened: number) {
   if (!sent) return "—";
@@ -54,11 +54,13 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
     setOpen(false);
   }
 
+
+
   async function handleRunScrape() {
     if (!copilot.scrapeProfileId) return;
     try {
       setRunningScrape(true);
-      await scrapeProfilesApi.run(copilot.scrapeProfileId);
+      await copilotsApi.run(copilot.id);
       onRefresh();
     } catch { alert("Failed to run scrape."); } finally { setRunningScrape(false); }
     setOpen(false);
@@ -131,6 +133,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
 
 export default function CopilotsPage() {
   const [copilots, setCopilots] = useState<Copilot[]>([]);
+  const [isActivating, setIsActivating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<typeof FILTERS[number]>("All");
   const [search, setSearch] = useState("");
@@ -156,6 +159,19 @@ export default function CopilotsPage() {
       if (sortBy === "emailsSent") return b.emailsSent - a.emailsSent;
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
+
+  async function handleActivateCopilot(id: number) {
+    setIsActivating(true);
+    try {
+      await copilotsApi.updateStatus(id, "active");
+      fetchCopilots();
+    } catch (error) {
+      console.error("Failed to activate copilot:", error);
+    } finally {
+      setIsActivating(false);
+    }
+  }
+
 
   const totalSent = copilots.reduce((s, c) => s + c.emailsSent, 0);
   const totalOpened = copilots.reduce((s, c) => s + c.emailsOpened, 0);
@@ -302,6 +318,27 @@ export default function CopilotsPage() {
 
                   {/* Stats */}
                   <div className="hidden md:flex items-center gap-6 flex-shrink-0">
+                    {/* activate button with "activate copilot" text */}
+                    {copilot.status === "active" ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-xs text-emerald-600 font-medium">Active</span>
+                      </div>
+                    ) : copilot.status === "running" ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        <span className="text-xs text-blue-600 font-medium">Running</span>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleActivateCopilot(copilot.id)}
+                        disabled={isActivating}
+                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600 disabled:opacity-50"
+                      >
+                        <Play size={13} className={isActivating ? "animate-pulse" : ""} />
+                        {isActivating ? "Activating..." : "Activate Copilot"}
+                      </button>
+                    )}
                     {[
                       { label: "Sent", value: copilot.emailsSent.toLocaleString() },
                     ].map(s => (
