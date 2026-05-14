@@ -21,20 +21,16 @@ function HeroVisuals() {
       " />
 
             {/* Dashboard card */}
-            <div className="
-        absolute top-0 left-0 w-full max-w-[500px] rounded-[20px] overflow-hidden bg-white
-        border border-black/[0.07]
-        shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.08),0_24px_60px_rgba(0,0,0,0.06)]
-        animate-[floatA_5s_ease-in-out_infinite]
-      ">
-                <img src="/dashboard.png" alt="EmailCopilot Dashboard" className="w-full h-auto block" />
+            <div >
+                <img src="/dashboard.png" alt="EmailCopilot Dashboard" className="absolute top-0 left-0 w-full max-w-[650px] rounded-[20px] overflow-hidden
+        
+        animate-[floatA_5s_ease-in-out_infinite] w-full h-auto block" />
             </div>
 
             {/* Inbox card */}
             <div className="
-        absolute bottom-[-20px] right-[-30px] w-[300px] rounded-[20px] bg-white z-[2]
-        border border-black/[0.07]
-        shadow-[0_2px_4px_rgba(0,0,0,0.06),0_12px_32px_rgba(0,0,0,0.1),0_32px_64px_rgba(0,0,0,0.08)]
+        absolute bottom-[-20px] right-[-30px] w-[370px] rounded-[20px] bg-white z-[2]
+        
         animate-[floatB_6s_1s_ease-in-out_infinite]
       ">
                 <div className="relative">

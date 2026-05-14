@@ -1,4 +1,4 @@
-import { Send, Search, Mail, ListChecks, Settings, Zap, MapPin, MessageSquare, Database, Link as LinkIcon, ChevronRight, Plus, ChevronDown, Check, X, Coffee } from "lucide-react";
+import { Send, Search, Mail, ListChecks, Settings, Zap, MapPin, MessageSquare, Database, Link as LinkIcon, ChevronRight, Plus, ChevronDown, Check, X, Coffee, ChartArea, ChartSpline, Rocket } from "lucide-react";
 
 export const FEATURES = [
     {
@@ -89,7 +89,7 @@ export const FAQS = [
         a: "Replies land directly in your inbox — we never intercept them. You can also log the reply status in the dashboard so your team knows which leads are warm.",
     },
     {
-        q: "Is there a free trial?",
+        q: "Is there a free test-flight?",
         a: "Yes, you can start for free and explore the dashboard. Paid plans start at €9/month — no credit card required to get started.",
     },
 ];
@@ -108,27 +108,39 @@ export const INTEGRATIONS = [
 export const PLANS = [
     {
         name: "Starter",
+        description: "Perfect for beginners",
+        icon: Send,
+        color: "primary",
         price: "€9",
+        estimated: "250 emails (~8/days)",
         tag: null,
         volume: "250 emails · ~8/day",
-        features: ["1 Copilot", "1 SMTP account", "Strong value to get started"],
-        cta: "Start free",
+        features: ["1 SMTP account", "Standard delivery speed", "No data export"],
+        cta: "Subscribe now",
     },
     {
         name: "Growth",
+        description: "Best for growing business",
+        icon: ChartSpline,
+        color: "secondary",
         price: "€19",
+        estimated: "750 emails (~25/days)",
         tag: "Most popular",
         volume: "750 emails · ~25/day",
-        features: ["3 Copilots", "Up to 3 SMTP accounts", "Export your data"],
-        cta: "Start free",
+        features: ["3 Copilots", "3 SMTP accounts", "Faster delivery speed", "Limited data export"],
+        cta: "Subscribe now",
         highlight: true,
     },
     {
         name: "Scale",
+        description: "For large teams & agencies",
+        icon: Rocket,
+        color: "light",
         price: "€39",
+        estimated: "2,000 emails (~65/days)",
         tag: null,
         volume: "2,000 emails · ~65/day",
-        features: ["Unlimited Copilots", "Unlimited SMTP accounts", "Full data ownership + export"],
-        cta: "Start free",
+        features: ["Unlimited Copilots", "Unlimited SMTP accounts", "Priority delivery speed", "Full data export"],
+        cta: "Subscribe now",
     },
 ];

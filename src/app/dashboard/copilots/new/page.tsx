@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { MoreVertical, ChevronRight, ShieldCheck, Save, Loader2 } from "lucide-react";
+import { MoreVertical, ChevronRight, ShieldCheck, Save, Loader2, Copy } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Stepper from "@/components/ui/Stepper";
 import CopilotSummary from "@/components/ui/CopilotSummary";
 import Step1Settings from "@/components/ui/Step1Settings";
@@ -26,13 +26,14 @@ export type NewCopilotContext = {
 
 export default function NewCopilotPage() {
   const router = useRouter();
-  // copilotData + resetStore now match the fixed store exports
-  const { currentStep, copilotData, resetStore } = useCopilotStore();
+  const searchParams = useSearchParams();
+  const { currentStep, copilotData, resetStore, mode, setMode, setEditingId, loadCopilot } = useCopilotStore();
 
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   const [launching, setLaunching] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
+  const [loadingCopilot, setLoadingCopilot] = useState(false);
 
   // Remote options for step dropdowns
   const [emailProfiles, setEmailProfiles] = useState<RemoteOption[]>([]);
@@ -71,21 +72,84 @@ export default function NewCopilotPage() {
     loadOptions();
   }, []);
 
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    const duplicateId = searchParams.get("duplicate");
+
+    if (editId) {
+      const id = parseInt(editId, 10);
+      setLoadingCopilot(true);
+      copilotsApi.getById(id)
+        .then((res) => {
+          const copilot = res.data;
+          loadCopilot({
+            name: copilot.name,
+            description: copilot.description,
+            emailProfileId: copilot.emailProfileId,
+            scrapeProfileId: copilot.scrapeProfileId,
+            templateId: copilot.templateId,
+            settings: copilot.settings || {
+              dailyLimit: 100,
+              sendingSpeed: "Normal (Recommended)",
+              timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+            },
+          }, id, "edit");
+          setDraftId(id);
+        })
+        .catch(() => {
+          alert("Failed to load copilot. Please try again.");
+          router.push("/dashboard/copilots");
+        })
+        .finally(() => setLoadingCopilot(false));
+    } else if (duplicateId) {
+      const id = parseInt(duplicateId, 10);
+      setLoadingCopilot(true);
+      copilotsApi.getById(id)
+        .then((res) => {
+          const copilot = res.data;
+          loadCopilot({
+            name: `Copy of ${copilot.name}`,
+            description: copilot.description,
+            emailProfileId: copilot.emailProfileId,
+            scrapeProfileId: copilot.scrapeProfileId,
+            templateId: copilot.templateId,
+            settings: copilot.settings || {
+              dailyLimit: 100,
+              sendingSpeed: "Normal (Recommended)",
+              timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+            },
+          }, undefined, "duplicate");
+        })
+        .catch(() => {
+          alert("Failed to load copilot. Please try again.");
+          router.push("/dashboard/copilots");
+        })
+        .finally(() => setLoadingCopilot(false));
+    }
+  }, [searchParams, router, loadCopilot]);
+
+  const getPageTitle = () => {
+    if (mode === "edit") return "Edit Copilot";
+    if (mode === "duplicate") return "Duplicate Copilot";
+    return "Create New Copilot";
+  };
+
   const handleSaveDraft = useCallback(async () => {
     try {
       setSavingDraft(true);
-      // status "draft" matches copilotStatusEnum in schema
       const payload = {
         ...copilotData,
         status: "draft" as const,
       };
 
       let res;
-      if (draftId) {
+      if (mode === "edit" && draftId) {
         res = await copilotsApi.update(draftId, payload);
       } else {
         res = await copilotsApi.create(payload);
-        setDraftId(res.data.id); // id is number (serial PK)
+        if (mode === "edit") {
+          setDraftId(res.data.id);
+        }
       }
 
       setDraftSaved(true);
@@ -95,29 +159,28 @@ export default function NewCopilotPage() {
     } finally {
       setSavingDraft(false);
     }
-  }, [copilotData, draftId]);
+  }, [copilotData, draftId, mode]);
 
   const handleLaunch = useCallback(async () => {
     try {
       setLaunching(true);
-      // status "active" matches copilotStatusEnum in schema
       const payload = { ...copilotData, userId: user?.id, status: "active" as const };
 
-      if (draftId) {
+      if (mode === "edit" && draftId) {
         await copilotsApi.update(draftId, payload);
-        await copilotsApi.updateStatus(draftId, "active"); // now exists in api.ts
+        await copilotsApi.updateStatus(draftId, "active");
       } else {
         await copilotsApi.create(payload);
       }
 
-      resetStore(); // renamed from reset() to resetStore() in store
+      resetStore();
       router.push("/dashboard/copilots");
     } catch {
       alert("Failed to launch copilot. Please try again.");
     } finally {
       setLaunching(false);
     }
-  }, [copilotData, draftId, router, resetStore]);
+  }, [copilotData, draftId, router, resetStore, mode]);
 
   const remoteContext: NewCopilotContext = {
     emailProfiles,
@@ -125,6 +188,17 @@ export default function NewCopilotPage() {
     templates,
     loadingOptions,
   };
+
+  if (loadingCopilot) {
+    return (
+      <div className="p-8 max-w-6xl mx-auto flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-3 text-gray-500">
+          <Loader2 size={20} className="animate-spin" />
+          <span>Loading copilot...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -136,7 +210,7 @@ export default function NewCopilotPage() {
               Copilots
             </Link>
             <ChevronRight size={16} className="text-gray-300" />
-            <span className="text-gray-900">Create New Copilot</span>
+            <span className="text-gray-900">{getPageTitle()}</span>
           </div>
           <p className="text-gray-500 text-sm">
             Build your copilot in a few simple steps and start sending personalized emails.

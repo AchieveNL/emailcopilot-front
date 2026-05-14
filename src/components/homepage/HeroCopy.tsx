@@ -1,7 +1,11 @@
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, CheckCircle, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 
-const TRUST_ITEMS = ["No credit card", "7-day free trial", "Setup in 5 minutes"];
+const TRUST_ITEMS = [
+  { icon: <CheckCircle size={14} className="fill-primary text-white" strokeWidth={2.5} />, label: "No credit card" },
+  { icon: <CheckCircle size={14} className="fill-secondary text-white" strokeWidth={2.5} />, label: "7-day free trial" },
+  { icon: <CheckCircle size={14} className="fill-light text-white" strokeWidth={2.5} />, label: "Setup in 5 minutes" }
+];
 
 function HeroCopy() {
   return (
@@ -12,11 +16,11 @@ function HeroCopy() {
         inline-flex items-center gap-1.5 mb-7
         bg-black/5 text-[#52525e]
         text-[0.75rem] font-medium
-        px-3 py-1 rounded-full
+        px-3 rounded-full
         border border-black/[0.08]
       ">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_6px_#22c55e] animate-[pulse_2s_ease-in-out_infinite]" />
-        AI-Powered Outbound
+        <span className="w-1.5 h-1.5 rounded-full  bg-primary shadow-[0_0_6px_#22c55e] animate-[pulse_2s_ease-in-out_infinite]" />
+        Starting from €9 month
       </div>
 
       {/* Headline */}
@@ -26,22 +30,22 @@ function HeroCopy() {
       ">
         We let AI run your<br />
         outbound sales on<br />
-        <em style={{ fontFamily: "'DM Serif Display', serif" }} className="not-italic font-normal text-[#0f0f12]">
+        <em style={{ fontFamily: "'DM Serif Display', serif" }} className="not-italic font-normal  bg-linear-to-r from-indigo-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
           autopilot.
         </em>
       </h1>
 
       {/* Tagline image */}
       <span className="block mb-6">
-        <Image src="/weclome.png" alt="Welcome sparkle" width={250} height={60} className="w-[250px] h-auto" />
+        <Image src="/you-welcome.svg" alt="Welcome sparkle" width={250} height={60} className="w-[250px] h-auto" />
       </span>
 
       {/* Description */}
       <p className="text-[1.05rem] leading-[1.7] text-[#52525e] mb-10">
-        You set your <strong className="text-[#0f0f12] font-bold">target audience</strong>, AI{" "}
-        <strong className="text-[#0f0f12] font-bold">finds</strong> the right businesses, sends{" "}
-        <strong className="text-[#0f0f12] font-bold">personalised emails</strong> from your own address, and replies go
-        straight to <strong className="text-[#0f0f12] font-bold">your inbox</strong> — every single day.
+        You set your target audience, AI{" "}
+        finds the right businesses, sends{" "}
+        personalised emails from your own address, and replies go
+        straight to your inbox — every single day.
       </p>
 
       {/* CTA buttons — mirrors page.tsx btn-cta / btn-outline */}
@@ -58,9 +62,9 @@ function HeroCopy() {
       {/* Trust row */}
       <div className="flex items-center gap-5 flex-wrap mb-12 justify-center lg:justify-start">
         {TRUST_ITEMS.map((item) => (
-          <div key={item} className="flex items-center gap-1.5 text-[0.83rem] font-semibold text-[#52525e]">
-            <Check size={14} className="text-green-500" strokeWidth={2.5} />
-            {item}
+          <div key={item.label} className="flex items-center gap-1.5 text-[0.83rem] font-semibold text-[#52525e]">
+            {item.icon}
+            {item.label}
           </div>
         ))}
       </div>

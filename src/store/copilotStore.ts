@@ -41,16 +41,23 @@ export interface ScrapeProfile {
   lastRun: string | null;
 }
 
+export type CopilotMode = "create" | "edit" | "duplicate";
+
 interface CopilotStore {
   currentStep: Step;
-  copilotData: CopilotData; // renamed from "settings" to match page.tsx usage
+  copilotData: CopilotData;
   launched: boolean;
+  mode: CopilotMode;
+  editingId: number | null;
 
   setStep: (step: Step) => void;
   updateCopilotData: (data: Partial<CopilotData>) => void;
   updateSettings: (settings: Partial<CopilotData["settings"]>) => void;
   setLaunched: (launched: boolean) => void;
-  resetStore: () => void; // renamed from "reset" to match page.tsx usage
+  setMode: (mode: CopilotMode) => void;
+  setEditingId: (id: number | null) => void;
+  loadCopilot: (data: CopilotData, id?: number, mode?: CopilotMode) => void;
+  resetStore: () => void;
 }
 
 const defaultCopilotData: CopilotData = {
@@ -71,6 +78,8 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
   currentStep: 1,
   copilotData: defaultCopilotData,
   launched: false,
+  mode: "create",
+  editingId: null,
 
   setStep: (step) => set({ currentStep: step }),
 
@@ -89,11 +98,24 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
 
   setLaunched: (launched) => set({ launched }),
 
+  setMode: (mode) => set({ mode }),
+
+  setEditingId: (id) => set({ editingId: id }),
+
+  loadCopilot: (data, id, mode = "edit") =>
+    set({
+      copilotData: data,
+      editingId: id ?? null,
+      mode,
+    }),
+
   resetStore: () =>
     set({
       currentStep: 1,
       copilotData: defaultCopilotData,
       launched: false,
+      mode: "create",
+      editingId: null,
     }),
 }));
 

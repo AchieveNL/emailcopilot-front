@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Plus, Send, Play, Pause, Archive, MoreVertical, Mail, MousePointerClick, MessageSquare,
-  Search, ChevronDown, Trash2
+  Search, ChevronDown, Trash2, Copy, Pencil
 } from "lucide-react";
 import Link from "next/link";
 import { copilotsApi } from "@/lib/api";
@@ -84,6 +84,11 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
     setOpen(false);
   }
 
+  function handleDuplicate() {
+    if (!confirm(`Duplicate "${copilot.name}"? This will create a new draft copy.`)) return;
+    window.location.href = `/dashboard/copilots/new?duplicate=${copilot.id}`;
+  }
+
   return (
     <div className="relative">
       <button
@@ -96,6 +101,18 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-9 bg-white border border-gray-200 rounded-xl shadow-lg z-20 w-44 py-1 overflow-hidden">
+            <Link
+              href={`/dashboard/copilots/new?edit=${copilot.id}`}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Pencil size={13} /> Edit
+            </Link>
+            <button
+              onClick={handleDuplicate}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Copy size={13} /> Duplicate
+            </button>
             {copilot.scrapeProfileId && (
               <button
                 onClick={handleRunScrape}
