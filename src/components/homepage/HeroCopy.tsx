@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const TRUST_ITEMS = [
   { icon: <CheckCircle size={14} className="fill-primary text-white" strokeWidth={2.5} />, label: "No credit card" },
-  { icon: <CheckCircle size={14} className="fill-secondary text-white" strokeWidth={2.5} />, label: "7-day free trial" },
+  { icon: <CheckCircle size={14} className="fill-secondary text-white" strokeWidth={2.5} />, label: "How it works" },
   { icon: <CheckCircle size={14} className="fill-light text-white" strokeWidth={2.5} />, label: "Setup in 5 minutes" }
 ];
 
@@ -25,8 +25,8 @@ function HeroCopy() {
 
       {/* Headline */}
       <h1 className="
-        text-[clamp(2.4rem,4.5vw,3.6rem)] font-black leading-[1.08]
-        tracking-[-0.03em] mb-2.5 text-[#0f0f12]
+        text-[clamp(2.4rem,4.5vw,3.6rem)] leading-[1.08]
+        tracking-[-0.03em] mb-2.5 font-serif text-[#0f0f12]
       ">
         We let AI run your<br />
         outbound sales on<br />
@@ -41,7 +41,7 @@ function HeroCopy() {
       </span>
 
       {/* Description */}
-      <p className="text-[1.05rem] leading-[1.7] text-[#52525e] mb-10">
+      <p className="text-[1.05rem] leading-[1.7] text-[#52525e] mb-10 font-sans">
         You set your target audience, AI{" "}
         finds the right businesses, sends{" "}
         personalised emails from your own address, and replies go
@@ -51,11 +51,11 @@ function HeroCopy() {
       {/* CTA buttons — mirrors page.tsx btn-cta / btn-outline */}
       <div className="flex items-center gap-3.5 flex-wrap mb-9 justify-center lg:justify-start">
         <button className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
-          Get Started Free
+          Start Flying
           <ArrowRight size={16} />
         </button>
         <button className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
-          Book a Demo
+          How it works
         </button>
       </div>
 

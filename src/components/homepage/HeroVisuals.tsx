@@ -7,7 +7,7 @@ function HeroVisuals() {
 
             {/* Subtle glow blob — neutral, not blue */}
             <div className="
-        absolute w-[520px] h-[520px] rounded-full pointer-events-none
+        absolute h-[520px] rounded-full pointer-events-none
         top-[-60px] right-[-80px]
         bg-[radial-gradient(ellipse_at_60%_40%,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.02)_55%,transparent_75%)]
         animate-[blobPulse_6s_ease-in-out_infinite]
@@ -22,9 +22,9 @@ function HeroVisuals() {
 
             {/* Dashboard card */}
             <div >
-                <img src="/dashboard.png" alt="EmailCopilot Dashboard" className="absolute top-0 left-0 w-full max-w-[650px] rounded-[20px] overflow-hidden
+                <img src="/dashboard.png" alt="EmailCopilot Dashboard" className="absolute top-0 left-0  max-w-[710px] rounded-[20px] overflow-hidden
         
-        animate-[floatA_5s_ease-in-out_infinite] w-full h-auto block" />
+        animate-[floatA_5s_ease-in-out_infinite]  h-auto block" />
             </div>
 
             {/* Inbox card */}

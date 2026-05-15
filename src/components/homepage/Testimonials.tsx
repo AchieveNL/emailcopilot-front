@@ -6,7 +6,7 @@ function Testimonials() {
     const [activeTestimonial, setActiveTestimonial] = useState(0);
 
     return (
-        <section id="testimonials" style={{ padding: "100px 2rem", background: "#fafafa", overflow: "hidden" }}>
+        <section id="testimonials" className='max-w-315 w-full' style={{ padding: "100px 2rem", background: "#fafafa", overflow: "hidden" }}>
             <div style={{ maxWidth: 900, margin: "0 auto" }}>
                 <div className="text-center mb-10">
                     <h2 className="text-6xl text-gray-900  leading-tight" style={{ fontFamily: 'DM Serif Display' }}>
@@ -33,7 +33,7 @@ function Testimonials() {
                     {TESTIMONIALS.map((t, i) => (
                         <div
                             key={t.name}
-                            className="testimonial-card top-0 left-0 right-0 flex flex-col gap-5 bg-white border border-gray-200 rounded-2xl p-10 shadow-md"
+                            className="testimonial-card top-0 left-0 right-0 flex items-center flex-col gap-5 bg-white border border-gray-200 rounded-2xl p-10 shadow-md"
                             style={{
                                 position: i === activeTestimonial ? "relative" : "absolute",
                                 opacity: i === activeTestimonial ? 1 : 0,

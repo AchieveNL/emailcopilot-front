@@ -6,7 +6,7 @@ function Pricing() {
     return (
         <section id="pricing"
 
-            className='py-20 px-4 bg-white border-t border-b border-gray-100 w-275 mx-auto'
+            className='py-20 px-4  border-t border-b border-gray-100 max-w-315 w-full mx-auto'
         >
             <div style={{ margin: "0 auto" }}>
                 <div className="text-center mb-10">
@@ -109,8 +109,11 @@ function Pricing() {
                                 <div className="mt-8 px-4 pb-4">
                                     <Link
                                         href={"login"}
-                                        className={`w-full py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 cursor-pointer ${plan.tag ? 'bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white  ' : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-600'}`}
-                                    >
+                                        className={`w-full py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 cursor-pointer ${plan.tag
+                                            ? 'bg-white hover:bg-indigo-600'
+                                            : 'bg-indigo-100 hover:bg-indigo-200'
+                                            }`}
+                                        style={{ color: plan.color }}                                    >
                                         {plan.cta}
                                         <span className="text-lg">→</span>
                                     </Link>

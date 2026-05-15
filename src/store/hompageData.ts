@@ -69,28 +69,33 @@ export const TESTIMONIALS = [
 
 export const FAQS = [
     {
-        q: "Do I need my own email account?",
-        a: "Yes — EmailCopilot connects to your own SMTP (Gmail, Outlook, or any provider). This means emails come from your real domain, boosting deliverability and keeping your sender reputation safe.",
+        q: "Do I really need my own email account?",
+        a: "Yes. EmailCopilot sends emails from your own business email account, like hello@yourbusiness.com. Gmail, Outlook, and other providers work too. That means your emails take off from your own runway instead of some suspicious airport that immediately gets redirected to the spam folder.",
     },
+
     {
-        q: "How does the lead scraping work?",
-        a: "You give us a search query (e.g. 'dental practices in London') and we scrape Google Maps to find matching businesses with contact details. The system runs automatically twice a day.",
+        q: "How does the magic work?",
+        a: "We can’t reveal all our secrets, but don’t worry, we trained our copilot very well. You set your target audience, EmailCopilot finds the right businesses, sends personalised emails from your own address, and lands replies straight in your inbox every single day.",
     },
+
     {
         q: "Will this get my domain blacklisted?",
-        a: "We built EmailCopilot with deliverability in mind. We enforce daily sending limits, add natural delays between emails, and never share sending infrastructure across customers.",
+        a: "No worries. Your copilot isn’t a kamikaze pilot. We use daily sending limits, natural delays, and smart sending behaviour to keep your domain healthy while your outreach quietly flies in the background.",
     },
+
     {
-        q: "Can I customise the email templates?",
-        a: "Absolutely. You have full control over every template. You can use dynamic variables like business name, location, and website to make each email feel genuinely personal.",
+        q: "Can I customize the email templates?",
+        a: "Absolutely. Your copilot works for you, not the other way around. You control every template and can use dynamic variables like {{company}}, {{city}}, and {{website}} to make each email feel personal while your outbound quietly runs in the background.",
     },
+
     {
         q: "What happens when someone replies?",
-        a: "Replies land directly in your inbox — we never intercept them. You can also log the reply status in the dashboard so your team knows which leads are warm.",
+        a: "Congratulations. The reply goes straight to your inbox, exactly where it belongs. Your copilot handled the outreach. Our work is done here. The rest is up to you, captain, to close the deal.",
     },
+
     {
-        q: "Is there a free test-flight?",
-        a: "Yes, you can start for free and explore the dashboard. Paid plans start at €9/month — no credit card required to get started.",
+        q: "Is there a free test flight?",
+        a: "Yes. We figured asking people to trust an AI copilot without a test flight would be slightly insane. You can explore the dashboard for free before spending a single euro. Paid plans start at €9/month.",
     },
 ];
 

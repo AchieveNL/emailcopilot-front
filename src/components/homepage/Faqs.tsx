@@ -6,7 +6,7 @@ function Faqs() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
     return (
-        <section id="faqs" style={{ padding: "100px 2rem", background: "#fafafa" }} className='w-275 mx-auto'>
+        <section id="faqs" style={{ padding: "100px 2rem", background: "#fafafa" }} className='max-w-315 w-full mx-auto'>
             <div className="">
                 <div className="text-center mb-10">
                     <h2 className="text-6xl text-gray-900  leading-tight" style={{ fontFamily: 'DM Serif Display' }}>
@@ -49,7 +49,7 @@ function Faqs() {
                                 maxHeight: openFaq === i ? "200px" : "0px",
                                 opacity: openFaq === i ? 1 : 0,
                             }}>
-                                <p style={{ padding: "0 24px 20px", fontSize: "0.875rem", lineHeight: 1.7, color: "#52525e" }}>
+                                <p style={{ padding: "0 24px 20px", fontSize: "0.875rem", lineHeight: 1.7, color: "#64748B" }}>
                                     {faq.a}
                                 </p>
                             </div>

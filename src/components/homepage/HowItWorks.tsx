@@ -241,7 +241,7 @@ function InboxCard() {
 // ─── Section Wrapper ─────────────────────────────────────────────────
 export default function HowItWorks() {
     return (
-        <section className="relative py-16 px-4 bg-gray-50 overflow-hidden">
+        <section id="how-it-works" className="relative py-16 px-4 max-w-315 w-full bg-gray-50 overflow-hidden">
             {/* Decorative dot grid (top-left) */}
             <div
                 aria-hidden

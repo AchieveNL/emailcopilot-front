@@ -1,10 +1,11 @@
 import React from 'react'
 import Logo from './Logo'
+import Link from 'next/link'
 
 function Footer() {
     return (
-        <footer style={{ padding: "48px 2rem 48px", borderTop: "1px solid rgba(0,0,0,0.07)" }}>
-            <div className="max-w-[1000px] mx-auto">
+        <footer style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }} className='max-w-315 w-full m-auto px-6 py-12'>
+            <div className="">
                 <div className='flex flex-wrap gap-8 mb-10 items-center justify-center'>
                     <div>
                         <Logo />
@@ -14,9 +15,15 @@ function Footer() {
                         <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Powered by Achieve.nl © 2026</span>
                         <div className='flex gap-6'>
 
-                            <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>General terms</span>
-                            <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Disclaimer</span>
-                            <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Privacy Statement</span>
+                            <Link href="/terms">
+                                <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>General terms</span>
+                            </Link>
+                            <Link href="/disclaimer">
+                                <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Disclaimer</span>
+                            </Link>
+                            <Link href="/privacy">
+                                <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Privacy Statement</span>
+                            </Link>
                         </div>
                         <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>2026 © EmailCopilot. All rights reserved.</span>
                     </div>

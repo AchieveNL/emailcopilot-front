@@ -20,6 +20,7 @@ import clsx from "clsx";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { useBilling } from "@/lib/useBilling";
 import UserCard from "../ui/UserCard";
+import Logo from "../homepage/Logo";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -48,10 +49,7 @@ export default function Sidebar() {
         <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
           <div>
             {/* Logo */}
-            <div className="px-6 py-5 flex items-center gap-3">
-              <Send size={20} className="text-gray-900" />
-              <span className="text-xl font-bold tracking-tight">Emailcopilot.io</span>
-            </div>
+            <Logo />
 
             <div className="flex flex-col items-center justify-center h-48 text-gray-400">
               <AlertTriangle size={48} className="mb-4" />

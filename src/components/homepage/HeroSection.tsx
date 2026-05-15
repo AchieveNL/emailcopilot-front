@@ -5,11 +5,11 @@ export default function HeroSection() {
   return (
     <>
       <section className="
-        grid grid-cols-1 lg:grid-cols-2 items-center gap-10 lg:gap-16
-        max-w-[1260px] mx-auto w-full
-        px-5 pt-14 pb-10 mt-20
-        sm:px-9 sm:pt-16 sm:pb-14
-        lg:px-[60px] lg:pt-20 lg:pb-[60px]
+        grid grid-cols-1 lg:grid-cols-2 items-center 
+        max-w-315 mx-auto w-full
+         pt-14 pb-10 mt-10
+        sm:pt-16 sm:pb-14
+       lg:pt-20 lg:pb-15
         min-h-[calc(100vh-73px)]
       ">
         {/* Left — horizontally centred on mobile, left-aligned on lg+ */}
