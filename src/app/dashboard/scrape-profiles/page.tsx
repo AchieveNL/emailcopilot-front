@@ -21,7 +21,7 @@ export default function ScrapeProfilesPage() {
   const [profiles, setProfiles] = useState<ScrapeProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: "", searchQuery: "", resultsPerRun: 0 });
+  const [form, setForm] = useState({ name: "", searchQuery: "" });
   const [saving, setSaving] = useState(false);
   const [runningId, setRunningId] = useState<number | null>(null);
 
@@ -43,7 +43,7 @@ export default function ScrapeProfilesPage() {
       setSaving(true);
       await scrapeProfilesApi.create({ ...form, userId: user?.id });
       setShowModal(false);
-      setForm({ name: "", searchQuery: "", resultsPerRun: 0 });
+      setForm({ name: "", searchQuery: "" });
       fetchProfiles();
     } catch { alert("Failed to create scrape profile."); } finally { setSaving(false); }
   }
@@ -146,10 +146,7 @@ export default function ScrapeProfilesPage() {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Search Query</label>
                 <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="tech leads in Amsterdam" value={form.searchQuery} onChange={e => setForm({ ...form, searchQuery: e.target.value })} />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Results per Run</label>
-                <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" placeholder="10" value={form.resultsPerRun} onChange={e => setForm({ ...form, resultsPerRun: parseInt(e.target.value) || 0 })} />
-              </div>
+
 
 
             </div>

@@ -2,10 +2,11 @@
 import { useBilling } from "@/lib/useBilling";
 import { useUser } from "@clerk/nextjs";
 import { BarChart3, Send, Users } from "lucide-react";
+import Link from "next/link";
 
 
 export default function DashboardPage() {
-  const { subscription, limits, isActive } = useBilling();
+  const { limits } = useBilling();
   const { user } = useUser()
 
   const stats = [
@@ -48,12 +49,12 @@ export default function DashboardPage() {
         </div>
         <h2 className="font-bold text-gray-900 mb-2">No active copilots</h2>
         <p className="text-sm text-gray-500 mb-4">Create a copilot to start automating your outreach.</p>
-        <a
-          href="/copilots/new"
+        <Link
+          href="/dashboard/copilots/new"
           className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
         >
           Create New Copilot
-        </a>
+        </Link>
       </div>
     </div>
   );

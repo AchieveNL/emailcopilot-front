@@ -1,9 +1,20 @@
+"use client";
 import { TESTIMONIALS } from '@/store/hompageData'
 import { Star } from 'lucide-react';
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function Testimonials() {
     const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+
+
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+        }, 4500);
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <section id="testimonials" className='max-w-315 w-full' style={{ padding: "100px 2rem", background: "#fafafa", overflow: "hidden" }}>

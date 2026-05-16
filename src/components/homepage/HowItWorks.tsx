@@ -217,10 +217,10 @@ function InboxCard() {
             <div className="flex-1 flex flex-col items-center justify-center gap-3">
                 <div className="w-16 h-16 rounded-2xl border border-gray-200 flex items-center justify-center">
                     <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8.3335 35.4167C8.3335 20.8334 16.6668 14.5834 29.1668 14.5834H70.8335C83.3335 14.5834 91.6668 20.8334 91.6668 35.4167V64.5834C91.6668 79.1667 83.3335 85.4167 70.8335 85.4167H29.1668" stroke="#06B6D4" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M70.8332 37.5L57.7915 47.9167C53.4998 51.3333 46.4582 51.3333 42.1665 47.9167L29.1665 37.5" stroke="#06B6D4" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M8.3335 68.75H33.3335" stroke="#06B6D4" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M8.3335 52.0834H20.8335" stroke="#06B6D4" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M8.3335 35.4167C8.3335 20.8334 16.6668 14.5834 29.1668 14.5834H70.8335C83.3335 14.5834 91.6668 20.8334 91.6668 35.4167V64.5834C91.6668 79.1667 83.3335 85.4167 70.8335 85.4167H29.1668" stroke="#06B6D4" strokeWidth="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M70.8332 37.5L57.7915 47.9167C53.4998 51.3333 46.4582 51.3333 42.1665 47.9167L29.1665 37.5" stroke="#06B6D4" strokeWidth="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M8.3335 68.75H33.3335" stroke="#06B6D4" strokeWidth="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M8.3335 52.0834H20.8335" stroke="#06B6D4" strokeWidth="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
 
 

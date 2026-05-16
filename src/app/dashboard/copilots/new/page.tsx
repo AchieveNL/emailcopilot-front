@@ -88,8 +88,8 @@ export default function NewCopilotPage() {
             emailProfileId: copilot.emailProfileId,
             scrapeProfileId: copilot.scrapeProfileId,
             templateId: copilot.templateId,
+            sendLimit: copilot.sendLimit || 10,
             settings: copilot.settings || {
-              dailyLimit: 100,
               sendingSpeed: "Normal (Recommended)",
               timezone: "(GMT-08:00) Pacific Time (US & Canada)",
             },
@@ -113,8 +113,8 @@ export default function NewCopilotPage() {
             emailProfileId: copilot.emailProfileId,
             scrapeProfileId: copilot.scrapeProfileId,
             templateId: copilot.templateId,
+            sendLimit: copilot.sendLimit || 10,
             settings: copilot.settings || {
-              dailyLimit: 100,
               sendingSpeed: "Normal (Recommended)",
               timezone: "(GMT-08:00) Pacific Time (US & Canada)",
             },

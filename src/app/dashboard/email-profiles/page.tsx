@@ -11,7 +11,6 @@ type EmailProfile = {
   email: string;
   provider: string;
   status: "active" | "inactive" | "error";
-  dailyLimit: number;
   sentToday: number;
   createdAt: string;
 };
@@ -120,7 +119,6 @@ export default function EmailProfilesPage() {
           {profiles.map((profile) => {
             const cfg = statusConfig[profile.status];
             const StatusIcon = cfg.icon;
-            const pct = Math.min(100, Math.round((profile.sentToday / profile.dailyLimit) * 100));
             return (
               <div key={profile.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-5">
                 <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
@@ -134,15 +132,7 @@ export default function EmailProfilesPage() {
                     </span>
                   </div>
                   <p className="text-xs text-gray-500">{profile.email} · {profile.provider}</p>
-                  <div className="mt-2">
-                    <div className="flex justify-between text-xs text-gray-400 mb-1">
-                      <span>Daily limit</span>
-                      <span>{profile.sentToday} / {profile.dailyLimit} sent</span>
-                    </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gray-900 rounded-full" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
+
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
@@ -205,10 +195,6 @@ export default function EmailProfilesPage() {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Your name / Sender Name</label>
                 <input type="text" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="John Doe" value={form.sendName} onChange={e => setForm({ ...form, sendName: e.target.value })} />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Daily Send Limit</label>
-                <input type="number" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="100" value={form.dailyLimit} onChange={e => setForm({ ...form, dailyLimit: parseInt(e.target.value) || 0 })} />
               </div>
             </div>
             <div className="flex gap-3 mt-6">

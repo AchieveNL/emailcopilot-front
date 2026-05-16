@@ -1,3 +1,4 @@
+"use client";
 import { useState } from 'react'
 import { FAQS } from '@/store/hompageData'
 import { Plus } from 'lucide-react';

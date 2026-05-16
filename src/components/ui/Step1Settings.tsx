@@ -3,7 +3,7 @@
 import { Clock, ArrowRight } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
 
-const dailyLimits = ["50", "100", "200", "500", "1000"];
+const dailyLimits = ["10", "20", "30", "40", "50", "100"];
 const speeds = ["Slow", "Normal (Recommended)", "Fast"];
 const timezones = [
   "(GMT-12:00) International Date Line West",
@@ -73,8 +73,8 @@ export default function Step1Settings() {
             <p className="mb-2 text-xs text-gray-500">Maximum number of emails to send per day.</p>
             <select
               id="daily"
-              value={copilotData.settings.dailyLimit}
-              onChange={(e) => updateSettings({ dailyLimit: parseInt(e.target.value) })}
+              value={copilotData.sendLimit}
+              onChange={(e) => updateCopilotData({ sendLimit: parseInt(e.target.value) })}
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm shadow-sm bg-white"
             >
               {dailyLimits.map((v) => <option key={v}>{v}</option>)}
@@ -101,7 +101,7 @@ export default function Step1Settings() {
         </div>
 
         {/* Timezone */}
-        <div>
+        {/*    <div>
           <label className="block text-sm font-semibold text-gray-900 mb-1" htmlFor="tz">
             Time zone
           </label>
@@ -114,7 +114,7 @@ export default function Step1Settings() {
           >
             {timezones.map((v) => <option key={v}>{v}</option>)}
           </select>
-        </div>
+        </div> */}
 
         {/* Submit */}
         <div className="pt-2 flex justify-end">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import Nav from "@/components/homepage/Nav";
+import Footer from "@/components/homepage/Footer";
 
 export const metadata: Metadata = {
   title: "Emailcopilot.io",
@@ -16,7 +17,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body>
+          <Nav />
           {children}
+          <Footer />
         </body>
       </html>
     </ClerkProvider>

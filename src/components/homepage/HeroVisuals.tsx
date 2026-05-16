@@ -29,7 +29,7 @@ function HeroVisuals() {
 
             {/* Inbox card */}
             <div className="
-        absolute bottom-[-20px] right-[-30px] w-[370px] rounded-[20px] bg-white z-[2]
+        absolute bottom-[-20px] right-[-30px] w-[370px] rounded-[20px] z-[2]
         
         animate-[floatB_6s_1s_ease-in-out_infinite]
       ">

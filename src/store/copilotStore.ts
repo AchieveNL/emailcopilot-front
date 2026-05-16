@@ -11,8 +11,8 @@ export interface CopilotData {
   emailProfileId: number | null;
   scrapeProfileId: number | null;
   templateId: number | null;
+  sendLimit: number;
   settings: {
-    dailyLimit: number;
     sendingSpeed: string;
     timezone: string;
   };
@@ -67,8 +67,8 @@ const defaultCopilotData: CopilotData = {
   emailProfileId: null,
   scrapeProfileId: null,
   templateId: null,
+  sendLimit: 10,
   settings: {
-    dailyLimit: 100,
     sendingSpeed: "Normal (Recommended)",
     timezone: "(GMT-08:00) Pacific Time (US & Canada)",
   },

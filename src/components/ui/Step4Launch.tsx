@@ -45,7 +45,7 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
             <div>
               <span className="text-xs text-gray-400 block mb-0.5">Daily Limit</span>
               <span className="font-medium text-gray-900">
-                {copilotData.settings.dailyLimit} emails/day
+                {copilotData.sendLimit} emails/day
               </span>
             </div>
             <div>
@@ -141,7 +141,7 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-xl font-bold text-gray-900">
-                {parseInt(copilotData.settings.dailyLimit.toString()).toLocaleString()}
+                {parseInt(copilotData.sendLimit.toString()).toLocaleString()}
               </div>
               <div className="text-xs text-gray-500 flex items-center justify-center gap-1 mt-0.5">
                 <Clock size={10} /> emails/day
@@ -149,7 +149,7 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
             </div>
             <div>
               <div className="text-xl font-bold text-gray-900">
-                {(parseInt(copilotData.settings.dailyLimit.toString()) * 7).toLocaleString()}
+                {(parseInt(copilotData.sendLimit.toString()) * 7).toLocaleString()}
               </div>
               <div className="text-xs text-gray-500 flex items-center justify-center gap-1 mt-0.5">
                 <Calendar size={10} /> emails/week
