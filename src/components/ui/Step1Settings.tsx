@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight, X } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
 
 const dailyLimits = ["10", "20", "30", "40", "50", "100"];
@@ -115,6 +115,35 @@ export default function Step1Settings() {
             {timezones.map((v) => <option key={v}>{v}</option>)}
           </select>
         </div> */}
+
+        {/* Schedule Time Picker */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 mb-1.5" htmlFor="runAt">
+            Scheduled run time <span className="font-normal text-gray-400">(optional)</span>
+          </label>
+          <p className="mb-2 text-xs text-gray-500">Set a specific time to run the copilot daily.</p>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                id="runAt"
+                type="time"
+                value={copilotData.settings.schedule.runAt}
+                onChange={(e) => updateSettings({ schedule: { runAt: e.target.value } })}
+                className="w-40 border border-gray-300 rounded-lg pl-9 pr-3 py-2.5 text-sm shadow-sm bg-white"
+              />
+            </div>
+            {copilotData.settings.schedule.runAt && (
+              <button
+                type="button"
+                onClick={() => updateSettings({ schedule: { runAt: "" } })}
+                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+              >
+                <X size={12} /> Clear
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* Submit */}
         <div className="pt-2 flex justify-end">

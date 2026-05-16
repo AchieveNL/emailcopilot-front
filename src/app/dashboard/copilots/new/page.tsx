@@ -90,6 +90,9 @@ export default function NewCopilotPage() {
             templateId: copilot.templateId,
             sendLimit: copilot.sendLimit || 10,
             settings: copilot.settings || {
+              schedule: {
+                runAt: "",
+              },
               sendingSpeed: "Normal (Recommended)",
               timezone: "(GMT-08:00) Pacific Time (US & Canada)",
             },
@@ -115,6 +118,9 @@ export default function NewCopilotPage() {
             templateId: copilot.templateId,
             sendLimit: copilot.sendLimit || 10,
             settings: copilot.settings || {
+              schedule: {
+                runAt: "",
+              },
               sendingSpeed: "Normal (Recommended)",
               timezone: "(GMT-08:00) Pacific Time (US & Canada)",
             },

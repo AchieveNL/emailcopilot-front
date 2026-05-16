@@ -55,9 +55,9 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
               </span>
             </div>
             <div>
-              <span className="text-xs text-gray-400 block mb-0.5">Time Zone</span>
+              <span className="text-xs text-gray-400 block mb-0.5">Start at</span>
               <span className="font-medium text-gray-900 text-xs">
-                {copilotData.settings.timezone}
+                {copilotData.settings.schedule.runAt || "Not scheduled"}
               </span>
             </div>
           </div>

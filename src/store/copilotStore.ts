@@ -13,6 +13,9 @@ export interface CopilotData {
   templateId: number | null;
   sendLimit: number;
   settings: {
+    schedule: {
+      "runAt": string; // ISO string, e.g. "2024-06-01T09:00:00Z"
+    };
     sendingSpeed: string;
     timezone: string;
   };
@@ -69,6 +72,9 @@ const defaultCopilotData: CopilotData = {
   templateId: null,
   sendLimit: 10,
   settings: {
+    schedule: {
+      runAt: "",
+    },
     sendingSpeed: "Normal (Recommended)",
     timezone: "(GMT-08:00) Pacific Time (US & Canada)",
   },
