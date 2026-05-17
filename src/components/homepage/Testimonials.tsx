@@ -21,7 +21,7 @@ function Testimonials() {
             <div style={{ maxWidth: 900, margin: "0 auto" }}>
                 <div className="text-center mb-10">
                     <h2 className="text-6xl text-gray-900  leading-tight" style={{ fontFamily: 'DM Serif Display' }}>
-                        Lazy people{" "}
+
                         <span
                             className="bg-clip-text text-transparent"
                             style={{
@@ -29,9 +29,9 @@ function Testimonials() {
                                     "linear-gradient(86.91deg, #4f46e5 0%, #2563eb 50%, #06b6d4 100%)",
                             }}
                         >
-                            love
+                            Trusted
                         </span>{" "}
-                        EmailCopilot
+                        by captains worldwide
                     </h2>
                     <p className="mt-2 text-gray-500 text-base font-bold">
                         Minimum effort with maximum efficiency

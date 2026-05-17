@@ -20,7 +20,7 @@ function Cta() {
                 </p>
 
                 <Link
-                    href="/dashboard"
+                    href="#pricing"
                     className="inline-flex items-center rounded-xl bg-[#fafafa] px-8 py-3.5 font-bold text-primary shadow-[0_4px_24px_rgba(255,255,255,0.1)] transition hover:scale-[1.02]"
                 >
                     Hire your own copilot now →

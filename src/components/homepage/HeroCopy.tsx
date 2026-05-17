@@ -1,9 +1,10 @@
 import { ArrowRight, Check, CheckCircle, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const TRUST_ITEMS = [
   { icon: <CheckCircle size={14} className="fill-primary text-white" strokeWidth={2.5} />, label: "No credit card" },
-  { icon: <CheckCircle size={14} className="fill-secondary text-white" strokeWidth={2.5} />, label: "How it works" },
+  { icon: <CheckCircle size={14} className="fill-secondary text-white" strokeWidth={2.5} />, label: "Free trial available" },
   { icon: <CheckCircle size={14} className="fill-light text-white" strokeWidth={2.5} />, label: "Setup in 5 minutes" }
 ];
 
@@ -50,13 +51,13 @@ function HeroCopy() {
 
       {/* CTA buttons — mirrors page.tsx btn-cta / btn-outline */}
       <div className="flex items-center gap-3.5 flex-wrap mb-9 justify-center lg:justify-start">
-        <button className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+        <Link href="#pricing" className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
           Start Flying
           <ArrowRight size={16} />
-        </button>
-        <button className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+        </Link>
+        <Link href="#how-it-works" className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
           How it works
-        </button>
+        </Link>
       </div>
 
       {/* Trust row */}

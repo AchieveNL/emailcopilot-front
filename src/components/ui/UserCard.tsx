@@ -15,7 +15,7 @@ export default function UserCard({ user, isActive }: { user: any; isActive: bool
           <>
             <div className="flex items-center gap-2 mb-3">
               <Crown size={14} className="text-gray-700" />
-              <span className="font-bold text-sm">{limits?.planId ? `${limits.planId} Plan` : "Starter Plan"}</span>
+              <span className="font-bold text-sm">{limits?.planId ? `${limits.planId} Plan` : "Starter plan"}</span>
             </div>
             <div className="mb-3">
               <div className="text-xs text-gray-500 mb-1.5">

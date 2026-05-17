@@ -12,7 +12,7 @@ function Footer() {
                     </div>
                     <div className='flex justify-between w-full'>
 
-                        <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Powered by Achieve.nl © 2026</span>
+                        <span style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>Powered by <a href="https://www.achieve.nl" target="_blank" rel="noopener noreferrer" style={{ color: "#a0a0b0" }}>Achieve.nl</a> © 2026</span>
                         <div className='flex gap-6'>
 
                             <Link href="/terms">

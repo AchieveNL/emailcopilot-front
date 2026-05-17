@@ -32,7 +32,7 @@ function Pricing() {
                     {PLANS.map((plan) => {
                         const Icon = plan.icon;
                         return (
-                            <div key={plan.name} className={`w-full max-w-sm rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden text-${plan.color} `}
+                            <div key={plan.name} className={`w-full max-w-sm rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden text-${plan.textcolor} `}
                                 style={
                                     plan.tag
                                         ? {
@@ -46,7 +46,7 @@ function Pricing() {
                                 <div className='flex items-center justify-between pt-6 pb-5 px-6'>
                                     <div className=" pt-6 pb-5 flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-2xl border border-indigo-200 bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                                            <Icon className={`text-${plan.color}`} />
+                                            <Icon className={`text-${plan.textcolor}`} />
                                         </div>
                                         <div>
                                             <h3 className={`${plan.tag ? 'text-white' : 'text-gray-900'} text-[14px] font-bold`}>{plan.name}</h3>
@@ -75,7 +75,7 @@ function Pricing() {
                                 <div className="px-6 pt-5 pb-3">
                                     <div className="flex items-baseline gap-2">
                                         <span
-                                            className={`text-3xl font-bold leading-none ${plan.tag ? 'text-white' : `text-${plan.color}`}`}
+                                            className={`text-3xl font-bold leading-none ${plan.tag ? 'text-white' : `text-${plan.textcolor}`}`}
 
                                         >
                                             {plan.price}
@@ -113,7 +113,7 @@ function Pricing() {
                                             ? 'bg-white hover:bg-indigo-600'
                                             : 'bg-indigo-100 hover:bg-indigo-200'
                                             }`}
-                                        style={{ color: plan.color }}                                    >
+                                        style={{ color: plan.textcolor }}                                    >
                                         {plan.cta}
                                         <span className="text-lg">→</span>
                                     </Link>

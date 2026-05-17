@@ -25,9 +25,9 @@ import Logo from "../homepage/Logo";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/copilots", label: "Copilots", icon: Send },
-  { href: "/dashboard/email-profiles", label: "Email Profiles", icon: Mail },
+  { href: "/dashboard/email-profiles", label: "Email Accounts", icon: Mail },
   { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database },
-  { href: "/dashboard/templates", label: "Templates", icon: FileText },
+  { href: "/dashboard/templates", label: "Email templates", icon: FileText },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
@@ -67,10 +67,7 @@ export default function Sidebar() {
         <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
           <div>
             {/* Logo */}
-            <div className="px-6 py-5 flex items-center gap-3">
-              <Send size={20} className="text-gray-900" />
-              <span className="text-xl font-bold tracking-tight">Emailcopilot.io</span>
-            </div>
+            <Logo />
 
 
             {/* Create Button */}

@@ -3,6 +3,7 @@
 // Tailwind CSS v4 with the globals.css variables provided
 
 import { Send } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const avatars = [
@@ -74,9 +75,9 @@ function PricingCard() {
                     ))}
                 </ul>
 
-                <button className="mt-4 w-full py-2.5 rounded-xl border-[1.5px] border-indigo-200 bg-indigo-50 text-indigo-600 text-[13px] font-semibold flex items-center justify-center gap-1.5 hover:bg-indigo-100 transition-colors">
+                <Link href="/sign-up" className="mt-4 w-full py-2.5 rounded-xl border-[1.5px] border-indigo-200 bg-indigo-50 text-indigo-600 text-[13px] font-semibold flex items-center justify-center gap-1.5 hover:bg-indigo-100 transition-colors">
                     Subscribe now →
-                </button>
+                </Link>
             </div>
         </div>
     );

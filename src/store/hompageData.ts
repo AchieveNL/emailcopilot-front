@@ -1,4 +1,4 @@
-import { Send, Search, Mail, ListChecks, Settings, Zap, MapPin, MessageSquare, Database, Link as LinkIcon, ChevronRight, Plus, ChevronDown, Check, X, Coffee, ChartArea, ChartSpline, Rocket } from "lucide-react";
+import { Send, Search, Mail, ListChecks, Settings, Zap, MapPin, MessageSquare, Database, Link as LinkIcon, ChartSpline, Rocket } from "lucide-react";
 
 export const FEATURES = [
     {
@@ -115,7 +115,8 @@ export const PLANS = [
         name: "Starter",
         description: "Perfect for beginners",
         icon: Send,
-        color: "primary",
+        bgcolor: "#F5F3FF",
+        textcolor: "#4F46E5",
         price: "€9",
         estimated: "250 emails (~8/days)",
         tag: null,
@@ -127,7 +128,8 @@ export const PLANS = [
         name: "Growth",
         description: "Best for growing business",
         icon: ChartSpline,
-        color: "secondary",
+        bgcolor: "#EFF6FF",
+        textcolor: "#2563EB",
         price: "€19",
         estimated: "750 emails (~25/days)",
         tag: "Most popular",
@@ -140,7 +142,8 @@ export const PLANS = [
         name: "Scale",
         description: "For large teams & agencies",
         icon: Rocket,
-        color: "light",
+        bgcolor: "#E2E8F0",
+        textcolor: "#06B6D4",
         price: "€39",
         estimated: "2,000 emails (~65/days)",
         tag: null,

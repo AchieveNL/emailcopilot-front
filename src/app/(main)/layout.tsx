@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import Nav from "@/components/homepage/Nav";
 import Footer from "@/components/homepage/Footer";
+import FloatingWhatsApp from "@/components/layout/FloatingWhatsApp";
 
 export const metadata: Metadata = {
   title: "Emailcopilot.io",
@@ -20,6 +21,7 @@ export default function RootLayout({
           <Nav />
           {children}
           <Footer />
+          <FloatingWhatsApp />
         </body>
       </html>
     </ClerkProvider>

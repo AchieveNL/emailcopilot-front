@@ -22,21 +22,18 @@ function HeroVisuals() {
 
             {/* Dashboard card */}
             <div >
-                <img src="/dashboard.png" alt="EmailCopilot Dashboard" className="absolute top-0 left-0  max-w-[710px] rounded-[20px] overflow-hidden
+                <img src="/dashboard.png" alt="EmailCopilot Dashboard" className="absolute top-0 -left-24  max-w-[790px] rounded-[20px] overflow-hidden
         
         animate-[floatA_5s_ease-in-out_infinite]  h-auto block" />
             </div>
 
             {/* Inbox card */}
-            <div className="
-        absolute bottom-[-20px] right-[-30px] w-[370px] rounded-[20px] z-[2]
-        
-        animate-[floatB_6s_1s_ease-in-out_infinite]
+            <div className="absolute bottom-[-130px] right-[-30px] w-[426px] rounded-[20px] z-[2]animate-[floatB_6s_1s_ease-in-out_infinite]
       ">
                 <div className="relative">
                     <img src="/inbox.png" alt="EmailCopilot Inbox" className="w-full h-auto block" />
                     {/* Annotation */}
-                    <div className="absolute bottom-[46px] right-[310px] pointer-events-none animate-[floatB_5s_0.5s_ease-in-out_infinite] z-[3]">
+                    <div className="absolute bottom-[46px] right-[358px] pointer-events-none animate-[floatB_5s_0.5s_ease-in-out_infinite] z-[3]">
                         <img src="/replies-to-inbox.png" alt="Replies to inbox" className="min-w-36 h-auto" />
                     </div>
                 </div>
