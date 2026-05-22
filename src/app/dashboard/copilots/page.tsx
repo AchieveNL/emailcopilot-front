@@ -29,7 +29,15 @@ const STATUS_CONFIG = {
   draft: { label: "Draft", color: "text-gray-500", bg: "bg-gray-100", dot: "bg-gray-400" },
   archived: { label: "Archived", color: "text-gray-400", bg: "bg-gray-50", dot: "bg-gray-300" },
   running: { label: "Running", color: "text-blue-700", bg: "bg-blue-50", dot: "bg-blue-500" },
-};
+  completed: { label: "Completed", color: "text-gray-700", bg: "bg-gray-100", dot: "bg-gray-500" },
+} as const;
+
+// Normalize status to handle case inconsistencies
+function getStatusConfig(status: string | undefined | null) {
+  if (!status) return STATUS_CONFIG.draft;
+  const normalizedStatus = status.toLowerCase().trim() as keyof typeof STATUS_CONFIG;
+  return STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG.draft;
+}
 
 const FILTERS = ["All", "Active", "Paused", "Running", "Draft", "Archived"] as const;
 
@@ -299,7 +307,7 @@ export default function CopilotsPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map(copilot => {
-            const cfg = STATUS_CONFIG[copilot.status];
+            const cfg = getStatusConfig(copilot.status);
             const or = openRate(copilot.emailsSent, copilot.emailsOpened);
             const rr = replyRate(copilot.emailsSent, copilot.emailsReplied);
             return (
