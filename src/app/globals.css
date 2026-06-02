@@ -4,29 +4,23 @@
 :root {
   --font-sans: "DM Sans", sans-serif;
   --font-mono: "DM Mono", monospace;
-  --primary-gradient: linear-gradient(
-    86.91deg,
-    #4f46e5 0.01%,
-    #2563eb 49.66%,
-    #06b6d4 99.31%
-  );
+  --primary-gradient: linear-gradient(86.91deg,
+      #4f46e5 0.01%,
+      #2563eb 49.66%,
+      #06b6d4 99.31%);
   --btn-width: 416px;
   --btn-inner-width: 320px;
   --btn-height: 80px;
   --btn-radius: 16px;
   --btn-outer-bg: #ffffff;
-  --btn-gradient: linear-gradient(
-    86.91deg,
-    #4f46e5 0.01%,
-    #2563eb 49.66%,
-    #06b6d4 99.31%
-  );
-  --btn-gradient-hover: linear-gradient(
-    86.91deg,
-    #4f46e5 0.01%,
-    #2563eb 49.66%,
-    #06b6d4 99.31%
-  );
+  --btn-gradient: linear-gradient(86.91deg,
+      #4f46e5 0.01%,
+      #2563eb 49.66%,
+      #06b6d4 99.31%);
+  --btn-gradient-hover: linear-gradient(86.91deg,
+      #4f46e5 0.01%,
+      #2563eb 49.66%,
+      #06b6d4 99.31%);
   --btn-font-size: 20px;
   --btn-text-color: #ffffff;
 
@@ -34,6 +28,7 @@
   --btn-outline-width: 320px;
   --btn-outline-color: #4f46e5;
 }
+
 @theme {
   --color-primary: #4f46e5;
   --color-secondary: #2563eb;
@@ -67,13 +62,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
@@ -85,37 +83,4 @@ select:focus {
   outline: none;
   border-color: #111827 !important;
   box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.12);
-}
-
-/* Blob Animation Utilities. Used for the animated background component with smooth motion */
-@layer utilities {
-  /* @keyframes blob: Smooth morph animation with 3-step translation and scale */
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(40px, -60px) scale(1.15);
-    }
-    66% {
-      transform: translate(-30px, 30px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-  }
-
-  /* Base blob animation: 16s duration with infinite alternation */
-  .animate-blob {
-    animation: blob 16s infinite alternate ease-in-out;
-  }
-
-  /* Stagger animations using delay offsets for layered blob effect */
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
 }

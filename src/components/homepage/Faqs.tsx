@@ -8,9 +8,9 @@ function Faqs() {
 
     // Helper function to determine button colors based on FAQ index for visual variety
     const getButtonColor = (index: number) => {
-        if (index < 2) return ["#8a2be2", "#F5F3FF"]; // purple
-        if (index < 4) return ["#000080", "#EFF6FF"]; // blue
-        return ["#00ced1", "#F0FDFF"]; // green
+        if (index < 2) return ["#4F46E5", "#F5F3FF"]; // purple
+        if (index < 4) return ["#2563EB", "#EFF6FF"]; // blue
+        return ["#06B6D4", "#F0FDFF"]; // green
     };
 
     return (
