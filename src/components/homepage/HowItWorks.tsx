@@ -382,7 +382,7 @@ export default function HowItWorks() {
             take over
           </h2>
           <p className="mt-2 text-gray-500 text-base font-bold">
-            Set it. Forget
+            Set it. Forget it.
           </p>
         </div>
 
