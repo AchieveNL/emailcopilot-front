@@ -264,6 +264,11 @@ export default function AnimatedBackground() {
           style={{ backgroundColor: "#E2E8F0" }}
         />
 
+        {/* Elegant masked dot grid & expanding mount ripple animation */}
+        <div className="absolute lab-bg inset-0 size-full z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(0,0,0,0.10)_1px,transparent_1px)] bg-[size:16px_16px]" />
+        </div>
+
       </div>
     </>
   );
