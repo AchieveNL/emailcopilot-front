@@ -5,8 +5,8 @@ import Link from 'next/link'
 function Pricing() {
     return (
         <section id="pricing"
-
-            className='py-20 px-4  border-t border-b border-gray-100 max-w-315 w-full mx-auto'
+            // remove borders
+            className='py-20 px-4 z-0 max-w-315 w-full mx-auto'
         >
             <div style={{ margin: "0 auto" }}>
                 <div className="text-center mb-10">
@@ -39,7 +39,7 @@ function Pricing() {
                                             background:
                                                 "linear-gradient(221.6deg, #06B6D4 4.2%, #168DE0 49.68%, #2563EB 96.05%)",
                                         }
-                                        : undefined
+                                        : { background: "white" } // subtle background for non-highlighted plans
                                 }                            >
 
                                 {/* Header */}
@@ -107,13 +107,11 @@ function Pricing() {
 
                                 {/* CTA */}
                                 <div className="mt-8 px-4 pb-4">
+                                    {/* adjust the button styles based on the plan */}
                                     <Link
                                         href={"login"}
-                                        className={`w-full py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 cursor-pointer ${plan.tag
-                                            ? 'bg-white hover:bg-indigo-600'
-                                            : 'bg-indigo-100 hover:bg-indigo-200'
-                                            }`}
-                                        style={{ color: plan.textcolor }}                                    >
+                                        className={`w-full py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 transition-opacity shadow-sm `}
+                                        style={{ color: plan.textcolor, backgroundColor: plan.bgcolor }}>
                                         {plan.cta}
                                         <span className="text-lg">→</span>
                                     </Link>

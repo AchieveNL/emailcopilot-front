@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Nav from "@/components/homepage/Nav";
 import Footer from "@/components/homepage/Footer";
 import FloatingWhatsApp from "@/components/layout/FloatingWhatsApp";
+import AnimatedBackground from "@/components/homepage/AnimatedBackground";
 
 export const metadata: Metadata = {
   title: "Emailcopilot.io",
@@ -19,6 +20,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body>
           <Nav />
+          <AnimatedBackground />
           {children}
           <Footer />
           <FloatingWhatsApp />

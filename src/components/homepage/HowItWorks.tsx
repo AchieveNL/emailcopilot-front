@@ -242,7 +242,7 @@ function InboxCard() {
 // ─── Section Wrapper ─────────────────────────────────────────────────
 export default function HowItWorks() {
     return (
-        <section id="how-it-works" className="relative py-16 px-4 max-w-315 w-full bg-gray-50 overflow-hidden">
+        <section id="how-it-works" className="relative py-16 px-4 max-w-315 w-full overflow-hidden">
             {/* Decorative dot grid (top-left) */}
             <div
                 aria-hidden
@@ -279,8 +279,9 @@ export default function HowItWorks() {
                         </span>{" "}
                         take over
                     </h2>
+                    {/* changed from "Set it. Forget" to the current text */}
                     <p className="mt-2 text-gray-500 text-base font-bold">
-                        Set it. Forget it.
+                        Minimum effort with maximum efficiency
                     </p>
                 </div>
 
