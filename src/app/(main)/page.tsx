@@ -12,7 +12,8 @@ export default function HomePage() {
     <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: "#fafafa", color: "#0f0f12", overflowX: "hidden" }} className="flex flex-col gap-0 items-center relative">
       <div className="fixed inset-0 pointer-events-none z-[9999]">
         <Ribbons
-          colors={["#2563EB"]}
+          colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+          singleLineGradient={true}
           baseSpring={0.03}
           baseFriction={0.9}
           baseThickness={24}

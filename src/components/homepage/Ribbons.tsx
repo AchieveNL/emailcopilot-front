@@ -18,6 +18,7 @@ interface RibbonsProps {
   enableShaderEffect?: boolean;
   effectAmplitude?: number;
   backgroundColor?: number[];
+  singleLineGradient?: boolean;
 }
 
 const Ribbons: React.FC<RibbonsProps> = ({
@@ -33,6 +34,7 @@ const Ribbons: React.FC<RibbonsProps> = ({
   enableShaderEffect = false,
   effectAmplitude = 2,
   backgroundColor = [0, 0, 0, 0],
+  singleLineGradient = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -121,6 +123,10 @@ const Ribbons: React.FC<RibbonsProps> = ({
     const fragment = `
       precision highp float;
       uniform vec3 uColor;
+      uniform vec3 uColor1;
+      uniform vec3 uColor2;
+      uniform vec3 uColor3;
+      uniform float uUseGradient;
       uniform float uOpacity;
       uniform float uEnableFade;
       varying vec2 vUV;
@@ -129,7 +135,17 @@ const Ribbons: React.FC<RibbonsProps> = ({
           if(uEnableFade > 0.5) {
               fadeFactor = 1.0 - smoothstep(0.0, 1.0, vUV.y);
           }
-          gl_FragColor = vec4(uColor, uOpacity * fadeFactor);
+          vec3 finalColor = uColor;
+          if(uUseGradient > 0.5) {
+              if (vUV.y < 0.2) {
+                  finalColor = mix(uColor1, uColor2, vUV.y * 5.0);
+              } else if (vUV.y < 0.4) {
+                  finalColor = mix(uColor2, uColor3, (vUV.y - 0.2) * 5.0);
+              } else {
+                  finalColor = uColor3;
+              }
+          }
+          gl_FragColor = vec4(finalColor, uOpacity * fadeFactor);
       }
     `;
 
@@ -143,15 +159,25 @@ const Ribbons: React.FC<RibbonsProps> = ({
     window.addEventListener("resize", resize);
 
     const center = (colors.length - 1) / 2;
-    colors.forEach((color, index) => {
-      const spring = baseSpring + (Math.random() - 0.5) * 0.05;
-      const friction = baseFriction + (Math.random() - 0.5) * 0.05;
+    const linesToDraw = singleLineGradient ? [colors] : colors.map((c) => [c]);
+
+    linesToDraw.forEach((colorSet, index) => {
+      const isGrad = singleLineGradient;
+      const c1 = isGrad ? (colorSet[0] || "#4f46e5") : colorSet[0];
+      const c2 = isGrad ? (colorSet[1] || c1) : c1;
+      const c3 = isGrad ? (colorSet[2] || c2) : c2;
+
+      const spring = isGrad ? 0.055 : baseSpring + (Math.random() - 0.5) * 0.05;
+      const friction = isGrad ? 0.88 : baseFriction + (Math.random() - 0.5) * 0.05;
       const thickness = baseThickness + (Math.random() - 0.5) * 3;
-      const mouseOffset = new Vec3(
-        (index - center) * offsetFactor + (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.1,
-        0,
-      );
+      
+      const mouseOffset = isGrad
+        ? new Vec3(0, 0, 0)
+        : new Vec3(
+            (index - center) * offsetFactor + (Math.random() - 0.5) * 0.01,
+            (Math.random() - 0.5) * 0.1,
+            0,
+          );
 
       const line = {
         spring,
@@ -174,7 +200,11 @@ const Ribbons: React.FC<RibbonsProps> = ({
         vertex,
         fragment,
         uniforms: {
-          uColor: { value: new Color(color) },
+          uColor: { value: new Color(c1) },
+          uColor1: { value: new Color(c1) },
+          uColor2: { value: new Color(c2) },
+          uColor3: { value: new Color(c3) },
+          uUseGradient: { value: isGrad ? 1.0 : 0.0 },
           uThickness: { value: thickness },
           uOpacity: { value: 1.0 },
           uTime: { value: 0.0 },
@@ -272,6 +302,7 @@ const Ribbons: React.FC<RibbonsProps> = ({
     enableShaderEffect,
     effectAmplitude,
     backgroundColor,
+    singleLineGradient,
   ]);
 
   return <div ref={containerRef} className="relative w-full h-full" />;
