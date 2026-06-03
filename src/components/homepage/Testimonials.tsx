@@ -17,7 +17,7 @@ function Testimonials() {
     }, []);
 
     return (
-        <section id="testimonials" className='max-w-315 w-full' style={{ padding: "100px 2rem", background: "#fafafa", overflow: "hidden" }}>
+        <section id="testimonials" className='max-w-315 w-full z-0 ' style={{ padding: "100px 2rem", overflow: "hidden" }}>
             <div style={{ maxWidth: 900, margin: "0 auto" }}>
                 <div className="text-center mb-10">
                     <h2 className="text-6xl text-gray-900  leading-tight" style={{ fontFamily: 'DM Serif Display' }}>
@@ -33,8 +33,9 @@ function Testimonials() {
                         </span>{" "}
                         by captains worldwide
                     </h2>
+                    {/* changed from "Minimum effort with maximum efficiency" to the current text */}
                     <p className="mt-2 text-gray-500 text-base font-bold">
-                        Minimum effort with maximum efficiency
+                        Outbound sales without the turbulence.
                     </p>
                 </div>
 

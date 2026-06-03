@@ -6,8 +6,15 @@ import { Plus } from 'lucide-react';
 function Faqs() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+    // Helper function to determine button colors based on FAQ index for visual variety
+    const getButtonColor = (index: number) => {
+        if (index < 2) return ["#4F46E5", "#F5F3FF"]; // purple
+        if (index < 4) return ["#2563EB", "#EFF6FF"]; // blue
+        return ["#06B6D4", "#F0FDFF"]; // green
+    };
+
     return (
-        <section id="faqs" style={{ padding: "100px 2rem", background: "#fafafa" }} className='max-w-315 w-full mx-auto'>
+        <section id="faqs" style={{ padding: "100px 2rem" }} className='max-w-315 z-0 w-full mx-auto'>
             <div className="">
                 <div className="text-center mb-10">
                     <h2 className="text-6xl text-gray-900  leading-tight" style={{ fontFamily: 'DM Serif Display' }}>
@@ -38,11 +45,17 @@ function Faqs() {
                                 <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#0f0f12" }}>{faq.q}</span>
                                 <div style={{
                                     width: 28, height: 28, borderRadius: 99,
-                                    background: openFaq === i ? "#4f46e5" : "rgba(0,0,0,0.06)",
+                                    // Button color changes when active, uses plan-specific colors for cohesive design
+                                    background: openFaq === i ? getButtonColor(i)[1] : "rgba(0,0,0,0.06)",
+                                    // Button border changes when active
+                                    border: "1px solid transparent",
+                                    // Active state border color matches the button's background color
+                                    borderColor: openFaq === i ? getButtonColor(i)[0] : "transparent",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     flexShrink: 0, transition: "all 0.2s",
                                 }}>
-                                    <Plus size={12} color={openFaq === i ? "#fff" : "#0f0f12"} strokeWidth={2.5}
+                                    {/* dynamically adjust the icon color to match the button's border color */}
+                                    <Plus size={12} color={openFaq === i ? getButtonColor(i)[0] : "#0f0f12"} strokeWidth={2.5}
                                         style={{ transform: openFaq === i ? "rotate(45deg)" : "rotate(0)", transition: "transform 0.2s" }} />
                                 </div>
                             </div>
