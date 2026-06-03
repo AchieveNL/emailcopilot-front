@@ -8,6 +8,7 @@ import Link from "next/link";
 import React from "react";
 import GradientText from "./GradientText";
 import ScrollFloat from "./ScrollFloat";
+import BorderGlow from "./BorderGlow";
 
 const avatars = [
   { initials: "A", bg: "bg-indigo-500" },
@@ -31,8 +32,16 @@ function StepBadge({ number, color }: { number: number; color: string }) {
 // ─── Card 1: Pricing ────────────────────────────────────────────────
 function PricingCard() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 py-6 flex flex-col gap-5 min-h-[220px]">
-      <div className="flex items-center gap-2">
+    <BorderGlow
+      borderRadius={16}
+      showShadow={false}
+      backgroundColor="#ffffff"
+      className="w-full"
+      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+      glowColor="#4f46e5"
+    >
+      <div className="relative z-10 p-5 py-6 flex flex-col gap-5 min-h-[220px] flex-1">
+        <div className="flex items-center gap-2">
         <StepBadge number={1} color="primary" />
         <span className="text-[13.5px] font-bold text-primary">
           Starting at €9/month
@@ -114,7 +123,8 @@ function PricingCard() {
           Subscribe now →
         </Link>
       </div>
-    </div>
+      </div>
+    </BorderGlow>
   );
 }
 
@@ -172,8 +182,16 @@ function DefineCustomerCard() {
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col gap-8 min-h-[220px]">
-      <div className="flex items-center gap-2">
+    <BorderGlow
+      borderRadius={16}
+      showShadow={false}
+      backgroundColor="#ffffff"
+      className="w-full"
+      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+      glowColor="#4f46e5"
+    >
+      <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
+        <div className="flex items-center gap-2">
         <StepBadge number={2} color="secondary" />
         <span className="text-[13.5px] font-bold text-secondary">
           Define your ideal customer
@@ -189,15 +207,24 @@ function DefineCustomerCard() {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </BorderGlow>
   );
 }
 
 // ─── Card 3: Automatic Outbound ──────────────────────────────────────
 function AutoOutboundCard() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col gap-8 min-h-[220px]">
-      <div className="flex items-center gap-2">
+    <BorderGlow
+      borderRadius={16}
+      showShadow={false}
+      backgroundColor="#ffffff"
+      className="w-full"
+      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+      glowColor="#4f46e5"
+    >
+      <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
+        <div className="flex items-center gap-2">
         <StepBadge number={3} color="secondary" />
         <span className="text-[13.5px] font-bold text-secondary">
           Automatic outbound
@@ -261,15 +288,24 @@ function AutoOutboundCard() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </BorderGlow>
   );
 }
 
 // ─── Card 4: Straight to Inbox ───────────────────────────────────────
 function InboxCard() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col gap-8 min-h-[220px]">
-      <div className="flex items-center gap-2">
+    <BorderGlow
+      borderRadius={16}
+      showShadow={false}
+      backgroundColor="#ffffff"
+      className="w-full"
+      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+      glowColor="#4f46e5"
+    >
+      <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
+        <div className="flex items-center gap-2">
         <StepBadge number={4} color="light" />
         <span className="text-[13.5px] font-bold text-light">
           Straight to your inbox
@@ -332,7 +368,8 @@ function InboxCard() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </BorderGlow>
   );
 }
 

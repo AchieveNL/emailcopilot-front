@@ -47,7 +47,7 @@ function Pricing() {
                 key={plan.name}
                 className={`w-full max-w-sm text-${plan.textcolor}`}
                 borderRadius={24}
-                showShadow="small"
+                showShadow={false}
                 backgroundColor={
                   plan.tag
                     ? "linear-gradient(221.6deg, #06B6D4 4.2%, #168DE0 49.68%, #2563EB 96.05%)"

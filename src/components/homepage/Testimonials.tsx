@@ -3,6 +3,7 @@ import { TESTIMONIALS } from "@/store/hompageData";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import ScrollFloat from "./ScrollFloat";
+import BorderGlow from "./BorderGlow";
 
 function Testimonials() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -44,9 +45,14 @@ function Testimonials() {
         {/* Active testimonial */}
         <div style={{ position: "relative", minHeight: 200 }}>
           {TESTIMONIALS.map((t, i) => (
-            <div
+            <BorderGlow
               key={t.name}
-              className="testimonial-card top-0 left-0 right-0 flex items-center flex-col gap-5 bg-white border border-gray-200 rounded-2xl p-10 shadow-md"
+              className="testimonial-card top-0 left-0 right-0"
+              borderRadius={16}
+              showShadow={false}
+              backgroundColor="#ffffff"
+              colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+              glowColor="#4f46e5"
               style={{
                 position: i === activeTestimonial ? "relative" : "absolute",
                 opacity: i === activeTestimonial ? 1 : 0,
@@ -58,68 +64,70 @@ function Testimonials() {
                 pointerEvents: i === activeTestimonial ? "auto" : "none",
               }}
             >
-              <div className="flex gap-1.5">
-                <Star size={20} className="text-yellow-400 fill-yellow-400" />
-                <Star size={20} className="text-yellow-400 fill-yellow-400" />
-                <Star size={20} className="text-yellow-400 fill-yellow-400" />
-                <Star size={20} className="text-yellow-400 fill-yellow-400" />
-                <Star size={20} className="text-yellow-400 fill-yellow-400" />
-              </div>
-              <div
-                className="quote-icon"
-                style={{
-                  fontSize: "3rem",
-                  color: "rgba(0,0,0,0.08)",
-                  lineHeight: 1,
-                  fontFamily: "Dm Serif Display",
-                  flexShrink: 0,
-                }}
-              ></div>
-              <div style={{ flex: 1 }}>
-                <p
-                  className="text-xl text-gray-900 mb-6 italic text-center"
-                  style={{ lineHeight: 1.7 }}
-                >
-                  {t.quote}
-                </p>
+              <div className="relative z-10 flex items-center flex-col gap-5 p-10 flex-1">
+                <div className="flex gap-1.5">
+                  <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                  <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                  <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                  <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                  <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                </div>
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: 14 }}
-                  className="justify-center"
-                >
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: "50%",
-                      background: t.color,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#fff",
-                      fontSize: "0.8rem",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                    }}
+                  className="quote-icon"
+                  style={{
+                    fontSize: "3rem",
+                    color: "rgba(0,0,0,0.08)",
+                    lineHeight: 1,
+                    fontFamily: "Dm Serif Display",
+                    flexShrink: 0,
+                  }}
+                ></div>
+                <div style={{ flex: 1 }}>
+                  <p
+                    className="text-xl text-gray-900 mb-6 italic text-center"
+                    style={{ lineHeight: 1.7 }}
                   >
-                    {t.avatar}
-                  </div>
-                  <div>
+                    {t.quote}
+                  </p>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 14 }}
+                    className="justify-center"
+                  >
                     <div
                       style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        background: t.color,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#fff",
+                        fontSize: "0.8rem",
                         fontWeight: 700,
-                        fontSize: "0.9rem",
-                        color: "#0f0f12",
+                        flexShrink: 0,
                       }}
                     >
-                      {t.name}
+                      {t.avatar}
                     </div>
-                    <div style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>
-                      {t.role}
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                          fontSize: "0.9rem",
+                          color: "#0f0f12",
+                        }}
+                      >
+                        {t.name}
+                      </div>
+                      <div style={{ fontSize: "0.8rem", color: "#a0a0b0" }}>
+                        {t.role}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </BorderGlow>
           ))}
         </div>
 
