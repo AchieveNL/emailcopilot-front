@@ -54,6 +54,12 @@ function Faqs() {
             <AnimatedItem key={i} index={i} delay={0.05 * i} className="w-full" once={false}>
               <div
                 className="faq-item"
+                style={{
+                  borderBottom:
+                    i === FAQS.length - 1
+                      ? "none"
+                      : "1px solid rgba(0,0,0,0.07)",
+                }}
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
               >
                 <div

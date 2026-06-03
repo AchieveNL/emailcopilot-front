@@ -76,14 +76,12 @@ function Testimonials() {
                 }}
               ></div>
               <div style={{ flex: 1 }}>
-                <ScrollFloat
-                  as="p"
-                  containerClassName="text-xl text-gray-900 mb-6 flex justify-center w-full"
-                  textClassName="text-xl italic text-gray-900 text-center"
+                <p
+                  className="text-xl text-gray-900 mb-6 italic text-center"
                   style={{ lineHeight: 1.7 }}
                 >
                   {t.quote}
-                </ScrollFloat>
+                </p>
                 <div
                   style={{ display: "flex", alignItems: "center", gap: 14 }}
                   className="justify-center"

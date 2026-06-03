@@ -5,6 +5,7 @@
 import React, { useEffect, useMemo, useRef, ReactNode, RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GradientText from "./GradientText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,11 +29,11 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   scrollContainerRef,
   containerClassName = "",
   textClassName = "",
-  animationDuration = 1,
-  ease = "back.inOut(2)",
-  scrollStart = "center bottom+=50%",
-  scrollEnd = "bottom bottom-=40%",
-  stagger = 0.03,
+  animationDuration = 0.2,
+  ease = "power2.out",
+  scrollStart = "top bottom",
+  scrollEnd = "bottom top",
+  stagger = 0.01,
   as = "h2",
   highlightWords = [],
   style,
@@ -41,7 +42,6 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
 
   const splitText = useMemo(() => {
     const text = typeof children === "string" ? children : "";
-    // Split by space, preserving whitespace
     const words = text.split(/(\s+)/);
     let charIndex = 0;
     const elements: React.ReactNode[] = [];
@@ -59,7 +59,6 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
         return;
       }
 
-      // Check if this word matches any word in highlightWords (ignoring case & punctuation)
       const cleanWord = word
         .toLowerCase()
         .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
@@ -69,30 +68,31 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
           h.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""),
       );
 
-      word.split("").forEach((char) => {
-        const idx = charIndex++;
+      if (shouldHighlight) {
         elements.push(
-          <span
-            className={`inline-block word ${
-              shouldHighlight ? "text-transparent bg-clip-text" : ""
-            }`}
-            style={
-              shouldHighlight
-                ? {
-                    WebkitBackgroundClip: "text",
-                    backgroundImage:
-                      "linear-gradient(to right, #4f46e5, #2563eb, #06b6d4, #4f46e5)",
-                    backgroundSize: "300% 100%",
-                    animation: "scrollFloatShimmer 6s linear infinite",
-                  }
-                : {}
-            }
-            key={`char-${idx}`}
+          <GradientText
+            key={`word-wrap-${wordIdx}`}
+            className="word"
+            style={{
+              display: "inline-flex",
+              verticalAlign: "baseline",
+            }}
+            colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+            animationSpeed={3}
           >
-            {char}
-          </span>,
+            {word}
+          </GradientText>,
         );
-      });
+      } else {
+        word.split("").forEach((char) => {
+          const idx = charIndex++;
+          elements.push(
+            <span className="inline-block word" key={`char-${idx}`}>
+              {char}
+            </span>,
+          );
+        });
+      }
     });
 
     return elements;
@@ -114,15 +114,17 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
       {
         willChange: "opacity, transform",
         opacity: 0,
-        yPercent: 120,
-        scaleY: 2.3,
-        scaleX: 0.7,
-        transformOrigin: "50% 0%",
+        x: -30,
+        yPercent: 0,
+        scaleY: 1,
+        scaleX: 1,
+        transformOrigin: "0% 50%",
       },
       {
         duration: animationDuration,
         ease: ease,
         opacity: 1,
+        x: 0,
         yPercent: 0,
         scaleY: 1,
         scaleX: 1,
@@ -131,8 +133,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
           trigger: el,
           scroller,
           start: scrollStart,
-          end: scrollEnd,
-          scrub: true,
+          toggleActions: "play reset complete reset",
         },
       },
     );
@@ -167,8 +168,8 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
     <>
       <style>{`
         @keyframes scrollFloatShimmer {
-          0% { background-position: 0% 50%; }
-          100% { background-position: 300% 50%; }
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
       `}</style>
       <Tag

@@ -23,6 +23,8 @@ interface BorderGlowProps {
   animated?: boolean;
   colors?: string[];
   fillOpacity?: number;
+  showShadow?: boolean | "small";
+  style?: React.CSSProperties;
 }
 
 function hexToHSL(hex: string): { h: number; s: number; l: number } {
@@ -180,6 +182,8 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   animated = false,
   colors = ["#c084fc", "#f472b6", "#38bdf8"],
   fillOpacity = 0.5,
+  showShadow = true,
+  style = {},
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -302,7 +306,12 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
         borderRadius: `${borderRadius}px`,
         transform: "translate3d(0, 0, 0.01px)",
         boxShadow:
-          "rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px",
+          showShadow === "small"
+            ? "0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.05)"
+            : showShadow
+              ? "rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px"
+              : "none",
+        ...style,
       }}
     >
       {/* mesh gradient border */}

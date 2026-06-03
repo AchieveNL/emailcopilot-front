@@ -27,13 +27,10 @@ function Cta() {
           Ready to land new clients?
         </ScrollFloat>
 
-        <ScrollFloat
-          as="p"
-          containerClassName="mb-9 text-base text-white flex justify-center w-full"
-          textClassName="text-base text-white"
-        >
-          Join businesses already using EmailCopilot to generate consistent meetings.
-        </ScrollFloat>
+        <p className="mb-9 text-base text-white">
+          Join businesses already using EmailCopilot to generate consistent
+          meetings.
+        </p>
 
         <Link
           href="#pricing"

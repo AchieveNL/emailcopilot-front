@@ -47,6 +47,7 @@ function Pricing() {
                 key={plan.name}
                 className={`w-full max-w-sm text-${plan.textcolor}`}
                 borderRadius={24}
+                showShadow="small"
                 backgroundColor={
                   plan.tag
                     ? "linear-gradient(221.6deg, #06B6D4 4.2%, #168DE0 49.68%, #2563EB 96.05%)"
@@ -55,9 +56,13 @@ function Pricing() {
                 glowColor={plan.textcolor}
                 glowIntensity={plan.tag ? 0.95 : 0.75}
                 glowRadius={plan.tag ? 50 : 35}
-                colors={plan.tag ? ["#ffffff", "#e0e7ff", "#2563eb"] : ["#6366f1", "#4f46e5", "#3b82f6"]}
+                colors={
+                  plan.tag
+                    ? ["#ffffff", "#e0e7ff", "#2563eb"]
+                    : ["#6366f1", "#4f46e5", "#3b82f6"]
+                }
               >
-                {/* add a dotted bg to the tagged plan */}
+                {/* a dotted bg to the tagged plan */}
 
                 {plan.tag && (
                   <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.15)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
