@@ -37,8 +37,8 @@ function PricingCard() {
       showShadow={false}
       backgroundColor="#ffffff"
       className="w-full"
-      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
-      glowColor="#2563eb"
+      colors={["#4f46e5", "#6366f1", "#4338ca"]}
+      glowColor="#4f46e5"
     >
       <div className="relative z-10 p-5 py-6 flex flex-col gap-5 min-h-[220px] flex-1">
         <div className="flex items-center gap-2">
@@ -199,7 +199,7 @@ function DefineCustomerCard() {
       showShadow={false}
       backgroundColor="#ffffff"
       className="w-full"
-      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+      colors={["#2563eb", "#3b82f6", "#1d4ed8"]}
       glowColor="#2563eb"
     >
       <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
@@ -232,7 +232,7 @@ function AutoOutboundCard() {
       showShadow={false}
       backgroundColor="#ffffff"
       className="w-full"
-      colors={["#4f46e5", "#2563eb", "#06b6d4"]}
+      colors={["#2563eb", "#3b82f6", "#1d4ed8"]}
       glowColor="#2563eb"
     >
       <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
