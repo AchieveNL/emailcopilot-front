@@ -1,6 +1,9 @@
+"use client";
 import { PLANS } from "@/store/hompageData";
 import { CheckCircleIcon } from "lucide-react";
 import Link from "next/link";
+import ScrollFloat from "./ScrollFloat";
+import BorderGlow from "./BorderGlow";
 
 function Pricing() {
   return (
@@ -10,26 +13,23 @@ function Pricing() {
       className="py-20 px-4 z-0 max-w-315 w-full mx-auto"
     >
       <div style={{ margin: "0 auto" }}>
-        <div className="text-center mb-10">
-          <h2
-            className="text-6xl text-gray-900  leading-tight"
-            style={{ fontFamily: "DM Serif Display" }}
+        <div className="text-center mb-10 flex flex-col items-center justify-center">
+          <ScrollFloat
+            as="h2"
+            containerClassName="text-6xl text-gray-900 leading-tight flex justify-center w-full"
+            textClassName="text-6xl leading-tight text-gray-900"
+            highlightWords={["flying"]}
+            style={{ fontFamily: "DM Serif Display", fontWeight: "normal" }}
           >
-            Start{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{
-                backgroundImage:
-                  "linear-gradient(86.91deg, #4f46e5 0%, #2563eb 50%, #06b6d4 100%)",
-              }}
-            >
-              flying
-            </span>{" "}
-            today!
-          </h2>
-          <p className="mt-2 text-gray-500 text-base font-bold">
+            Start flying today!
+          </ScrollFloat>
+          <ScrollFloat
+            as="p"
+            containerClassName="mt-2 text-gray-500 text-base font-bold flex justify-center w-full"
+            textClassName="text-base font-bold text-gray-500"
+          >
             Start as low as €9 /month
-          </p>
+          </ScrollFloat>
         </div>
 
         <div
@@ -43,17 +43,19 @@ function Pricing() {
           {PLANS.map((plan) => {
             const Icon = plan.icon;
             return (
-              <div
+              <BorderGlow
                 key={plan.name}
-                className={`relative w-full max-w-sm rounded-3xl border border-gray-100 shadow-sm flex flex-col overflow-hidden text-${plan.textcolor} `}
-                style={
+                className={`w-full max-w-sm text-${plan.textcolor}`}
+                borderRadius={24}
+                backgroundColor={
                   plan.tag
-                    ? {
-                        background:
-                          "linear-gradient(221.6deg, #06B6D4 4.2%, #168DE0 49.68%, #2563EB 96.05%)",
-                      }
-                    : { background: "white" } // subtle background for non-highlighted plans
+                    ? "linear-gradient(221.6deg, #06B6D4 4.2%, #168DE0 49.68%, #2563EB 96.05%)"
+                    : "#ffffff"
                 }
+                glowColor={plan.textcolor}
+                glowIntensity={plan.tag ? 0.95 : 0.75}
+                glowRadius={plan.tag ? 50 : 35}
+                colors={plan.tag ? ["#ffffff", "#e0e7ff", "#2563eb"] : ["#6366f1", "#4f46e5", "#3b82f6"]}
               >
                 {/* add a dotted bg to the tagged plan */}
 
@@ -150,7 +152,7 @@ function Pricing() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </BorderGlow>
             );
           })}
         </div>

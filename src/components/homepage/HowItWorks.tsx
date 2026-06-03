@@ -1,3 +1,4 @@
+"use client";
 // components/HowItWorks.tsx
 // Requires: DM Sans + DM Mono from Google Fonts (add to your layout or globals.css)
 // Tailwind CSS v4 with the globals.css variables provided
@@ -5,6 +6,8 @@
 import { Send } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import GradientText from "./GradientText";
+import ScrollFloat from "./ScrollFloat";
 
 const avatars = [
   { initials: "A", bg: "bg-indigo-500" },
@@ -364,26 +367,23 @@ export default function HowItWorks() {
 
       <div className="relative mx-auto">
         {/* Heading */}
-        <div className="text-center mb-10">
-          <h2
-            className="text-6xl text-gray-900  leading-tight"
-            style={{ fontFamily: "DM Serif Display" }}
+        <div className="text-center mb-10 flex flex-col items-center justify-center">
+          <ScrollFloat
+            as="h2"
+            containerClassName="text-6xl text-gray-900 leading-tight flex justify-center w-full"
+            textClassName="text-6xl leading-tight text-gray-900"
+            highlightWords={["Copilot"]}
+            style={{ fontFamily: "DM Serif Display", fontWeight: "normal" }}
           >
-            Sit back, let your{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{
-                backgroundImage:
-                  "linear-gradient(86.91deg, #4f46e5 0%, #2563eb 50%, #06b6d4 100%)",
-              }}
-            >
-              Copilot
-            </span>{" "}
-            take over
-          </h2>
-          <p className="mt-2 text-gray-500 text-base font-bold">
+            Sit back, let your Copilot take over
+          </ScrollFloat>
+          <ScrollFloat
+            as="p"
+            containerClassName="mt-2 text-gray-500 text-base font-bold flex justify-center w-full"
+            textClassName="text-base font-bold text-gray-500"
+          >
             Set it. Forget it.
-          </p>
+          </ScrollFloat>
         </div>
 
         {/* Cards grid */}
