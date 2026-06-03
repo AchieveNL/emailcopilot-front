@@ -38,7 +38,7 @@ function PricingCard() {
       backgroundColor="#ffffff"
       className="w-full"
       colors={["#4f46e5", "#2563eb", "#06b6d4"]}
-      glowColor="#4f46e5"
+      glowColor="#2563eb"
     >
       <div className="relative z-10 p-5 py-6 flex flex-col gap-5 min-h-[220px] flex-1">
         <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ function DefineCustomerCard() {
       backgroundColor="#ffffff"
       className="w-full"
       colors={["#4f46e5", "#2563eb", "#06b6d4"]}
-      glowColor="#4f46e5"
+      glowColor="#2563eb"
     >
       <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
         <div className="flex items-center gap-2">
@@ -221,7 +221,7 @@ function AutoOutboundCard() {
       backgroundColor="#ffffff"
       className="w-full"
       colors={["#4f46e5", "#2563eb", "#06b6d4"]}
-      glowColor="#4f46e5"
+      glowColor="#2563eb"
     >
       <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
         <div className="flex items-center gap-2">
@@ -302,7 +302,7 @@ function InboxCard() {
       backgroundColor="#ffffff"
       className="w-full"
       colors={["#4f46e5", "#2563eb", "#06b6d4"]}
-      glowColor="#4f46e5"
+      glowColor="#2563eb"
     >
       <div className="relative z-10 p-5 flex flex-col gap-8 min-h-[220px] flex-1">
         <div className="flex items-center gap-2">

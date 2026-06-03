@@ -52,7 +52,7 @@ function Testimonials() {
               showShadow={false}
               backgroundColor="#ffffff"
               colors={["#4f46e5", "#2563eb", "#06b6d4"]}
-              glowColor="#4f46e5"
+              glowColor="#2563eb"
               style={{
                 position: i === activeTestimonial ? "relative" : "absolute",
                 opacity: i === activeTestimonial ? 1 : 0,
