@@ -142,7 +142,7 @@ export const PLANS = [
         name: "Scale",
         description: "For large teams & agencies",
         icon: Rocket,
-        bgcolor: "#E2E8F0",
+        bgcolor: "#F0FDFF",
         textcolor: "#06B6D4",
         price: "€39",
         estimated: "2,000 emails (~65/days)",

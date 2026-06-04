@@ -4,8 +4,9 @@ import Link from 'next/link'
 
 function Footer() {
     return (
-        <footer style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }} className='max-w-315 w-full m-auto px-6 py-12'>
-            <div className="">
+        // making the footer take the full screen width and ignoring the max-width constraint of the container to ensure it spans edge-to-edge, creating a clear separation from the main content and grounding the design
+        <footer style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }} className='w-full overflow-hidden z-0 px-6 py-12 relative bg-white'>
+            <div className='max-w-315 m-auto'>
                 <div className='flex flex-wrap gap-8 mb-10 items-center justify-center'>
                     <div>
                         <Logo />
