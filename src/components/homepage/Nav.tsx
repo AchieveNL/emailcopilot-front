@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from 'react'
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
-import Link from 'next/dist/client/link'
-import Logo from './Logo';
-import { Menu, X } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import Link from "next/dist/client/link";
+import Logo from "./Logo";
+import { Menu, X } from "lucide-react";
 
 function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,27 +29,45 @@ function Nav() {
         }
 
         .btn-main {
+
           display: inline-flex; align-items: center; gap: 8px;
           padding: 14px 28px; border-radius: 12px;
           font-size: 0.9rem; font-weight: 600; cursor: pointer;
-          transition: all 0.2s; text-decoration: none; border: none;
+          transition: all 0.4s; text-decoration: none; border: 1px solid transparent;
         }
-        .btn-cta {
-          background: var(--btn-gradient); color: #fafafa;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-        }
-        .btn-cta:hover {
-  background: linear-gradient(86.91deg, #3730a3 0.01%, #1d4ed8 49.66%, #0891b2 99.31%);
-  box-shadow: 0 6px 32px rgba(79, 70, 229, 0.45);
-  transform: translateY(-1px);
+@keyframes gradientFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-cta {
+  background: var(--btn-gradient);
+  background-size: 200% 200%;
+  color: var(--btn-text-color);
+}
+.btn-cta:hover {
+  animation: gradientFlow 2s ease infinite;
+  background-image: linear-gradient(
+    86.91deg,
+    var(--color-primary),
+    var(--color-secondary),
+    var(--color-light),
+    var(--color-primary-dark),
+    var(--color-primary)
+  );
+  background-size: 300% 300%;
+  border: 1px solid transparent;
+  color: var(--btn-text-color);
 }
         .btn-outline {
           background: transparent; color: var(--btn-outline-color);
           border: 1.5px solid var(--btn-outline-color);
         }
         .btn-outline:hover {
-          background: rgba(0,0,0,0.04);
-          border-color: rgba(0,0,0,0.25);
+         background: var(--btn-gradient); color: #fafafa;
+         
+          border: 1px solid transparent
         }
 
         .feature-card {
@@ -342,24 +360,53 @@ function Nav() {
       `}</style>
 
       {/* ── Nav ── */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        padding: "0 1.5rem",
-        transition: "all 0.3s",
-        marginBottom: "66px",
-        ...(scrolled ? {} : { background: "transparent", borderBottom: "1px solid transparent" }),
-      }} className={scrolled ? "nav-blur" : ""}>
-        <div className="max-w-[1100px] mx-auto flex items-center justify-between" style={{ height: 64 }}>
+      <nav
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          padding: "0 1.5rem",
+          transition: "all 0.3s",
+          marginBottom: "66px",
+          ...(scrolled
+            ? {}
+            : {
+                background: "transparent",
+                borderBottom: "1px solid transparent",
+              }),
+        }}
+        className={scrolled ? "nav-blur" : ""}
+      >
+        <div
+          className="max-w-[1100px] mx-auto flex items-center justify-between"
+          style={{ height: 64 }}
+        >
           <Logo />
 
-          <div style={{ display: "flex", gap: 28, alignItems: "center" }} className="nav-links">
+          <div
+            style={{ display: "flex", gap: 28, alignItems: "center" }}
+            className="nav-links"
+          >
             {[
               { label: "How it works", href: "#how-it-works" },
               { label: "Testimonials", href: "#testimonials" },
               { label: "Pricing", href: "#pricing" },
               { label: "FAQs", href: "#faqs" },
             ].map((l) => (
-              <a key={l.label} href={l.href} style={{ fontSize: "0.875rem", color: "#52525e", textDecoration: "none", fontWeight: 500 }}>{l.label}</a>
+              <a
+                key={l.label}
+                href={l.href}
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#52525e",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
+              >
+                {l.label}
+              </a>
             ))}
           </div>
 
@@ -373,20 +420,33 @@ function Nav() {
           </button>
 
           {/* Desktop Auth Buttons */}
-          <div style={{ alignItems: "center", gap: 12 }} className="nav-buttons hidden md:flex">
+          <div
+            style={{ alignItems: "center", gap: 12 }}
+            className="nav-buttons hidden md:flex"
+          >
             <Show when="signed-out">
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <SignInButton>
-                  <button className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                  <button
+                    className="btn-main btn-outline "
+                    style={{ padding: "9px 20px", fontSize: "0.85rem" }}
+                  >
                     Sign In
                   </button>
                 </SignInButton>
                 <SignUpButton>
-                  <button className="btn-main btn-outline" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                  <button
+                    className="btn-main btn-outline "
+                    style={{ padding: "9px 20px", fontSize: "0.85rem" }}
+                  >
                     Sign Up
                   </button>
                 </SignUpButton>
-                <Link href="#pricing" className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                <Link
+                  href="#pricing"
+                  className="btn-main btn-cta "
+                  style={{ padding: "9px 20px", fontSize: "0.85rem" }}
+                >
                   Get started →
                 </Link>
               </div>
@@ -394,7 +454,11 @@ function Nav() {
             <Show when="signed-in">
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <UserButton />
-                <Link href="/dashboard" className="btn-main btn-cta" style={{ padding: "9px 20px", fontSize: "0.85rem" }}>
+                <Link
+                  href="/dashboard"
+                  className="btn-main btn-cta"
+                  style={{ padding: "9px 20px", fontSize: "0.85rem" }}
+                >
                   Dashboard →
                 </Link>
               </div>
@@ -419,16 +483,18 @@ function Nav() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div style={{
-          position: "fixed",
-          top: 64,
-          left: 0,
-          right: 0,
-          background: "#fafafa",
-          zIndex: 45,
-          padding: "1.5rem",
-          borderBottom: "1px solid rgba(0,0,0,0.07)",
-        }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 64,
+            left: 0,
+            right: 0,
+            background: "#fafafa",
+            zIndex: 45,
+            padding: "1.5rem",
+            borderBottom: "1px solid rgba(0,0,0,0.07)",
+          }}
+        >
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
               { label: "How it works", href: "#how-it-works" },
@@ -440,30 +506,80 @@ function Nav() {
                 key={l.label}
                 href={l.href}
                 onClick={() => setMobileMenuOpen(false)}
-                style={{ fontSize: "0.875rem", color: "#52525e", textDecoration: "none", fontWeight: 500, padding: "10px 0" }}
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#52525e",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  padding: "10px 0",
+                }}
               >
                 {l.label}
               </a>
             ))}
-            <div style={{ borderTop: "1px solid rgba(0,0,0,0.07)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div
+              style={{
+                borderTop: "1px solid rgba(0,0,0,0.07)",
+                paddingTop: 12,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
               <Show when="signed-out">
                 <SignInButton>
-                  <button className="btn-main btn-outline" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                  <button
+                    className="btn-main btn-outline"
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      padding: "10px 20px",
+                      fontSize: "0.85rem",
+                    }}
+                  >
                     Sign In
                   </button>
                 </SignInButton>
                 <SignUpButton>
-                  <button className="btn-main btn-outline" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                  <button
+                    className="btn-main btn-outline"
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      padding: "10px 20px",
+                      fontSize: "0.85rem",
+                    }}
+                  >
                     Sign Up
                   </button>
                 </SignUpButton>
-                <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="btn-main btn-cta" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                <Link
+                  href="#pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="btn-main btn-cta"
+                  style={{
+                    width: "100%",
+                    justifyContent: "center",
+                    padding: "10px 20px",
+                    fontSize: "0.85rem",
+                  }}
+                >
                   Get started →
                 </Link>
               </Show>
               <Show when="signed-in">
                 <UserButton />
-                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="btn-main btn-cta" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", fontSize: "0.85rem" }}>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="btn-main btn-cta"
+                  style={{
+                    width: "100%",
+                    justifyContent: "center",
+                    padding: "10px 20px",
+                    fontSize: "0.85rem",
+                  }}
+                >
                   Dashboard →
                 </Link>
               </Show>
@@ -472,7 +588,7 @@ function Nav() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Nav
+export default Nav;
