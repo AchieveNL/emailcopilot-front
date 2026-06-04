@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import ScrollFloat from "./ScrollFloat";
 
 function Cta() {
   return (
@@ -19,9 +20,12 @@ function Cta() {
 
       {/* Content */}
       <div className="relative z-10">
-        <h2 className="mb-4 font-serif text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-[-0.02em] text-[#fafafa]">
+        <ScrollFloat
+          containerClassName="mb-4 font-serif text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-[-0.02em] text-[#fafafa] flex justify-center"
+          textClassName="font-serif text-[#fafafa]"
+        >
           Ready to land new clients?
-        </h2>
+        </ScrollFloat>
 
         <p className="mb-9 text-base text-white">
           Join businesses already using EmailCopilot to generate consistent
