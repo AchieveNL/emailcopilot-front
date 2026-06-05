@@ -43,6 +43,7 @@ export default function HeroSection() {
                 height: "250px",
                 position: "relative",
                 transform: "rotateY(-32px)",
+                opacity: 0.1,
               }}
             >
               <Threads
