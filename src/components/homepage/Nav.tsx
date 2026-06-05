@@ -380,7 +380,7 @@ function Nav() {
         className={scrolled ? "nav-blur" : ""}
       >
         <div
-          className="max-w-[1100px] mx-auto flex items-center justify-between"
+          className="container mx-auto flex items-center justify-between"
           style={{ height: 64 }}
         >
           <Logo />
