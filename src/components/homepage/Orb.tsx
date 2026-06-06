@@ -1,6 +1,6 @@
-"use client"
-import { Mesh, Program, Renderer, Triangle, Vec3 } from 'ogl';
-import { useEffect, useRef } from 'react';
+"use client";
+import { Mesh, Program, Renderer, Triangle, Vec3 } from "ogl";
+import { useEffect, useRef } from "react";
 
 interface OrbProps {
   hue?: number;
@@ -15,7 +15,7 @@ export default function Orb({
   hoverIntensity = 0.2,
   rotateOnHover = true,
   forceHoverState = false,
-  backgroundColor = '#000000'
+  backgroundColor = "#fafafa",
 }: OrbProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
 
@@ -40,6 +40,7 @@ export default function Orb({
     uniform float rot;
     uniform float hoverIntensity;
     uniform vec3 backgroundColor;
+    uniform float bgAlpha;
     varying vec2 vUv;
 
     vec3 rgb2yiq(vec3 c) {
@@ -132,14 +133,14 @@ export default function Orb({
       float len = length(uv);
       float invLen = len > 0.0 ? 1.0 / len : 0.0;
       
-      float bgLuminance = dot(backgroundColor, vec3(0.299, 0.587, 0.114));
+      float bgLuminance = dot(backgroundColor, vec3(0.299, 0.587, 0.114)) * bgAlpha;
       
       float n0 = snoise3(vec3(uv * noiseScale, iTime * 0.5)) * 0.5 + 0.5;
       float r0 = mix(mix(innerRadius, 1.0, 0.4), mix(innerRadius, 1.0, 0.6), n0);
       float d0 = distance(uv, (r0 * invLen) * uv);
       float v0 = light1(1.0, 10.0, d0);
 
-      v0 *= smoothstep(r0 * 1.05, r0, len);
+      v0 *= smoothstep(r0, r0 - 0.01, len);
       float innerFade = smoothstep(r0 * 0.8, r0 * 0.95, len);
       v0 *= mix(innerFade, 1.0, bgLuminance * 0.7);
       float cl = cos(ang + iTime * 2.0) * 0.5 + 0.5;
@@ -160,8 +161,9 @@ export default function Orb({
       darkCol = (darkCol + v1) * v2 * v3;
       darkCol = clamp(darkCol, 0.0, 1.0);
       
+      // Only blend toward background if bgAlpha > 0 (not transparent)
       vec3 lightCol = (colBase + v1) * mix(1.0, v2 * v3, fadeAmount);
-      lightCol = mix(backgroundColor, lightCol, v0);
+      lightCol = mix(lightCol, mix(backgroundColor, lightCol, v0), bgAlpha);
       lightCol = clamp(lightCol, 0.0, 1.0);
       
       vec3 finalCol = mix(darkCol, lightCol, bgLuminance);
@@ -188,7 +190,9 @@ export default function Orb({
     void main() {
       vec2 fragCoord = vUv * iResolution.xy;
       vec4 col = mainImage(fragCoord);
-      gl_FragColor = vec4(col.rgb * col.a, col.a);
+      // When bgAlpha is 0 (transparent bg), keep the orb's natural alpha without darkening edges
+      float orbAlpha = col.a * mix(col.a, 1.0, bgAlpha);
+      gl_FragColor = vec4(col.rgb * orbAlpha, orbAlpha);
     }
   `;
 
@@ -202,20 +206,28 @@ export default function Orb({
     container.appendChild(gl.canvas);
 
     const geometry = new Triangle(gl);
+
+    const { vec: bgVec, alpha: bgA } = hexToVec3(backgroundColor);
+
     const program = new Program(gl, {
       vertex: vert,
       fragment: frag,
       uniforms: {
         iTime: { value: 0 },
         iResolution: {
-          value: new Vec3(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
+          value: new Vec3(
+            gl.canvas.width,
+            gl.canvas.height,
+            gl.canvas.width / gl.canvas.height,
+          ),
         },
         hue: { value: hue },
         hover: { value: 0 },
         rot: { value: 0 },
         hoverIntensity: { value: hoverIntensity },
-        backgroundColor: { value: hexToVec3(backgroundColor) }
-      }
+        backgroundColor: { value: bgVec },
+        bgAlpha: { value: bgA },
+      },
     });
 
     const mesh = new Mesh(gl, { geometry, program });
@@ -226,11 +238,15 @@ export default function Orb({
       const width = container.clientWidth;
       const height = container.clientHeight;
       renderer.setSize(width * dpr, height * dpr);
-      gl.canvas.style.width = width + 'px';
-      gl.canvas.style.height = height + 'px';
-      program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+      gl.canvas.style.width = width + "px";
+      gl.canvas.style.height = height + "px";
+      program.uniforms.iResolution.value.set(
+        gl.canvas.width,
+        gl.canvas.height,
+        gl.canvas.width / gl.canvas.height,
+      );
     }
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
     resize();
 
     let targetHover = 0;
@@ -261,8 +277,8 @@ export default function Orb({
       targetHover = 0;
     };
 
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("mouseleave", handleMouseLeave);
 
     let rafId: number;
     const update = (t: number) => {
@@ -273,14 +289,18 @@ export default function Orb({
       program.uniforms.hue.value = hue;
       program.uniforms.hoverIntensity.value = hoverIntensity;
 
+      const { vec: bgVecUpdate, alpha: bgAUpdate } = hexToVec3(backgroundColor);
+      program.uniforms.backgroundColor.value = bgVecUpdate;
+      program.uniforms.bgAlpha.value = bgAUpdate;
+
       const effectiveHover = forceHoverState ? 1 : targetHover;
-      program.uniforms.hover.value += (effectiveHover - program.uniforms.hover.value) * 0.1;
+      program.uniforms.hover.value +=
+        (effectiveHover - program.uniforms.hover.value) * 0.1;
 
       if (rotateOnHover && effectiveHover > 0.5) {
         currentRot += dt * rotationSpeed;
       }
       program.uniforms.rot.value = currentRot;
-      program.uniforms.backgroundColor.value = hexToVec3(backgroundColor);
 
       renderer.render({ scene: mesh });
     };
@@ -288,18 +308,18 @@ export default function Orb({
 
     return () => {
       cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', resize);
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener("resize", resize);
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", handleMouseLeave);
       container.removeChild(gl.canvas);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor]);
 
   return <div ref={ctnDom} className="w-full h-full" />;
 }
 
-function hslToRgb(h: number, s: number, l: number) {
+function hslToRgb(h: number, s: number, l: number): Vec3 {
   let r, g, b;
 
   if (s === 0) {
@@ -324,26 +344,60 @@ function hslToRgb(h: number, s: number, l: number) {
   return new Vec3(r, g, b);
 }
 
-function hexToVec3(color: string) {
-  if (color.startsWith('#')) {
-    const r = parseInt(color.slice(1, 3), 16) / 255;
-    const g = parseInt(color.slice(3, 5), 16) / 255;
-    const b = parseInt(color.slice(5, 7), 16) / 255;
-    return new Vec3(r, g, b);
+// Returns both the RGB vector and the alpha value so transparent is handled correctly
+function hexToVec3(color: string): { vec: Vec3; alpha: number } {
+  // Handle transparent keyword — return black with alpha 0
+  if (!color || color === "transparent") {
+    return { vec: new Vec3(0, 0, 0), alpha: 0 };
   }
 
-  const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  // Handle hex colors (#rrggbb or #rgb)
+  if (color.startsWith("#")) {
+    let hex = color.slice(1);
+    // Expand shorthand #rgb → #rrggbb
+    if (hex.length === 3) {
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
+    }
+    const r = parseInt(hex.slice(0, 2), 16) / 255;
+    const g = parseInt(hex.slice(2, 4), 16) / 255;
+    const b = parseInt(hex.slice(4, 6), 16) / 255;
+    // 8-digit hex has alpha (#rrggbbaa)
+    const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
+    return { vec: new Vec3(r, g, b), alpha: a };
+  }
+
+  // Handle rgba(r, g, b, a) and rgb(r, g, b)
+  const rgbMatch = color.match(
+    /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/,
+  );
   if (rgbMatch) {
-    return new Vec3(parseInt(rgbMatch[1]) / 255, parseInt(rgbMatch[2]) / 255, parseInt(rgbMatch[3]) / 255);
+    return {
+      vec: new Vec3(
+        parseInt(rgbMatch[1]) / 255,
+        parseInt(rgbMatch[2]) / 255,
+        parseInt(rgbMatch[3]) / 255,
+      ),
+      alpha: rgbMatch[4] !== undefined ? parseFloat(rgbMatch[4]) : 1,
+    };
   }
 
-  const hslMatch = color.match(/hsla?\((\d+),\s*(\d+)%,\s*(\d+)%/);
+  // Handle hsla(h, s%, l%, a) and hsl(h, s%, l%)
+  const hslMatch = color.match(
+    /hsla?\((\d+),\s*(\d+)%,\s*(\d+)%(?:,\s*([\d.]+))?\)/,
+  );
   if (hslMatch) {
     const h = parseInt(hslMatch[1]) / 360;
     const s = parseInt(hslMatch[2]) / 100;
     const l = parseInt(hslMatch[3]) / 100;
-    return hslToRgb(h, s, l);
+    return {
+      vec: hslToRgb(h, s, l),
+      alpha: hslMatch[4] !== undefined ? parseFloat(hslMatch[4]) : 1,
+    };
   }
 
-  return new Vec3(0, 0, 0);
+  // Fallback — treat as opaque black
+  return { vec: new Vec3(0, 0, 0), alpha: 1 };
 }
