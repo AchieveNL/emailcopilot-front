@@ -127,6 +127,16 @@ export const billingApi = {
     api.put("/billing/payment-method", data),
 };
 
+// ─── Leads ────────────────────────────────────────────────────────────────────
+// Schema: leads — status: "sent"|"opened"|"replied"|"bounced"
+// GET /leads?status=sent&page=1&limit=20 → { data: Lead[], meta: PaginatedMeta }
+
+export const leadsApi = {
+  getAll: (params?: { status?: string; page?: number; limit?: number }) =>
+    api.get("/leads", { params }),
+  getById: (id: number) => api.get(`/leads/${id}`),
+};
+
 export const usersApi = {
   create: (data: Record<string, unknown>) => api.post("/users", data),
   getById: (id: number) => api.get(`/users/${id}`),
