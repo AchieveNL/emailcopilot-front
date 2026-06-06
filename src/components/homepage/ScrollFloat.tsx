@@ -84,14 +84,24 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
           </GradientText>,
         );
       } else {
-        word.split("").forEach((char) => {
+        const charElements = word.split("").map((char) => {
           const idx = charIndex++;
-          elements.push(
+          return (
             <span className="inline-block word" key={`char-${idx}`}>
               {char}
-            </span>,
+            </span>
           );
         });
+
+        // Wrap the characters of the word in an inline-block container
+        elements.push(
+          <span
+            className="inline-block whitespace-nowrap"
+            key={`word-wrap-${wordIdx}`}
+          >
+            {charElements}
+          </span>,
+        );
       }
     });
 
