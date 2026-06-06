@@ -27,13 +27,13 @@ export default function HeroSection() {
         <div className="flex  justify-center lg:justify-end overflow-visible">
           <div className="w-full relative max-w-[420px] sm:max-w-[500px] lg:max-w-[560px]">
             {/* Decorative floating orb */}
-            <div className="absolute top-1/4 -right-16 lg:top-1/4  w-90 h-90 -translate-y-1/2  pointer-events-none z-0">
+            <div className="absolute top-1/4 -right-16 lg:top-1/4 w-90 h-90 md:w-100 md:h-100 -translate-y-1/2  pointer-events-none z-0">
               <Orb
-                hoverIntensity={2}
+                hoverIntensity={3.49}
                 rotateOnHover
-                hue={78}
+                hue={0}
                 forceHoverState={false}
-                backgroundColor="transparent"
+                backgroundColor={"transparent"}
               />
             </div>
             <HeroVisuals />
@@ -42,10 +42,11 @@ export default function HeroSection() {
                 width: "100%",
                 height: "250px",
                 position: "relative",
-                transform: "rotateY(-32px)",
+
                 opacity: 0.1,
               }}
             >
+              <div className="absolute z-9999999999 right-0 h-full w-1/2 bg-linear-to-l from-primary-light to-transparent" />
               <Threads
                 amplitude={2.7}
                 distance={0}

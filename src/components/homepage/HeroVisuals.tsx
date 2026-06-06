@@ -1,5 +1,4 @@
 import { TrendingUp } from "lucide-react";
-import Image from "next/image";
 
 function HeroVisuals() {
   return (
@@ -30,7 +29,7 @@ function HeroVisuals() {
         <img
           src="/dashboard.png"
           alt="EmailCopilot Dashboard"
-          className="w-full h-auto rounded-xl sm:rounded-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.08)] animate-[floatA_5s_ease-in-out_infinite] block object-contain"
+          className="w-full h-auto rounded-xl sm:rounded-[20px]  animate-[floatA_5s_ease-in-out_infinite] block object-contain"
         />
       </div>
 
