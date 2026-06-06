@@ -173,8 +173,12 @@ export default function TemplatesPage() {
                 <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" placeholder="Quick question about {{companyName}}" value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Body <span className="text-gray-400 font-normal ml-1">Use {"{{variable}}"} for dynamic fields</span></label>
-                <textarea className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none" rows={8} placeholder="Hi {{firstName}},&#10;&#10;I noticed that {{companyName}} ..." value={form.body} onChange={e => setForm({ ...form, body: e.target.value })} />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Body <span className="text-gray-400 font-normal ml-1">Use {"{{variable}}"} for dynamic fields, {"{{ companyName }}"}
+                  {"{{email}}"}
+                  {"{{website}}"}
+                  {"{{phone}}"}
+                  {"{{senderName}}"}</span></label>
+                <textarea className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none" rows={8} placeholder="Hi {{companyName}},&#10;&#10;I noticed that {{website}} ..." value={form.body} onChange={e => setForm({ ...form, body: e.target.value })} />
               </div>
             </div>
             <div className="flex gap-3 mt-6">
