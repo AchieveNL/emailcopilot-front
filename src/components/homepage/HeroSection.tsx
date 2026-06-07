@@ -11,7 +11,7 @@ export default function HeroSection() {
         grid grid-cols-1 lg:grid-cols-2 items-start gap-10 lg:gap-6
         max-w-315 mx-auto w-full
         px-5 sm:px-6 lg:px-4
-        pt-10 pb-10 mt-6
+        pt-10 pb-0 mt-6
         sm:pt-16 sm:pb-14 sm:mt-10
         lg:pt-20 lg:pb-15
         min-h-[calc(100vh-73px)] lg:min-h-auto
@@ -37,15 +37,7 @@ export default function HeroSection() {
               />
             </div>
             <HeroVisuals />
-            <div
-              style={{
-                width: "100%",
-                height: "250px",
-                position: "relative",
-
-                opacity: 0.1,
-              }}
-            >
+            <div className="w-full relative h-54 sm:h-62 opacity-10 ">
               <div className="absolute z-9999999999 right-0 h-full w-1/2 bg-linear-to-l from-primary-light to-transparent" />
               <Threads
                 amplitude={2.7}
