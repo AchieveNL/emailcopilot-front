@@ -55,7 +55,7 @@ function HeroCopy() {
       {/* Headline */}
       <h1
         className="
-        text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08]  font-bold
+        text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08]  font-medium
         tracking-[-0.03em] mb-2 sm:mb-2.5 font-serif text-[#0f0f12]
       "
       >
