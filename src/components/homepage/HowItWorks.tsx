@@ -129,7 +129,7 @@ function PricingCard() {
           </ul>
 
           <Link
-            href="/sign-up"
+            href="#pricing"
             className="mt-4 w-full py-2.5 rounded-xl border-[1.5px] border-indigo-200 bg-indigo-50 text-indigo-600 text-[13px] font-semibold flex items-center justify-center gap-1.5 hover:bg-indigo-100 transition-colors"
           >
             Subscribe now →
