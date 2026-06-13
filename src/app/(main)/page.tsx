@@ -9,7 +9,15 @@ import Ribbons from "@/components/homepage/Ribbons";
 
 export default function HomePage() {
   return (
-    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: "#fafafa", color: "#0f0f12", overflowX: "hidden" }} className="flex flex-col gap-0 items-center relative">
+    <div
+      style={{
+        fontFamily: "'DM Sans', system-ui, sans-serif",
+        background: "#fafafa",
+        color: "#0f0f12",
+        overflowX: "hidden",
+      }}
+      className="flex flex-col gap-0 items-center relative"
+    >
       <div className="fixed inset-0 pointer-events-none z-[9999]">
         <Ribbons
           colors={["#4f46e5", "#2563eb", "#06b6d4"]}
@@ -23,19 +31,14 @@ export default function HomePage() {
         />
       </div>
 
-
       {/* ── Hero ── */}
       <HeroSection />
       <TrustedTeams />
       <HowItWorks />
 
-
-
       {/* ── Testimonials ── */}
 
       <Testimonials />
-
-
 
       {/* ── Pricing ── */}
       <Pricing />
@@ -45,7 +48,6 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <Cta />
-
     </div>
   );
 }

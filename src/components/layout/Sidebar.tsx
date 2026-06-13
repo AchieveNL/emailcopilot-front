@@ -27,7 +27,11 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/copilots", label: "Copilots", icon: Send },
   { href: "/dashboard/email-profiles", label: "Email Accounts", icon: Mail },
-  { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database },
+  {
+    href: "/dashboard/scrape-profiles",
+    label: "Scrape Profiles",
+    icon: Database,
+  },
   { href: "/dashboard/templates", label: "Email templates", icon: FileText },
   /* { href: "/dashboard/leads", label: "Leads", icon: Users }, */
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
@@ -37,13 +41,11 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  //get user from Clerk to show in sidebar 
-  const { user } = useUser()
+  //get user from Clerk to show in sidebar
+  const { user } = useUser();
   console.log("User in Sidebar:", user); // Debugging line to check user object
-
-  const {
-    limits,
-  } = useBilling();
+  console.log("pathname in Sidebar:", pathname); // Debugging line to check pathname value
+  const { limits } = useBilling();
   console.log("Limits in Sidebar:", limits); // Debugging line to check limits value
   return (
     <>
@@ -55,13 +57,17 @@ export default function Sidebar() {
 
             <div className="flex flex-col items-center justify-center h-48 text-gray-400">
               <AlertTriangle size={48} className="mb-4" />
-              <p className="text-center">No active subscription found. Please choose a plan to access the dashboard.</p>
-              <Link href={"/dashboard/billing"} className="mt-4 inline-block bg-gray-900 text-white rounded-lg py-2 px-4 font-medium hover:bg-gray-700 transition-colors">
+              <p className="text-center">
+                No active subscription found. Please choose a plan to access the
+                dashboard.
+              </p>
+              <Link
+                href={"/dashboard/billing"}
+                className="mt-4 inline-block bg-gray-900 text-white rounded-lg py-2 px-4 font-medium hover:bg-gray-700 transition-colors"
+              >
                 View Plans
               </Link>
             </div>
-
-
           </div>
           <UserCard user={user} isActive={false} />
         </aside>
@@ -69,11 +75,12 @@ export default function Sidebar() {
         <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
           <div>
             {/* Logo */}
-            <Logo />
 
+            <Logo />
+            <hr className="w-full border-gray-200 mb-6" />
 
             {/* Create Button */}
-            <div className="px-4 mb-4">
+            {/* <div className="px-4 mb-4">
               <Link
                 href="/dashboard/copilots/new"
                 className="w-full bg-gray-900 text-white rounded-lg py-2.5 px-4 font-medium flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors text-sm"
@@ -81,12 +88,15 @@ export default function Sidebar() {
                 <Plus size={15} />
                 Create New Copilot
               </Link>
-            </div>
+            </div> */}
 
             {/* Nav */}
             <nav className="px-3 space-y-0.5">
               {navItems.map(({ href, label, icon: Icon }) => {
-                const active = pathname === href || pathname.startsWith(href + "/");
+                const active =
+                  href === "/dashboard"
+                    ? pathname === href
+                    : pathname.startsWith(href + "/");
                 return (
                   <Link
                     key={href}
@@ -94,12 +104,15 @@ export default function Sidebar() {
                     className={clsx(
                       "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
                       active
-                        ? "bg-gray-100 text-gray-900 font-semibold"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon size={16} className={active ? "text-gray-800" : "text-gray-400"} />
+                      <Icon
+                        size={16}
+                        className={active ? "text-primary" : "text-gray-400"}
+                      />
                       <span className="font-medium">{label}</span>
                     </div>
                   </Link>
@@ -109,7 +122,6 @@ export default function Sidebar() {
           </div>
 
           <UserCard user={user} isActive={true} />
-
         </aside>
       )}
     </>

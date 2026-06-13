@@ -3,69 +3,110 @@
 import { Check } from "lucide-react";
 import clsx from "clsx";
 import { useCopilotStore, type Step } from "@/store/copilotStore";
+import { SlidersVertical, Mail, Crosshair,FileText,CalendarDays,Plane } from "lucide-react";
 
 const steps = [
-  { id: 1, label: "Settings", sub: "Configure your copilot" },
-  { id: 2, label: "Email Profile", sub: "Choose who's sending" },
-  { id: 3, label: "Scrape Profile", sub: "Choose what to scrape" },
-  { id: 4, label: "Launch", sub: "Review and start sending" },
+  { id: 1, label: "Setup", sub: "Configure your copilot" ,icon: <SlidersVertical size={16} /> },
+  { id: 2, label: "Email accounts", sub: "Choose who's sending",icon:<Mail size={16} /> },
+  { id: 3, label: "Target profile", sub: "Choose who to reach",icon:<Crosshair size={16} /> },
+  { id: 4, label: "Email Template", sub: "Create you message",icon:<FileText size={16} /> },
+  { id: 5, label: "Schedule", sub: "Choose when to send",icon:<CalendarDays size={16} /> },
+  { id: 6, label: "Take-off", sub: "Review and launch",icon:<Plane size={16} /> },
 ];
 
 export default function Stepper() {
   const { currentStep, setStep } = useCopilotStore();
 
-  const progressWidth = `${((currentStep - 1) / (steps.length - 1)) * 100}%`;
-
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+    <div className=" py-6 mb-6">
       <div className="flex items-start justify-between relative">
-        {/* Background line */}
-        <div className="absolute top-4 left-0 right-0 h-px bg-gray-200 -z-10" />
-        {/* Progress line */}
-        <div
-          className="absolute top-4 left-0 h-0.5 bg-gray-900 -z-10 transition-all duration-500"
-          style={{ width: progressWidth }}
-        />
-
-        {steps.map((step) => {
+        {steps.map((step, idx) => {
           const done = currentStep > step.id;
           const active = currentStep === step.id;
+          const isLast = idx === steps.length - 1;
 
           return (
-            <button
-              key={step.id}
-              onClick={() => {
-                if (step.id <= currentStep) setStep(step.id as Step);
-              }}
-              className={clsx(
-                "flex flex-col items-start bg-white pr-4 last:pr-0",
-                step.id <= currentStep ? "cursor-pointer" : "cursor-default"
-              )}
-            >
-              <div className="flex items-center gap-2.5 mb-1">
+            <div key={step.id} className="flex items-start flex-1 last:flex-none">
+              <button
+                onClick={() => {
+                  if (step.id <= currentStep) setStep(step.id as Step);
+                }}
+                className={clsx(
+                  "flex flex-col items-center text-center",
+                  step.id <= currentStep ? "cursor-pointer" : "cursor-default"
+                )}
+              >
+                <div className="flex items-center  gap-2">
                 <div
                   className={clsx(
-                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all",
+                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all",
                     done
-                      ? "bg-gray-900 text-white"
+                      ? "text-white"
                       : active
-                      ? "bg-gray-900 text-white"
-                      : "bg-gray-100 text-gray-500 border border-gray-200"
+                      ? "border"
+                      : "bg-white text-gray-900 border border-gray-200"
                   )}
+                  style={
+                    done
+                      ? { backgroundColor: "var(--color-primary)" }
+                      : active
+                      ? {
+                          borderColor: "var(--color-primary)",
+                          backgroundColor: "var(--color-primary)",
+                          color: "white",
+                        }
+                      : undefined
+                  }
                 >
-                  {done ? <Check size={14} strokeWidth={3} /> : step.id}
+                  {done ? <Check size={16} strokeWidth={3} /> : step. id}
                 </div>
+                <div
+                  className={clsx(
+                    "w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all",
+                    done
+                      ? "text-white"
+                      : active
+                      ? "border"
+                      : "bg-white text-gray-900 border border-gray-200"
+                  )}
+                  style={
+                    done
+                      ? { backgroundColor: "var(--color-primary)" }
+                      : active
+                      ? {
+                          borderColor: "var(--color-primary)",
+                          backgroundColor: "var(--color-primary-light)",
+                          color: "var(--color-primary)",
+                        }
+                      : undefined
+                  }
+                >
+                  {done ? <Check size={16} strokeWidth={3} /> : step.icon}
+                </div>
+
+                </div>
+
                 <span
                   className={clsx(
-                    "text-sm font-semibold",
-                    active ? "text-gray-900" : done ? "text-gray-700" : "text-gray-400"
+                    "text-sm font-semibold mt-2 whitespace-nowrap",
+                    active
+                      ? "text-[var(--color-primary)]"
+                      : done
+                      ? "text-gray-700"
+                      : "text-gray-900"
                   )}
                 >
                   {step.label}
                 </span>
-              </div>
-              <span className="text-xs text-gray-400 ml-10">{step.sub}</span>
-            </button>
+                <span className="text-xs text-gray-400 mt-0.5 whitespace-nowrap">
+                  {step.sub}
+                </span>
+              </button>
+
+              {!isLast && (
+                <div className="flex-1 h-px bg-gray-200 mt-[18px] mx-3" />
+              )}
+            </div>
           );
         })}
       </div>

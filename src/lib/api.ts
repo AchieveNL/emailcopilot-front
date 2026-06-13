@@ -1,7 +1,8 @@
 import axios from "axios";
-
+import { getToken } from "@clerk/nextjs";
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -9,11 +10,20 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response) => response,
+
+  async (response) => {
+    const token = await getToken();
+
+    if (token) {
+      response.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return response;
+  },
   (error) => {
     console.error("API Error:", error);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
@@ -70,7 +80,7 @@ export const copilotsApi = {
   delete: (id: number) => api.delete(`/copilots/${id}`),
   updateStatus: (
     id: number,
-    status: "draft" | "active" | "paused" | "archived" | "running"  // matches copilotStatusEnum
+    status: "draft" | "active" | "paused" | "archived" | "running", // matches copilotStatusEnum
   ) => api.patch(`/copilots/${id}/status`, { status }),
   run: (id: number) => api.post(`/copilots/${id}/run`),
 };
@@ -142,8 +152,6 @@ export const usersApi = {
   getById: (id: number) => api.get(`/users/${id}`),
   delete: (id: number) => api.delete(`/users/${id}`),
   getCurrent: () => api.get("/users"),
-  updateUser: (
-    id: number,
-    data: Record<string, unknown>
-  ) => api.put(`/users/${id}`, data),
+  updateUser: (id: number, data: Record<string, unknown>) =>
+    api.put(`/users/${id}`, data),
 };

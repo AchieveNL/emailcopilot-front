@@ -8,13 +8,14 @@ export type Step = 1 | 2 | 3 | 4;
 export interface CopilotData {
   name: string;
   description: string;
+  goal: string;
   emailProfileId: number | null;
   scrapeProfileId: number | null;
   templateId: number | null;
   sendLimit: number;
   settings: {
     schedule: {
-      "runAt": string; // ISO string, e.g. "2024-06-01T09:00:00Z"
+      runAt: string; // ISO string, e.g. "2024-06-01T09:00:00Z"
     };
     sendingSpeed: string;
     timezone: string;
@@ -36,9 +37,9 @@ export interface EmailProfile {
 export interface ScrapeProfile {
   id: number; // serial PK — number, not string
   name: string;
-  url: string;          // was wrongly "category" + "location"
-  selector: string;     // was missing
-  fields: string[];     // was missing (jsonb string[])
+  url: string; // was wrongly "category" + "location"
+  selector: string; // was missing
+  fields: string[]; // was missing (jsonb string[])
   status: "idle" | "running" | "done" | "error"; // matches scrapeStatusEnum
   resultsCount: number; // was wrongly "count"
   lastRun: string | null;
@@ -64,9 +65,10 @@ interface CopilotStore {
 }
 
 const defaultCopilotData: CopilotData = {
-  name: "Dental Practices — California",
+  name: "Private Jet Operators",
   description:
-    "AI-powered outreach to dental practices in California to introduce our services and book more appointments.",
+    "Reach out to private jet operators in Amsterdam and introduce our services.",
+  goal: "Book more appointments and generate qualified leads",
   emailProfileId: null,
   scrapeProfileId: null,
   templateId: null,

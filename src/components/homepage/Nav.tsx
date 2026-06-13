@@ -46,8 +46,8 @@ function Nav() {
           <Logo />
 
           <div
-            style={{ display: "flex", gap: 28, alignItems: "center" }}
-            className="nav-links"
+            style={{ gap: 28, alignItems: "center" }}
+            className="nav-links hidden lg:flex"
           >
             {[
               { label: "How it works", href: "#how-it-works" },
@@ -72,7 +72,7 @@ function Nav() {
 
           {/* Mobile Menu Button */}
           <button
-            className="mobile-menu-btn"
+            className="mobile-menu-btn block lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             style={{ zIndex: 51 }}
           >
@@ -82,7 +82,7 @@ function Nav() {
           {/* Desktop Auth Buttons */}
           <div
             style={{ alignItems: "center", gap: 12 }}
-            className="nav-buttons hidden md:flex"
+            className="nav-buttons hidden lg:flex"
           >
             <Show when="signed-out">
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
