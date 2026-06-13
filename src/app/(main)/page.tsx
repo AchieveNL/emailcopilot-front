@@ -6,6 +6,7 @@ import Pricing from "@/components/homepage/Pricing";
 import Testimonials from "@/components/homepage/Testimonials";
 import TrustedTeams from "@/components/homepage/TrustedTeams";
 import Ribbons from "@/components/homepage/Ribbons";
+import SidebarTest from "@/components/homepage/SidebarTest";
 
 export default function HomePage() {
   return (
