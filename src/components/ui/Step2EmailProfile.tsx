@@ -1,6 +1,12 @@
 "use client";
 
-import { ArrowRight, ArrowLeft, CheckCircle2, Mail, FileText } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Mail,
+  FileText,
+} from "lucide-react";
 import clsx from "clsx";
 import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
@@ -9,7 +15,9 @@ interface Step2EmailProfileProps {
   remoteContext: NewCopilotContext;
 }
 
-export default function Step2EmailProfile({ remoteContext }: Step2EmailProfileProps) {
+export default function Step2EmailProfile({
+  remoteContext,
+}: Step2EmailProfileProps) {
   const { copilotData, updateCopilotData, setStep } = useCopilotStore();
 
   const canContinue =
@@ -18,7 +26,7 @@ export default function Step2EmailProfile({ remoteContext }: Step2EmailProfilePr
     !remoteContext.loadingOptions;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-xl p-6 ">
       <h2 className="text-lg font-bold mb-1">Email Profile &amp; Template</h2>
       <p className="text-sm text-gray-500 mb-6">
         Choose who&apos;s sending and what to send.
@@ -48,12 +56,14 @@ export default function Step2EmailProfile({ remoteContext }: Step2EmailProfilePr
                   return (
                     <button
                       key={profile.id}
-                      onClick={() => updateCopilotData({ emailProfileId: profile.id })}
+                      onClick={() =>
+                        updateCopilotData({ emailProfileId: profile.id })
+                      }
                       className={clsx(
                         "w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all",
                         selected
                           ? "border-gray-900 bg-gray-50 shadow-sm"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50",
                       )}
                     >
                       <div className="flex items-center gap-4">
@@ -75,7 +85,10 @@ export default function Step2EmailProfile({ remoteContext }: Step2EmailProfilePr
                         </div>
                       </div>
                       {selected && (
-                        <CheckCircle2 size={18} className="text-gray-900 shrink-0" />
+                        <CheckCircle2
+                          size={18}
+                          className="text-gray-900 shrink-0"
+                        />
                       )}
                     </button>
                   );
@@ -102,12 +115,14 @@ export default function Step2EmailProfile({ remoteContext }: Step2EmailProfilePr
                   return (
                     <button
                       key={template.id}
-                      onClick={() => updateCopilotData({ templateId: template.id })}
+                      onClick={() =>
+                        updateCopilotData({ templateId: template.id })
+                      }
                       className={clsx(
                         "w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all",
                         selected
                           ? "border-gray-900 bg-gray-50 shadow-sm"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50",
                       )}
                     >
                       <div className="flex items-center gap-4">
@@ -124,7 +139,10 @@ export default function Step2EmailProfile({ remoteContext }: Step2EmailProfilePr
                         </div>
                       </div>
                       {selected && (
-                        <CheckCircle2 size={18} className="text-gray-900 shrink-0" />
+                        <CheckCircle2
+                          size={18}
+                          className="text-gray-900 shrink-0"
+                        />
                       )}
                     </button>
                   );
@@ -143,13 +161,15 @@ export default function Step2EmailProfile({ remoteContext }: Step2EmailProfilePr
           <ArrowLeft size={15} /> Back
         </button>
         <button
-          onClick={() => { if (canContinue) setStep(3); }}
+          onClick={() => {
+            if (canContinue) setStep(3);
+          }}
           disabled={!canContinue}
           className={clsx(
             "flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors",
             canContinue
               ? "bg-gray-900 text-white hover:bg-gray-700"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed",
           )}
         >
           Save &amp; Continue <ArrowRight size={15} />

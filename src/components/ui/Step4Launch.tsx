@@ -1,6 +1,15 @@
 "use client";
 
-import { ArrowLeft, Rocket, Settings, Mail, Database, FileText, Clock, Calendar } from "lucide-react";
+import {
+  ArrowLeft,
+  Rocket,
+  Settings,
+  Mail,
+  Database,
+  FileText,
+  Clock,
+  Calendar,
+} from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 
@@ -10,21 +19,25 @@ interface Step4LaunchProps {
   launching: boolean;
 }
 
-export default function Step4Launch({ remoteContext, onLaunch, launching }: Step4LaunchProps) {
+export default function Step4Launch({
+  remoteContext,
+  onLaunch,
+  launching,
+}: Step4LaunchProps) {
   const { copilotData, setStep } = useCopilotStore();
 
   const selectedEmailProfile = remoteContext.emailProfiles.find(
-    (p) => p.id === copilotData.emailProfileId
+    (p) => p.id === copilotData.emailProfileId,
   );
   const selectedScrapeProfile = remoteContext.scrapeProfiles.find(
-    (p) => p.id === copilotData.scrapeProfileId
+    (p) => p.id === copilotData.scrapeProfileId,
   );
   const selectedTemplate = remoteContext.templates?.find(
-    (t) => t.id === copilotData.templateId
+    (t) => t.id === copilotData.templateId,
   );
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-xl p-6 ">
       <h2 className="text-lg font-bold mb-1">Review &amp; Launch</h2>
       <p className="text-sm text-gray-500 mb-6">
         Everything looks good? Launch your copilot to start sending.
@@ -35,27 +48,39 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
         <div className="border border-gray-100 rounded-xl p-4 bg-gray-50">
           <div className="flex items-center gap-2 mb-3">
             <Settings size={14} className="text-gray-500" />
-            <span className="text-sm font-semibold text-gray-700">Settings</span>
+            <span className="text-sm font-semibold text-gray-700">
+              Settings
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <span className="text-xs text-gray-400 block mb-0.5">Copilot Name</span>
-              <span className="font-medium text-gray-900">{copilotData.name}</span>
+              <span className="text-xs text-gray-400 block mb-0.5">
+                Copilot Name
+              </span>
+              <span className="font-medium text-gray-900">
+                {copilotData.name}
+              </span>
             </div>
             <div>
-              <span className="text-xs text-gray-400 block mb-0.5">Daily Limit</span>
+              <span className="text-xs text-gray-400 block mb-0.5">
+                Daily Limit
+              </span>
               <span className="font-medium text-gray-900">
                 {copilotData.sendLimit} emails/day
               </span>
             </div>
             <div>
-              <span className="text-xs text-gray-400 block mb-0.5">Sending Speed</span>
+              <span className="text-xs text-gray-400 block mb-0.5">
+                Sending Speed
+              </span>
               <span className="font-medium text-gray-900">
                 {copilotData.settings.sendingSpeed}
               </span>
             </div>
             <div>
-              <span className="text-xs text-gray-400 block mb-0.5">Start at</span>
+              <span className="text-xs text-gray-400 block mb-0.5">
+                Start at
+              </span>
               <span className="font-medium text-gray-900 text-xs">
                 {copilotData.settings.schedule.runAt || "Not scheduled"}
               </span>
@@ -67,7 +92,9 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
         <div className="border border-gray-100 rounded-xl p-4 bg-gray-50">
           <div className="flex items-center gap-2 mb-3">
             <Mail size={14} className="text-gray-500" />
-            <span className="text-sm font-semibold text-gray-700">Email Profile</span>
+            <span className="text-sm font-semibold text-gray-700">
+              Email Profile
+            </span>
           </div>
           {selectedEmailProfile && (
             <div className="flex items-center gap-3">
@@ -94,7 +121,9 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
         <div className="border border-gray-100 rounded-xl p-4 bg-gray-50">
           <div className="flex items-center gap-2 mb-3">
             <FileText size={14} className="text-gray-500" />
-            <span className="text-sm font-semibold text-gray-700">Email Template</span>
+            <span className="text-sm font-semibold text-gray-700">
+              Email Template
+            </span>
           </div>
           {selectedTemplate ? (
             <div className="flex items-center gap-3">
@@ -119,7 +148,9 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
         <div className="border border-gray-100 rounded-xl p-4 bg-gray-50">
           <div className="flex items-center gap-2 mb-3">
             <Database size={14} className="text-gray-500" />
-            <span className="text-sm font-semibold text-gray-700">Scrape Profile</span>
+            <span className="text-sm font-semibold text-gray-700">
+              Scrape Profile
+            </span>
           </div>
           {selectedScrapeProfile && (
             <div>
@@ -149,7 +180,9 @@ export default function Step4Launch({ remoteContext, onLaunch, launching }: Step
             </div>
             <div>
               <div className="text-xl font-bold text-gray-900">
-                {(parseInt(copilotData.sendLimit.toString()) * 7).toLocaleString()}
+                {(
+                  parseInt(copilotData.sendLimit.toString()) * 7
+                ).toLocaleString()}
               </div>
               <div className="text-xs text-gray-500 flex items-center justify-center gap-1 mt-0.5">
                 <Calendar size={10} /> emails/week
