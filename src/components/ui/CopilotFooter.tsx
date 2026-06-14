@@ -12,6 +12,7 @@ function CopilotFooter() {
       </div>
       <Link
         href="https://emailcopilot.io/privacy"
+        target="_blank"
         className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-hover transition-colors whitespace-nowrap ml-4"
       >
         Learn more <ExternalLink size={14} />
