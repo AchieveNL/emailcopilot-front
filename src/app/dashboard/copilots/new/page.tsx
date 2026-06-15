@@ -8,11 +8,13 @@ import {
   Loader2,
   ExternalLink,
   Lock,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Stepper from "@/components/ui/Stepper";
 import CopilotSummary from "@/components/ui/CopilotSummary";
+import EmailProfileSidebar from "@/components/ui/EmailProfileSidebar";
 import Step1Settings from "@/components/ui/Step1Settings";
 import Step2EmailProfile from "@/components/ui/Step2EmailProfile";
 import Step3ScrapeProfile from "@/components/ui/Step3ScrapeProfile";
@@ -45,8 +47,8 @@ export default function NewCopilotPage() {
     copilotData,
     resetStore,
     mode,
-    setMode,
-    setEditingId,
+    setStep,
+
     loadCopilot,
   } = useCopilotStore();
 
@@ -63,6 +65,42 @@ export default function NewCopilotPage() {
   const [loadingOptions, setLoadingOptions] = useState(true);
 
   const { user } = useUser();
+
+  // Define steps with their respective components and sidebar content
+  const STEPS = [
+    {
+      id: 1,
+      component: () => <Step1Settings />,
+      sideBar: () => (
+        <CopilotSummary draftId={draftId?.toString() ?? undefined} />
+      ),
+    },
+    {
+      id: 1,
+      component: () => <Step2EmailProfile remoteContext={remoteContext} />,
+      sideBar: () => <EmailProfileSidebar />,
+    },
+    {
+      id: 1,
+      component: () => <Step3ScrapeProfile remoteContext={remoteContext} />,
+      sideBar: () => (
+        <CopilotSummary draftId={draftId?.toString() ?? undefined} />
+      ),
+    },
+    {
+      id: 1,
+      component: () => (
+        <Step4Launch
+          remoteContext={remoteContext}
+          onLaunch={handleLaunch}
+          launching={launching}
+        />
+      ),
+      sideBar: () => (
+        <CopilotSummary draftId={draftId?.toString() ?? undefined} />
+      ),
+    },
+  ];
 
   // Load dropdown options once on mount
   useEffect(() => {
@@ -315,26 +353,15 @@ export default function NewCopilotPage() {
       <div className="grid grid-cols-4 gap-6 mt-6">
         {/* Main form */}
         <div className="col-span-3">
-          {currentStep === 1 && <Step1Settings />}
-          {currentStep === 2 && (
-            <Step2EmailProfile remoteContext={remoteContext} />
-          )}
-          {currentStep === 3 && (
-            <Step3ScrapeProfile remoteContext={remoteContext} />
-          )}
-          {currentStep === 4 && (
-            <Step4Launch
-              remoteContext={remoteContext}
-              onLaunch={handleLaunch}
-              launching={launching}
-            />
-          )}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 ">
+            {STEPS[currentStep - 1].component()}
+          </div>
           {/* Footer banner */}
           <CopilotFooter />
         </div>
 
         {/* Sidebar */}
-        <CopilotSummary draftId={draftId?.toString() ?? undefined} />
+        {STEPS[currentStep - 1].sideBar()}
       </div>
     </div>
   );
