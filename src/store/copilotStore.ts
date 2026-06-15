@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 
-export type Step = 1 | 2 | 3 | 4;
+export type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 // Matches schema: copilots table + settings jsonb
 export interface CopilotData {
@@ -65,10 +65,9 @@ interface CopilotStore {
 }
 
 const defaultCopilotData: CopilotData = {
-  name: "Private Jet Operators",
-  description:
-    "Reach out to private jet operators in Amsterdam and introduce our services.",
-  goal: "Book more appointments and generate qualified leads",
+  name: "",
+  description: "",
+  goal: "",
   emailProfileId: null,
   scrapeProfileId: null,
   templateId: null,

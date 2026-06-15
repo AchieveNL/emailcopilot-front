@@ -1,19 +1,13 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
+import { ArrowRight } from "lucide-react";
 
 export default function Step1Settings() {
-  const { copilotData, updateCopilotData, updateSettings, setStep } =
-    useCopilotStore();
-
-  const handleSubmit = () => {
-    if (!copilotData.name.trim()) return;
-    setStep(2);
-  };
+  const { copilotData, updateCopilotData, setStep } = useCopilotStore();
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 ">
+    <>
       <h2 className="text-lg font-bold mb-1">Setup Your Copilot</h2>
       <p className="text-sm text-gray-500 mb-12">
         Give your Copilot a name and describe its purpose.
@@ -98,18 +92,20 @@ export default function Step1Settings() {
             />
           </div>
         </div>
-
-        <hr className="w-full border-gray-200 mt-12 mb-4" />
-        {/* Submit */}
-        <div className="pt-2 flex justify-end">
-          <button
-            onClick={handleSubmit}
-            className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary-hover active:bg-primary-active transition-colors"
-          >
-            Save &amp; Continue <ArrowRight size={15} />
-          </button>
-        </div>
       </div>
-    </div>
+      <hr className="w-full border-gray-200 mt-12 mb-4" />
+      {/* Submit */}
+      <div className="pt-2 flex justify-end">
+        <button
+          onClick={() => {
+            if (!copilotData.name.trim()) return;
+            setStep(2);
+          }}
+          className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary-hover active:bg-primary-active transition-colors"
+        >
+          Save &amp; Continue <ArrowRight size={15} />
+        </button>
+      </div>
+    </>
   );
 }
