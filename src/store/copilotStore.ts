@@ -20,6 +20,11 @@ export interface CopilotData {
     sendingSpeed: string;
     timezone: string;
   };
+  targetProfile: {
+    industries: string[];
+    countries: string[];
+    cities: string[];
+  };
 }
 
 // Matches schema: emailProfiles table
@@ -57,6 +62,7 @@ interface CopilotStore {
   setStep: (step: Step) => void;
   updateCopilotData: (data: Partial<CopilotData>) => void;
   updateSettings: (settings: Partial<CopilotData["settings"]>) => void;
+  updateTargetProfile: (profile: Partial<CopilotData["targetProfile"]>) => void;
   setLaunched: (launched: boolean) => void;
   setMode: (mode: CopilotMode) => void;
   setEditingId: (id: number | null) => void;
@@ -79,6 +85,11 @@ const defaultCopilotData: CopilotData = {
     sendingSpeed: "Normal (Recommended)",
     timezone: "(GMT-08:00) Pacific Time (US & Canada)",
   },
+  targetProfile: {
+    industries: [],
+    countries: [],
+    cities: [],
+  },
 };
 
 export const useCopilotStore = create<CopilotStore>((set) => ({
@@ -100,6 +111,14 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       copilotData: {
         ...state.copilotData,
         settings: { ...state.copilotData.settings, ...settings },
+      },
+    })),
+
+  updateTargetProfile: (targetProfile) =>
+    set((state) => ({
+      copilotData: {
+        ...state.copilotData,
+        targetProfile: { ...state.copilotData.targetProfile, ...targetProfile },
       },
     })),
 

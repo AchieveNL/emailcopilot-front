@@ -12,13 +12,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import Stepper from "@/components/ui/Stepper";
-import CopilotSummary from "@/components/ui/CopilotSummary";
-import EmailProfileSidebar from "@/components/ui/EmailProfileSidebar";
-import Step1Settings from "@/components/ui/Step1Settings";
-import Step2EmailProfile from "@/components/ui/Step2EmailProfile";
-import Step3ScrapeProfile from "@/components/ui/Step3ScrapeProfile";
-import Step4Launch from "@/components/ui/Step4Launch";
+import Stepper from "@/components/ui/NewCopilot/Stepper";
+import CopilotSummary from "@/components/ui/NewCopilot/StepOne/CopilotSummary";
+import EmailProfileSidebar from "@/components/ui/NewCopilot/StepTwo/EmailProfileSidebar";
+import Step1Settings from "@/components/ui/NewCopilot/StepOne/Step1Settings";
+import Step2EmailProfile from "@/components/ui/NewCopilot/StepTwo/Step2EmailProfile";
+import Step3ScrapeProfile from "@/components/ui/NewCopilot/StepThree/Step3ScrapeProfile";
+import Step4Launch from "@/components/ui/NewCopilot/StepFour/Step4Launch";
+import TargetAudienceSummary from "@/components/ui/NewCopilot/StepThree/TargetAudienceSummary";
 import { useCopilotStore } from "@/store/copilotStore";
 import {
   copilotsApi,
@@ -27,7 +28,7 @@ import {
   templatesApi,
 } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
-import CopilotFooter from "@/components/ui/CopilotFooter";
+import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
 type RemoteOption = { id: number; name: string };
@@ -82,10 +83,8 @@ export default function NewCopilotPage() {
     },
     {
       id: 1,
-      component: () => <Step3ScrapeProfile remoteContext={remoteContext} />,
-      sideBar: () => (
-        <CopilotSummary draftId={draftId?.toString() ?? undefined} />
-      ),
+      component: () => <Step3ScrapeProfile />,
+      sideBar: () => <TargetAudienceSummary />,
     },
     {
       id: 1,
@@ -167,6 +166,11 @@ export default function NewCopilotPage() {
                 sendingSpeed: "Normal (Recommended)",
                 timezone: "(GMT-08:00) Pacific Time (US & Canada)",
               },
+              targetProfile: copilot.targetProfile || {
+                industries: [],
+                countries: [],
+                cities: [],
+              },
             },
             id,
             "edit",
@@ -200,6 +204,11 @@ export default function NewCopilotPage() {
                 },
                 sendingSpeed: "Normal (Recommended)",
                 timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+              },
+              targetProfile: copilot.targetProfile || {
+                industries: [],
+                countries: [],
+                cities: [],
               },
             },
             undefined,

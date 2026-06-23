@@ -83,7 +83,7 @@ body {
 }
 
 /* Input focus ring override */
-input:focus,
+input:focus:not(.no-focus-ring),
 textarea:focus,
 select:focus {
   outline: none;
@@ -167,6 +167,10 @@ select:focus {
   border-color: rgba(0, 0, 0, 0.12);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @keyframes fadeUp {
