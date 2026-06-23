@@ -55,7 +55,7 @@ export default function SignUpPage() {
         {/* Logo */}
         <Logo />
 
-        <SignUp signInForceRedirectUrl={"/dashboard"} />
+        <SignUp />
       </div>
     </div>
   );
