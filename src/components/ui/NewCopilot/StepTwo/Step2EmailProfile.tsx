@@ -1,20 +1,11 @@
 "use client";
 
-import {
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle2,
-  CheckCircle,
-  ChevronRight,
-  Zap,
-  Inbox,
-  Mail,
-  FileText,
-} from "lucide-react";
+import { CheckCircle, ChevronRight, Zap, Inbox } from "lucide-react";
 
 import Image from "next/image";
 import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
+import StepsActions from "../StepsActions";
 
 interface Step2EmailProfileProps {
   remoteContext: NewCopilotContext;
@@ -23,7 +14,7 @@ interface Step2EmailProfileProps {
 export default function Step2EmailProfile({
   remoteContext,
 }: Step2EmailProfileProps) {
-  const { copilotData, updateCopilotData, setStep } = useCopilotStore();
+  const { copilotData } = useCopilotStore();
 
   const canContinue =
     !!copilotData.emailProfileId &&
@@ -80,7 +71,7 @@ export default function Step2EmailProfile({
             {/* Connect with Outlook */}
             <button
               type="button"
-              className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-light)] transition-colors text-left"
+              className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
             >
               <div className="flex items-center gap-4">
                 <Image
@@ -126,7 +117,7 @@ export default function Step2EmailProfile({
         {/* Connect other provider */}
         <button
           type="button"
-          className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-light)] transition-colors text-left"
+          className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
         >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-200 shrink-0">
@@ -144,19 +135,7 @@ export default function Step2EmailProfile({
           <ChevronRight size={18} className="text-gray-400 shrink-0" />
         </button>
       </div>
-      <hr className="w-full border-gray-200 mt-12 mb-4" />
-      {/* Submit */}
-      <div className="pt-2 flex justify-end">
-        <button
-          onClick={() => {
-            if (!copilotData.name.trim()) return;
-            setStep(3);
-          }}
-          className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary-hover active:bg-primary-active transition-colors"
-        >
-          Save &amp; Continue <ArrowRight size={15} />
-        </button>
-      </div>
+      <StepsActions step={3} canContinue={canContinue} />
     </>
   );
 }
