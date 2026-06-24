@@ -11,16 +11,16 @@ function TargetAudienceSummary() {
   // Mock a dynamic audience size based on the number of selected fields
   // const estimatedSize = useMemo(() => {
   //   if (industries.length === 0 && countries.length === 0 && cities.length === 0) return 0;
-    
+
   //   const base = 500;
   //   const indMult = industries.length > 0 ? industries.length * 1.5 : 1;
   //   const counMult = countries.length > 0 ? countries.length * 2 : 1;
   //   const cityMult = cities.length > 0 ? cities.length * 1.2 : 1;
-    
+
   //   return Math.floor(base * indMult * counMult * cityMult);
   // }, [industries, countries, cities]);
-const estimatedSize = 8420;  
-    let label = "";
+  const estimatedSize = 8420;
+  let label = "";
 
   let colorClass = "text-gray-600 bg-gray-100";
 
@@ -33,12 +33,10 @@ const estimatedSize = 8420;
   } else if (estimatedSize > 1000) {
     label = "Healthy";
     colorClass = "text-amber-600 bg-amber-100";
-    
   } else if (estimatedSize > 500) {
     label = "moderate";
     colorClass = "text-orange-600 bg-orange-100";
-  }
-   else if (estimatedSize > 100) {
+  } else if (estimatedSize > 100) {
     label = "Limited";
     colorClass = "text-red-600 bg-red-100";
   }
@@ -69,7 +67,7 @@ const estimatedSize = 8420;
           <div>
             <p className="text-xs font-semibold text-gray-900">Country</p>
             <p className="text-xs text-gray-500 mt-1">
-              {countries.length > 0 ? countries.join(", ") : "None selected"}
+              {countries.length > 0 ? countries.join(", ") : "All"}
             </p>
           </div>
         </div>
@@ -80,7 +78,7 @@ const estimatedSize = 8420;
           <div>
             <p className="text-xs font-semibold text-gray-900">Cities</p>
             <p className="text-xs text-gray-500 mt-1">
-              {cities.length > 0 ? cities.join(", ") : "None selected"}
+              {cities.length > 0 ? cities.join(", ") : "All"}
             </p>
           </div>
         </div>
@@ -101,7 +99,9 @@ const estimatedSize = 8420;
               </p>
             </div>
           </div>
-          <span className={`text-[8px] font-semibold px-1 py-0.5 rounded-sm ${colorClass}`}>
+          <span
+            className={`text-[8px] font-semibold px-1 py-0.5 rounded-sm ${colorClass}`}
+          >
             {label}
           </span>
         </div>

@@ -6,53 +6,30 @@ import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
 import { useCopilotStore } from "@/store/copilotStore";
 
-// ── Mock data (industries aren't covered by country-state-city) ──────────────
-
-const MOCK_INDUSTRIES = [
-  "Private Jet Operators",
-  "Chiropractors",
-  "Software Development",
-  "Healthcare",
-  "Financial Services",
-  "Real Estate",
-  "E-commerce",
-  "Education",
-  "Manufacturing",
-  "Logistics & Supply Chain",
-  "Hospitality & Tourism",
-  "Renewable Energy",
-  "Telecommunications",
-  "Media & Entertainment",
-  "Agriculture",
-  "Construction",
-  "Automotive",
-  "Consulting",
-  "Legal Services",
-  "Insurance",
-];
-
 // ── TagInput ─────────────────────────────────────────────────────────────────
 
 interface TagInputProps {
   icon: React.ReactNode;
-  options: string[];
+  options?: string[];
   selected: string[];
   onAdd: (value: string) => void;
   onRemove: (value: string) => void;
   onClearAll: () => void;
   placeholder?: string;
   emptyMessage?: string;
+  allowCustom?: boolean;
 }
 
 function TagInput({
   icon,
-  options,
+  options = [],
   selected,
   onAdd,
   onRemove,
   onClearAll,
   placeholder = "Type to search…",
   emptyMessage = "No results found",
+  allowCustom = false,
 }: TagInputProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -94,6 +71,14 @@ function TagInput({
     if (e.key === "Escape") setOpen(false);
     if (e.key === "Backspace" && query === "" && selected.length > 0) {
       onRemove(selected[selected.length - 1]);
+    }
+    if (e.key === "Enter" && query.trim() !== "") {
+      e.preventDefault();
+      if (allowCustom && !selected.includes(query.trim())) {
+        onAdd(query.trim());
+        setQuery("");
+        setOpen(false);
+      }
     }
   };
 
@@ -153,7 +138,7 @@ function TagInput({
       </div>
 
       {/* Dropdown */}
-      {open && filtered.length > 0 && (
+      {open && !allowCustom && filtered.length > 0 && (
         <ul className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg py-1">
           {filtered.map((option) => (
             <li
@@ -170,7 +155,7 @@ function TagInput({
         </ul>
       )}
 
-      {open && query.length > 0 && filtered.length === 0 && (
+      {open && query.length > 0 && filtered.length === 0 && !allowCustom && (
         <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg py-3 px-3 text-sm text-gray-400 text-center">
           {emptyMessage}
         </div>
@@ -241,8 +226,7 @@ export default function Step3ScrapeProfile() {
     updateTargetProfile({ countries: [], cities: [] });
   }, [updateTargetProfile]);
 
-  const canContinue =
-    industries.length > 0 && countries.length > 0 && cities.length > 0;
+  const canContinue = industries.length > 0;
 
   return (
     <>
@@ -255,14 +239,19 @@ export default function Step3ScrapeProfile() {
         {/* Industry */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 items-start">
           <div>
-            <h3 className="text-sm font-bold text-gray-900">Industry</h3>
+            <h3 className="text-sm relative font-bold text-gray-900">
+              Industry
+              <span className="text-sm font-semibold  text-red-500 absolute">
+                *
+              </span>
+            </h3>
             <p className="text-xs text-gray-500 mt-1">
               Choose the industry of your target companies.
             </p>
           </div>
           <TagInput
             icon={<Building2 size={15} />}
-            options={MOCK_INDUSTRIES}
+            allowCustom
             selected={industries}
             onAdd={(v) =>
               updateTargetProfile({ industries: [...industries, v] })
@@ -273,7 +262,7 @@ export default function Step3ScrapeProfile() {
               })
             }
             onClearAll={() => updateTargetProfile({ industries: [] })}
-            placeholder="Search industries…"
+            placeholder="Type and press Enter to add industries…"
           />
         </div>
 
@@ -299,7 +288,7 @@ export default function Step3ScrapeProfile() {
         {/* Cities */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 items-start">
           <div>
-            <h3 className="text-sm font-bold text-gray-900">Cities</h3>
+            <h3 className="text-sm font-bold text-gray-900">City</h3>
             <p className="text-xs text-gray-500 mt-1">
               In which cities are your target companies located?
             </p>
