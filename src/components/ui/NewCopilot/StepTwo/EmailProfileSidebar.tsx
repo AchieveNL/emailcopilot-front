@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { ShieldCheck, Send, TrendingUp, Inbox } from "lucide-react";
 function EmailProfileSidebar() {
