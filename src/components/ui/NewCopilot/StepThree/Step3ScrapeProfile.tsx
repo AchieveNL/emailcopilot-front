@@ -87,7 +87,7 @@ function TagInput({
       setOpen(false);
       inputRef.current?.focus();
     },
-    [onAdd]
+    [onAdd],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -220,7 +220,7 @@ export default function Step3ScrapeProfile() {
   // Derive available cities from selected countries
   const availableCities = useMemo(
     () => getCitiesForCountries(countries),
-    [countries]
+    [countries],
   );
 
   // When a country is removed, also remove cities that no longer belong
@@ -234,7 +234,7 @@ export default function Step3ScrapeProfile() {
 
       updateTargetProfile({ countries: remaining, cities: remainingCities });
     },
-    [countries, cities, updateTargetProfile]
+    [countries, cities, updateTargetProfile],
   );
 
   const handleClearCountries = useCallback(() => {
@@ -242,7 +242,7 @@ export default function Step3ScrapeProfile() {
   }, [updateTargetProfile]);
 
   const canContinue =
-    industries.length > 0 || countries.length > 0 || cities.length > 0;
+    industries.length > 0 && countries.length > 0 && cities.length > 0;
 
   return (
     <>
@@ -264,9 +264,13 @@ export default function Step3ScrapeProfile() {
             icon={<Building2 size={15} />}
             options={MOCK_INDUSTRIES}
             selected={industries}
-            onAdd={(v) => updateTargetProfile({ industries: [...industries, v] })}
+            onAdd={(v) =>
+              updateTargetProfile({ industries: [...industries, v] })
+            }
             onRemove={(v) =>
-              updateTargetProfile({ industries: industries.filter((i) => i !== v) })
+              updateTargetProfile({
+                industries: industries.filter((i) => i !== v),
+              })
             }
             onClearAll={() => updateTargetProfile({ industries: [] })}
             placeholder="Search industries…"
@@ -305,7 +309,9 @@ export default function Step3ScrapeProfile() {
             options={availableCities}
             selected={cities}
             onAdd={(v) => updateTargetProfile({ cities: [...cities, v] })}
-            onRemove={(v) => updateTargetProfile({ cities: cities.filter((c) => c !== v) })}
+            onRemove={(v) =>
+              updateTargetProfile({ cities: cities.filter((c) => c !== v) })
+            }
             onClearAll={() => updateTargetProfile({ cities: [] })}
             placeholder={
               countries.length === 0
@@ -320,7 +326,7 @@ export default function Step3ScrapeProfile() {
           />
         </div>
       </div>
-      <StepsActions step={2} canContinue={canContinue} />
+      <StepsActions step={4} canContinue={!canContinue} />
     </>
   );
 }
