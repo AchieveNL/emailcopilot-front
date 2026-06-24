@@ -5,7 +5,9 @@ import { CheckCircle, ChevronRight, Zap, Inbox } from "lucide-react";
 import Image from "next/image";
 import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
+import OtherProviderPopUp from "@/components/ui/NewCopilot/StepTwo/OtherProviderPopUp";
 import StepsActions from "../StepsActions";
+import { useState } from "react";
 
 interface Step2EmailProfileProps {
   remoteContext: NewCopilotContext;
@@ -15,7 +17,7 @@ export default function Step2EmailProfile({
   remoteContext,
 }: Step2EmailProfileProps) {
   const { copilotData } = useCopilotStore();
-
+  const [showOtherProviderPopUp, setShowOtherProviderPopUp] = useState(true);
   const canContinue =
     !!copilotData.emailProfileId &&
     !!copilotData.templateId &&
@@ -117,6 +119,7 @@ export default function Step2EmailProfile({
         {/* Connect other provider */}
         <button
           type="button"
+          onClick={() => setShowOtherProviderPopUp(true)}
           className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
         >
           <div className="flex items-center gap-4">
@@ -136,6 +139,10 @@ export default function Step2EmailProfile({
         </button>
       </div>
       <StepsActions step={3} canContinue={canContinue} />
+
+      {showOtherProviderPopUp && (
+        <OtherProviderPopUp onClose={() => setShowOtherProviderPopUp(false)} />
+      )}
     </>
   );
 }
