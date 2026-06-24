@@ -39,3 +39,24 @@ export type LimitsResponseActive = {
 };
 
 export type LimitsResponse = LimitsResponseActive | LimitsResponseInactive;
+
+export type Lead = {
+  id: number;
+  companyName: string;
+  email: string;
+  address: string | null;
+  phone: string | null;
+  emailedAt: string;
+};
+
+export type PaginatedMeta = {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: PaginatedMeta;
+};
