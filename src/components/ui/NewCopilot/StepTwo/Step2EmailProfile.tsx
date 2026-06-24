@@ -135,7 +135,7 @@ export default function Step2EmailProfile({
           <ChevronRight size={18} className="text-gray-400 shrink-0" />
         </button>
       </div>
-      <StepsActions step={3} canContinue={false} />
+      <StepsActions step={3} canContinue={canContinue} />
     </>
   );
 }
