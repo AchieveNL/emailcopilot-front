@@ -17,7 +17,7 @@ export default function Step2EmailProfile({
   remoteContext,
 }: Step2EmailProfileProps) {
   const { copilotData } = useCopilotStore();
-  const [showOtherProviderPopUp, setShowOtherProviderPopUp] = useState(true);
+  const [showOtherProviderPopUp, setShowOtherProviderPopUp] = useState(false);
   const canContinue =
     !!copilotData.emailProfileId &&
     !!copilotData.templateId &&
