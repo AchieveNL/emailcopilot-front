@@ -18,12 +18,12 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h2 className="text-lg font-bold text-gray-900">Add Email Profile</h2>
+        <h2 className="text-lg font-bold text-gray-900">Add Email Account</h2>
 
         {/* Profile Name */}
         <div className="space-y-1">
           <label className="block text-xs text-gray-900" htmlFor="profileName">
-            Profile Name
+            Account Name
           </label>
           <input
             id="profileName"
@@ -142,7 +142,7 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
               (e.currentTarget.style.backgroundColor = "var(--color-primary)")
             }
           >
-            Add Profile
+            Add Account
           </button>
         </div>
       </div>
