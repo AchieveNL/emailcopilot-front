@@ -47,6 +47,12 @@ export type Lead = {
   address: string | null;
   phone: string | null;
   emailedAt: string;
+  //will be modifie later
+  copilotName?: string;
+  copilotDescription?: string;
+  templateName?: string;
+  //this well be changed late
+  templateId?: number;
 };
 
 export type PaginatedMeta = {
