@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios,{ AxiosRequestConfig } from "axios";
 import { getToken } from "@clerk/nextjs";
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
@@ -54,12 +54,14 @@ export const scrapeProfilesApi = {
   run: (id: number) => api.post(`/scrape-profiles/${id}/run`),
 };
 
+
+
 // ─── Templates ────────────────────────────────────────────────────────────────
 // Schema: templates — category: "Cold Outreach"|"Follow-up"|"Re-engagement"|"Partnership"|"Other"
 
 export const templatesApi = {
   getAll: () => api.get("/templates"),
-  getById: (id: number) => api.get(`/templates/${id}`),
+  getById: (id: number, config?: AxiosRequestConfig) => api.get(`/templates/${id}`, config),
   create: (data: Record<string, unknown>) => api.post("/templates", data),
   update: (id: number, data: Record<string, unknown>) =>
     api.put(`/templates/${id}`, data),
@@ -145,6 +147,12 @@ export const leadsApi = {
   getAll: (params?: { status?: string; page?: number; limit?: number }) =>
     api.get("/leads", { params }),
   getById: (id: number) => api.get(`/leads/${id}`),
+};
+
+// ─── Email Logs ───────────────────────────────────────────────────────────────
+export const emailLogsApi = {
+  getAll: (params?: { leadId?: number; page?: number; limit?: number }) =>
+    api.get("/emails/logs", { params }),
 };
 
 export const usersApi = {

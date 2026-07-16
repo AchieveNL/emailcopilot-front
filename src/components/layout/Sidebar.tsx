@@ -33,7 +33,7 @@ const navItems = [
     icon: Database,
   },
   { href: "/dashboard/templates", label: "Email templates", icon: FileText },
-  /* { href: "/dashboard/leads", label: "Leads", icon: Users }, */
+  { href: "/dashboard/leads", label: "Departured", icon: Users },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
