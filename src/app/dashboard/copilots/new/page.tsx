@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  MoreVertical,
-  ChevronRight,
-  Save,
-  Loader2,
-  ExternalLink,
-  Lock,
-  ArrowRight,
-} from "lucide-react";
+import { MoreVertical, ChevronRight, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Stepper from "@/components/ui/NewCopilot/Stepper";
@@ -21,6 +13,7 @@ import Step3ScrapeProfile from "@/components/ui/NewCopilot/StepThree/Step3Scrape
 import Step4Launch from "@/components/ui/NewCopilot/StepFour/Step4Launch";
 import TargetAudienceSummary from "@/components/ui/NewCopilot/StepThree/TargetAudienceSummary";
 import { useCopilotStore } from "@/store/copilotStore";
+import EmailTemplateStep from "@/components/ui/NewCopilot/StepFour/EmailTemplateStep";
 import {
   copilotsApi,
   emailProfilesApi,
@@ -29,6 +22,7 @@ import {
 } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
+import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTemplateSidbar";
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
 type RemoteOption = { id: number; name: string };
@@ -48,7 +42,6 @@ export default function NewCopilotPage() {
     copilotData,
     resetStore,
     mode,
-    setStep,
 
     loadCopilot,
   } = useCopilotStore();
@@ -77,17 +70,22 @@ export default function NewCopilotPage() {
       ),
     },
     {
-      id: 1,
+      id: 2,
       component: () => <Step2EmailProfile remoteContext={remoteContext} />,
       sideBar: () => <EmailProfileSidebar />,
     },
     {
-      id: 1,
+      id: 3,
       component: () => <Step3ScrapeProfile />,
       sideBar: () => <TargetAudienceSummary />,
     },
     {
-      id: 1,
+      id: 4,
+      component: () => <EmailTemplateStep />,
+      sideBar: () => <EmailTemplateSidbar />,
+    },
+    {
+      id: 5,
       component: () => (
         <Step4Launch
           remoteContext={remoteContext}
@@ -290,7 +288,7 @@ export default function NewCopilotPage() {
 
   if (loadingCopilot) {
     return (
-      <div className="p-8 max-w-6xl mx-auto flex items-center justify-center min-h-100">
+      <div className="py-8 px-4 w-full mx-auto flex items-center justify-center min-h-100">
         <div className="flex items-center gap-3 text-gray-500">
           <Loader2 size={20} className="animate-spin" />
           <span>Loading copilot...</span>
@@ -300,7 +298,7 @@ export default function NewCopilotPage() {
   }
 
   return (
-    <div className="p-5 max-w-6xl mx-auto">
+    <div className="p-5 w-full mx-auto">
       {/* Header */}
       <header className="flex items-start justify-between mb-4">
         <div>

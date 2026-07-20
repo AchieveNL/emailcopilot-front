@@ -199,7 +199,7 @@ function getCitiesForCountries(countryNames: string[]): string[] {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function Step3ScrapeProfile() {
-  const { copilotData, updateTargetProfile } = useCopilotStore();
+  const { copilotData, updateTargetProfile, setStep } = useCopilotStore();
   const { industries, countries, cities } = copilotData.targetProfile;
 
   // Derive available cities from selected countries
@@ -315,7 +315,13 @@ export default function Step3ScrapeProfile() {
           />
         </div>
       </div>
-      <StepsActions step={4} canContinue={!canContinue} />
+      <StepsActions
+        onPress={() => {
+          console.log("copilot data", copilotData);
+          setStep(4);
+        }}
+        canContinue={!canContinue}
+      />
     </>
   );
 }

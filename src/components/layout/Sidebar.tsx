@@ -26,14 +26,14 @@ import Logo from "../homepage/Logo";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/copilots", label: "Copilots", icon: Send },
-  { href: "/dashboard/email-profiles", label: "Email Accounts", icon: Mail },
+  { href: "/dashboard/email-accounts", label: "Email Accounts", icon: Mail },
   {
-    href: "/dashboard/scrape-profiles",
-    label: "Scrape Profiles",
+    href: "/dashboard/target-audiences",
+    label: "Target Audiences",
     icon: Database,
   },
   { href: "/dashboard/templates", label: "Email templates", icon: FileText },
-  { href: "/dashboard/leads", label: "Departured", icon: Users },
+  { href: "/dashboard/departured", label: "Departured", icon: Users },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
