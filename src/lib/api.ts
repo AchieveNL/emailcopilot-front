@@ -61,6 +61,7 @@ export const scrapeProfilesApi = {
 
 export const templatesApi = {
   getAll: () => api.get("/templates"),
+   //getById: (id: number) => api.get(`/templates/${id}`),
   getById: (id: number, config?: AxiosRequestConfig) => api.get(`/templates/${id}`, config),
   create: (data: Record<string, unknown>) => api.post("/templates", data),
   update: (id: number, data: Record<string, unknown>) =>

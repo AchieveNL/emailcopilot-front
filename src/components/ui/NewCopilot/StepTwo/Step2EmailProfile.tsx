@@ -16,12 +16,15 @@ interface Step2EmailProfileProps {
 export default function Step2EmailProfile({
   remoteContext,
 }: Step2EmailProfileProps) {
-  const { copilotData } = useCopilotStore();
+  const { copilotData, setStep } = useCopilotStore();
   const [showOtherProviderPopUp, setShowOtherProviderPopUp] = useState(false);
-  const canContinue =
-    !!copilotData.emailProfileId &&
-    !!copilotData.templateId &&
-    !remoteContext.loadingOptions;
+  const [selectedProfileName, setSelectedProfileName] = useState<string | null>(
+    null,
+  );
+  const canContinue = copilotData.emailProfileId === null;
+  // &&
+  // !!copilotData.templateId &&
+  // !remoteContext.loadingOptions;
 
   return (
     <>
@@ -46,7 +49,12 @@ export default function Step2EmailProfile({
             {/* Connect with Gmail - highlighted */}
             <button
               type="button"
-              className="w-full flex items-center justify-between gap-4 p-5 rounded-xl border border-primary bg-primary-light transition-colors text-left"
+              className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border ${
+                selectedProfileName === "gmail"
+                  ? "border-primary bg-primary-light"
+                  : "border-gray-200 hover:border-primary hover:bg-primary-light"
+              } transition-colors text-left`}
+              onClick={() => setSelectedProfileName("gmail")}
             >
               <div className="flex items-center gap-4">
                 <Image src="/gmail.svg" alt="Gmail" width={40} height={40} />
@@ -73,7 +81,12 @@ export default function Step2EmailProfile({
             {/* Connect with Outlook */}
             <button
               type="button"
-              className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
+              className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border ${
+                selectedProfileName === "outlook"
+                  ? "border-primary bg-primary-light"
+                  : "border-gray-200 hover:border-primary hover:bg-primary-light"
+              } transition-colors text-left`}
+              onClick={() => setSelectedProfileName("outlook")}
             >
               <div className="flex items-center gap-4">
                 <Image
@@ -119,8 +132,15 @@ export default function Step2EmailProfile({
         {/* Connect other provider */}
         <button
           type="button"
-          onClick={() => setShowOtherProviderPopUp(true)}
-          className="w-full flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
+          onClick={() => {
+            setShowOtherProviderPopUp(true);
+            setSelectedProfileName("other");
+          }}
+          className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border ${
+            selectedProfileName === "other"
+              ? "border-primary bg-primary-light"
+              : "border-gray-200 hover:border-primary hover:bg-primary-light"
+          } transition-colors text-left`}
         >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-200 shrink-0">
@@ -139,14 +159,15 @@ export default function Step2EmailProfile({
         </button>
       </div>
 
-   
-
       {showOtherProviderPopUp && (
         <OtherProviderPopUp onClose={() => setShowOtherProviderPopUp(false)} />
       )}
 
-      <StepsActions step={3} canContinue={false} />
-
+      <StepsActions
+        onPress={() => setStep(3)}
+        isLoading={false}
+        canContinue={canContinue}
+      />
     </>
   );
 }

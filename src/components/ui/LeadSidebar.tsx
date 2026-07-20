@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { X, Mail, Calendar, FileText, Loader2 } from "lucide-react";
+import { X, Mail, Calendar, Loader2 } from "lucide-react";
 import type { Lead, PaginatedMeta } from "@/lib/types";
 import { Pagination } from "./Pagination";
-import { div } from "motion/react-client";
 // import { emailLogsApi } from "@/lib/api";
 
 interface EmailLog {
@@ -113,23 +112,25 @@ export function LeadSidebar({ lead, isOpen, onClose }: LeadSidebarProps) {
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/20 z-40 transition-opacity"
         onClick={onClose}
       />
-      
+
       {/* Sidebar */}
       <div className="fixed right-0 top-0 h-full w-[400px] bg-white shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 line-clamp-1">{lead.companyName}</h2>
+            <h2 className="text-xl font-bold text-gray-900 line-clamp-1">
+              {lead.companyName}
+            </h2>
             <div className="flex items-center gap-2 mt-1 text-gray-500 text-sm">
               <Mail size={14} />
               <span>{lead.email}</span>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
           >
@@ -143,7 +144,7 @@ export function LeadSidebar({ lead, isOpen, onClose }: LeadSidebarProps) {
             <Mail size={18} className="text-blue-500" />
             Emails Reached
           </h3>
-          
+
           <div className="space-y-3 mb-6">
             {loading ? (
               <div className="flex justify-center py-8 text-gray-400">
@@ -155,23 +156,33 @@ export function LeadSidebar({ lead, isOpen, onClose }: LeadSidebarProps) {
               </div>
             ) : (
               emailLogs.map((email) => (
-                <div key={email.id} className="bg-white p-4 rounded-xl border border-gray-100">
+                <div
+                  key={email.id}
+                  className="bg-white p-4 rounded-xl border border-gray-100"
+                >
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <div className="font-medium text-gray-900 text-sm line-clamp-2">
                       {email.subject}
                     </div>
-                    <span className={`shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium border capitalize ${
-                      email.status === 'delivered' || email.status === 'sent' 
-                        ? 'bg-green-50 text-green-700 border-green-200' 
-                        : email.status === 'error' || email.status === 'bounced' || email.status === 'failed'
-                          ? 'bg-red-50 text-red-700 border-red-200'
-                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                    }`}>
+                    <span
+                      className={`shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium border capitalize ${
+                        email.status === "delivered" || email.status === "sent"
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : email.status === "error" ||
+                              email.status === "bounced" ||
+                              email.status === "failed"
+                            ? "bg-red-50 text-red-700 border-red-200"
+                            : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                      }`}
+                    >
                       {email.status}
                     </span>
                   </div>
                   {email.errorMessage && (
-                    <div className="text-xs text-red-500 mb-2 truncate" title={email.errorMessage}>
+                    <div
+                      className="text-xs text-red-500 mb-2 truncate"
+                      title={email.errorMessage}
+                    >
                       Error: {email.errorMessage}
                     </div>
                   )}
@@ -193,14 +204,13 @@ export function LeadSidebar({ lead, isOpen, onClose }: LeadSidebarProps) {
           </div>
 
           {meta && (
-         <Pagination 
+            <Pagination
               meta={meta}
               currentPage={page}
               onPageChange={setPage}
               onLimitChange={handleLimitChange}
               isLarge={false}
-              />
-           
+            />
           )}
         </div>
       </div>

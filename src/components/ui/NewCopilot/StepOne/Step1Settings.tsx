@@ -1,10 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import { useCopilotStore } from "@/store/copilotStore";
+
 import StepsActions from "../StepsActions";
 
 export default function Step1Settings() {
-  const { copilotData, updateCopilotData } = useCopilotStore();
+  const { copilotData, updateCopilotData, setStep } = useCopilotStore();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+
+    updateCopilotData({
+      name: copilotData.name,
+      description: copilotData.description,
+    });
+    console.log("Updated copilot data:", copilotData);
+    setStep(2);
+
+    setIsLoading(false);
+  };
 
   return (
     <>
@@ -93,7 +109,11 @@ export default function Step1Settings() {
           </div>
         </div>
       </div>
-      <StepsActions step={2} canContinue={copilotData.name.trim() === ""} />
+      <StepsActions
+        isLoading={isLoading}
+        onPress={handleSubmit}
+        canContinue={copilotData.name.trim() === ""}
+      />
     </>
   );
 }
