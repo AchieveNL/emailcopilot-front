@@ -122,7 +122,7 @@ export const PLANS = [
     tag: null,
     volume: "250 emails · ~8/day",
     features: [
-      "1 Copilot",
+      "Nice 1 Copilot",
       "1 SMTP account",
       "Standard delivery speed",
       "No data export",

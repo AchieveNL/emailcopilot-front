@@ -320,7 +320,7 @@ export default function Step3ScrapeProfile() {
           console.log("copilot data", copilotData);
           setStep(4);
         }}
-        canContinue={!canContinue}
+        canContinue={canContinue}
       />
     </>
   );
