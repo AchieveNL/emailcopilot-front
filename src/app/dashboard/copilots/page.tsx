@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { copilotsApi } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 type Copilot = {
   id: number;
@@ -51,6 +52,7 @@ function replyRate(sent: number, replied: number) {
 }
 
 function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () => void }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [runningScrape, setRunningScrape] = useState(false);
 
@@ -94,7 +96,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
 
   function handleDuplicate() {
     if (!confirm(`Duplicate "${copilot.name}"? This will create a new draft copy.`)) return;
-    window.location.href = `/dashboard/copilots/new?duplicate=${copilot.id}`;
+    router.push(`/dashboard/copilots/new?duplicate=${copilot.id}`);
   }
 
   return (
@@ -157,6 +159,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
 }
 
 export default function CopilotsPage() {
+  const router = useRouter();
   const [copilots, setCopilots] = useState<Copilot[]>([]);
   const [isActivating, setIsActivating] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -171,6 +174,9 @@ export default function CopilotsPage() {
       setLoading(true);
       const res = await copilotsApi.getAll();
       setCopilots(res.data);
+      if (res.data.length === 0) {
+        router.push("/dashboard/copilots/new");
+      }
     } catch { setCopilots([]); } finally { setLoading(false); }
   }
 

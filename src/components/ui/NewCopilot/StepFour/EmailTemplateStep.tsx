@@ -524,7 +524,7 @@ export default function EmailTemplateStep() {
       <StepsActions
         onPress={() => handleSave()}
         isLoading={loading}
-        canContinue={editor?.getHTML() === ""}
+        canContinue={!!(editor && editor.getText().trim().length > 0)}
       />
     </div>
   );

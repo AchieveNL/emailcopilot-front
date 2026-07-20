@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { emailProfilesApi } from "@/lib/api";
 import { useCopilotStore } from "@/store/copilotStore";
 import { useUser } from "@clerk/nextjs";
 
 interface OtherProviderPopUpProps {
-  onClose: () => void;
+  onClose: (saved?: boolean) => void;
+  editProfile?: any;
 }
 
-function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
+function OtherProviderPopUp({ onClose, editProfile }: OtherProviderPopUpProps) {
   const { user } = useUser();
   const { updateCopilotData } = useCopilotStore();
   const [saving, setSaving] = useState(false);
@@ -25,6 +26,21 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
     dailyLimit: 100,
   });
 
+  useEffect(() => {
+    if (editProfile) {
+      setForm({
+        profileName: editProfile.profileName || editProfile.name || "",
+        email: editProfile.email || "",
+        provider: editProfile.provider || "smtp",
+        smtpHost: editProfile.smtpHost || "",
+        smtpPort: editProfile.smtpPort || 587,
+        smtpPass: "",
+        sendName: editProfile.sendName || "",
+        dailyLimit: editProfile.dailyLimit || 100,
+      });
+    }
+  }, [editProfile]);
+
   const handleAddAccount = async () => {
     if (!form.profileName || !form.email) {
       alert("Profile Name and Email Address are required");
@@ -33,14 +49,20 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
 
     try {
       setSaving(true);
-      const res = await emailProfilesApi.create({ ...form, userId: user?.id });
-      
-      if (res.data?.id) {
-        updateCopilotData({ emailProfileId: res.data.id });
+      if (editProfile) {
+        const { smtpPass, ...rest } = form;
+        const payload = !smtpPass ? rest : form;
+        await emailProfilesApi.update(editProfile.id, payload);
+        onClose(true);
+      } else {
+        const res = await emailProfilesApi.create({ ...form, userId: user?.id });
+        if (res.data?.id) {
+          updateCopilotData({ emailProfileId: res.data.id });
+        }
+        onClose(true);
       }
-      onClose();
     } catch (error) {
-      alert("Failed to create profile.");
+      alert(editProfile ? "Failed to update profile." : "Failed to create profile.");
       console.error(error);
     } finally {
       setSaving(false);
@@ -50,7 +72,7 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
   return (
     <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onClose}
+      onClick={() => onClose()}
     >
       {/* Modal */}
       <div
@@ -58,7 +80,9 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h2 className="text-lg font-bold text-gray-900">Add Email Account</h2>
+        <h2 className="text-lg font-bold text-gray-900">
+          {editProfile ? "Edit Email Account" : "Add Email Account"}
+        </h2>
 
         {/* Profile Name */}
         <div className="space-y-1">
@@ -177,7 +201,7 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
         <div className="grid grid-cols-2 gap-3 pt-1">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => onClose()}
             disabled={saving}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
@@ -198,7 +222,7 @@ function OtherProviderPopUp({ onClose }: OtherProviderPopUpProps) {
             }
           >
             {saving && <Loader2 size={16} className="animate-spin" />}
-            {saving ? "Adding..." : "Add Account"}
+            {saving ? (editProfile ? "Saving..." : "Adding...") : (editProfile ? "Save Changes" : "Add Account")}
           </button>
         </div>
       </div>

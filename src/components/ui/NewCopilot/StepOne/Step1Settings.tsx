@@ -49,7 +49,7 @@ export default function Step1Settings() {
               type="text"
               value={copilotData.name}
               onChange={(e) => updateCopilotData({ name: e.target.value })}
-              placeholder="Private Jet Operators"
+              placeholder="e.g. Private Jet Operators"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
@@ -76,7 +76,7 @@ export default function Step1Settings() {
               onChange={(e) =>
                 updateCopilotData({ description: e.target.value })
               }
-              placeholder="Reach out to private jet operators in Amsterdam and introduce our services"
+              placeholder="e.g. Reach out to private jet operators in Amsterdam and introduce our services"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
@@ -103,7 +103,7 @@ export default function Step1Settings() {
               rows={3}
               value={copilotData.goal}
               onChange={(e) => updateCopilotData({ goal: e.target.value })}
-              placeholder="Book more appointments and generate qualified leads"
+              placeholder="e.g. Book more appointments and generate qualified leads"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
