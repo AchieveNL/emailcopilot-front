@@ -112,7 +112,7 @@ export default function Step1Settings() {
       <StepsActions
         isLoading={isLoading}
         onPress={handleSubmit}
-        canContinue={copilotData.name.trim() === ""}
+        canContinue={copilotData.name.trim() !== ""}
       />
     </>
   );

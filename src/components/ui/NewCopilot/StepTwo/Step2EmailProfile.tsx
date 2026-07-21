@@ -207,14 +207,22 @@ export default function Step2EmailProfile({
           </div>
           <ChevronRight size={18} className="text-gray-400 shrink-0" />
         </button>
+
+              {/* Divider */}
+        <div className="relative py-1">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-white px-3 text-xs font-semibold text-gray-800">
+             Your Accounts
+            </span>
+          </div>
+        </div>
         
         {/* User Created Accounts */}
         {!loadingProfiles && userProfiles.length > 0 && (
           <div className="mt-6">
-            <div className="relative py-1 border-t border-gray-200 mb-4" />
-            <h3 className="text-xs font-semibold text-gray-800 mb-3">
-              Your Accounts
-            </h3>
             <div className="space-y-3">
               {userProfiles.map((profile) => (
                 <div key={profile.id} className="flex gap-2 items-center">
@@ -246,11 +254,7 @@ export default function Step2EmailProfile({
                         </p>
                       </div>
                     </div>
-                    {copilotData.emailProfileId === profile.id && (
-                      <CheckCircle size={18} className="text-primary shrink-0" />
-                    )}
-                  </button>
-
+              
                   <div className="relative isolate shrink-0 flex items-center">
                     <button
                       type="button"
@@ -291,6 +295,8 @@ export default function Step2EmailProfile({
                       </div>
                     )}
                   </div>
+                  </button>
+
                 </div>
               ))}
             </div>
