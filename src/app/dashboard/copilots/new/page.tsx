@@ -23,6 +23,9 @@ import {
 import { useUser } from "@clerk/nextjs";
 import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
 import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTemplateSidbar";
+import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
+import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
+import {toast} from "sonner"
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
 type RemoteOption = { id: number; name: string };
@@ -86,6 +89,11 @@ export default function NewCopilotPage() {
     },
     {
       id: 5,
+      component: () => <ScheduleStep />,
+      sideBar: () => <ScheduleSideBar />,
+    },
+    {
+      id: 6,
       component: () => (
         <Step4Launch
           remoteContext={remoteContext}
@@ -176,7 +184,7 @@ export default function NewCopilotPage() {
           setDraftId(id);
         })
         .catch(() => {
-          alert("Failed to load copilot. Please try again.");
+          toast.error("Failed to load copilot. Please try again.");
           router.push("/dashboard/copilots");
         })
         .finally(() => setLoadingCopilot(false));
@@ -214,7 +222,7 @@ export default function NewCopilotPage() {
           );
         })
         .catch(() => {
-          alert("Failed to load copilot. Please try again.");
+          toast.error("Failed to load copilot. Please try again.");
           router.push("/dashboard/copilots");
         })
         .finally(() => setLoadingCopilot(false));
@@ -248,7 +256,7 @@ export default function NewCopilotPage() {
       setDraftSaved(true);
       setTimeout(() => setDraftSaved(false), 2500);
     } catch {
-      alert("Failed to save draft. Please try again.");
+      toast.error("Failed to save draft. Please try again.");
     } finally {
       setSavingDraft(false);
     }
@@ -273,7 +281,8 @@ export default function NewCopilotPage() {
       resetStore();
       router.push("/dashboard/copilots");
     } catch {
-      alert("Failed to launch copilot. Please try again.");
+   
+    toast.error('Failed to launch copilot. Please try again.');
     } finally {
       setLaunching(false);
     }

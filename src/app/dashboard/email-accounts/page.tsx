@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Mail, Trash2, CheckCircle2, XCircle, RefreshCw, AlertCircle } from "lucide-react";
 import { emailProfilesApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 type EmailProfile = {
   id: number;
@@ -49,7 +50,7 @@ export default function EmailProfilesPage() {
       setForm({ profileName: "", email: "", sendName: "", provider: "smtp", smtpHost: "", smtpPort: 587, smtpPass: "", dailyLimit: 100 });
       fetchProfiles();
     } catch {
-      alert("Failed to create profile.");
+      toast.error("Failed to create profile.");
     } finally {
       setSaving(false);
     }
@@ -61,7 +62,7 @@ export default function EmailProfilesPage() {
       await emailProfilesApi.delete(id);
       fetchProfiles();
     } catch {
-      alert("Failed to delete profile.");
+      toast.error("Failed to delete profile.");
     }
   }
 
@@ -71,7 +72,7 @@ export default function EmailProfilesPage() {
       await emailProfilesApi.verify(id);
       fetchProfiles();
     } catch {
-      alert("Verification failed.");
+      toast.error("Verification failed.");
     } finally {
       setVerifyingId(null);
     }

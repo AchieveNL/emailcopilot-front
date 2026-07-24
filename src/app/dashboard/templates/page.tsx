@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, FileText, Trash2, Copy, Edit2, Search } from "lucide-react";
 import { templatesApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 type Template = {
   id: number;
@@ -75,7 +76,7 @@ export default function TemplatesPage() {
       setForm({ name: "", subject: "", body: "", category: "Cold Outreach" });
       fetchTemplates();
     } catch {
-      alert("Failed to save template.");
+      toast.error("Failed to save template.");
     } finally {
       setSaving(false);
     }
@@ -87,7 +88,7 @@ export default function TemplatesPage() {
       await templatesApi.delete(id);
       fetchTemplates();
     } catch {
-      alert("Failed to delete.");
+      toast.error("Failed to delete.");
     }
   }
 
@@ -96,7 +97,7 @@ export default function TemplatesPage() {
       await templatesApi.duplicate(id);
       fetchTemplates();
     } catch {
-      alert("Failed to duplicate.");
+      toast.error("Failed to duplicate.");
     }
   }
 

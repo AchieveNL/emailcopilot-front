@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Globe, Trash2, Play, Clock, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { scrapeProfilesApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 type ScrapeProfile = {
   id: number;
@@ -45,7 +46,7 @@ export default function ScrapeProfilesPage() {
       setShowModal(false);
       setForm({ name: "", searchQuery: "" });
       fetchProfiles();
-    } catch { alert("Failed to create scrape profile."); } finally { setSaving(false); }
+    } catch { toast.error("Failed to create scrape profile."); } finally { setSaving(false); }
   }
 
   async function handleRun(id: number) {
@@ -53,12 +54,12 @@ export default function ScrapeProfilesPage() {
       setRunningId(id);
       await scrapeProfilesApi.run(id);
       fetchProfiles();
-    } catch { alert("Failed to run scrape."); } finally { setRunningId(null); }
+    } catch { toast.error("Failed to run scrape."); } finally { setRunningId(null); }
   }
 
   async function handleDelete(id: number) {
     if (!confirm("Delete this scrape profile?")) return;
-    try { await scrapeProfilesApi.delete(id); fetchProfiles(); } catch { alert("Failed to delete."); }
+    try { await scrapeProfilesApi.delete(id); fetchProfiles(); } catch { toast.error("Failed to delete."); }
   }
 
   const statusConfig = {

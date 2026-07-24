@@ -16,7 +16,12 @@ export interface CopilotData {
   settings: {
     schedule: {
       runAt: string; // ISO string, e.g. "2024-06-01T09:00:00Z"
+      activeDays?: string[];
+      fromTime?: string;
+      toTime?: string;
+      sendingHoursActive?: boolean;
     };
+    sendLimitActive?: boolean;
     sendingSpeed: string;
     timezone: string;
   };
@@ -81,7 +86,12 @@ const defaultCopilotData: CopilotData = {
   settings: {
     schedule: {
       runAt: "",
+      activeDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      fromTime: "08:00",
+      toTime: "17:00",
+      sendingHoursActive: false,
     },
+    sendLimitActive: false,
     sendingSpeed: "Normal (Recommended)",
     timezone: "(GMT-08:00) Pacific Time (US & Canada)",
   },
