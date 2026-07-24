@@ -5,6 +5,7 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { emailProfilesApi } from "@/lib/api";
 import { useCopilotStore } from "@/store/copilotStore";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 interface OtherProviderPopUpProps {
   onClose: (saved?: boolean) => void;
@@ -43,7 +44,7 @@ function OtherProviderPopUp({ onClose, editProfile }: OtherProviderPopUpProps) {
 
   const handleAddAccount = async () => {
     if (!form.profileName || !form.email) {
-      alert("Profile Name and Email Address are required");
+      toast.error("Profile Name and Email Address are required");
       return;
     }
 
@@ -62,7 +63,7 @@ function OtherProviderPopUp({ onClose, editProfile }: OtherProviderPopUpProps) {
         onClose(true);
       }
     } catch (error) {
-      alert(editProfile ? "Failed to update profile." : "Failed to create profile.");
+      toast.error(editProfile ? "Failed to update profile." : "Failed to create profile.");
       console.error(error);
     } finally {
       setSaving(false);

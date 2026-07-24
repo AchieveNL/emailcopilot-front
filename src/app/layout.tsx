@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import {Toaster} from "sonner"
 
 export const metadata: Metadata = {
   title: "Emailcopilot.io",
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body>{children}</body>
+        <body>
+          {children}
+             <Toaster theme="light" position="top-right" closeButton={true} richColors={true} />
+        </body>
       </html>
     </ClerkProvider>
   );

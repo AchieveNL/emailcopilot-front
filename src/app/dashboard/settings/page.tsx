@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { User, Lock, Bell, Palette, Save, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { settingsApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 type Settings = {
   firstName: string;
@@ -62,23 +63,23 @@ export default function SettingsPage() {
       await settingsApi.update(settings as unknown as Record<string, unknown>);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch { alert("Failed to save settings."); } finally { setSaving(false); }
+    } catch { toast.error("Failed to save settings."); } finally { setSaving(false); }
   }
 
   async function handlePasswordChange() {
-    if (pwForm.next !== pwForm.confirm) { alert("Passwords don't match."); return; }
+    if (pwForm.next !== pwForm.confirm) { toast.error("Passwords don't match."); return; }
     try {
       setPwSaving(true);
       await settingsApi.updatePassword({ current: pwForm.current, password: pwForm.next });
       setPwForm({ current: "", next: "", confirm: "" });
-      alert("Password updated.");
-    } catch { alert("Failed to update password."); } finally { setPwSaving(false); }
+      toast.error("Password updated.");
+    } catch { toast.error("Failed to update password."); } finally { setPwSaving(false); }
   }
 
   async function handleDeleteAccount() {
     if (!confirm("Are you sure? This is irreversible.")) return;
     if (!confirm("This will permanently delete your account and all data. Type DELETE to confirm.")) return;
-    try { await settingsApi.deleteAccount(); window.location.href = "/"; } catch { alert("Failed to delete account."); }
+    try { await settingsApi.deleteAccount(); window.location.href = "/"; } catch { toast.error("Failed to delete account."); }
   }
 
   if (loading) return <div className="flex items-center justify-center h-48 text-gray-400">Loading...</div>;

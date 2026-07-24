@@ -9,6 +9,7 @@ import OtherProviderPopUp from "@/components/ui/NewCopilot/StepTwo/OtherProvider
 import StepsActions from "../StepsActions";
 import { useState, useEffect } from "react";
 import { emailProfilesApi } from "@/lib/api";
+import { toast } from "sonner";
 
 interface Step2EmailProfileProps {
   remoteContext: NewCopilotContext;
@@ -62,7 +63,7 @@ export default function Step2EmailProfile({
       fetchProfiles();
     } catch (error) {
       console.error(error);
-      alert("Failed to delete account");
+      toast.error("Failed to delete account");
     }
   };
 

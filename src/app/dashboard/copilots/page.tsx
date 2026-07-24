@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { copilotsApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Copilot = {
   id: number;
@@ -60,7 +61,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
     try {
       await copilotsApi.updateStatus(copilot.id, next);
       onRefresh();
-    } catch { alert("Failed to update status."); }
+    } catch { toast.error("Failed to update status."); }
     setOpen(false);
   }
 
@@ -72,7 +73,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
       setRunningScrape(true);
       await copilotsApi.run(copilot.id);
       onRefresh();
-    } catch { alert("Failed to run scrape."); } finally { setRunningScrape(false); }
+    } catch { toast.error("Failed to run scrape."); } finally { setRunningScrape(false); }
     setOpen(false);
   }
 
@@ -81,7 +82,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
     try {
       await copilotsApi.updateStatus(copilot.id, "archived");
       onRefresh();
-    } catch { alert("Failed to archive."); }
+    } catch { toast.error("Failed to archive."); }
     setOpen(false);
   }
 
@@ -90,7 +91,7 @@ function CopilotMenu({ copilot, onRefresh }: { copilot: Copilot; onRefresh: () =
     try {
       await copilotsApi.delete(copilot.id);
       onRefresh();
-    } catch { alert("Failed to delete."); }
+    } catch { toast.error("Failed to delete."); }
     setOpen(false);
   }
 

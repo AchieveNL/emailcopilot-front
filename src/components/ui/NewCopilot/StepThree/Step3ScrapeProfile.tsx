@@ -1,11 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Globe, X, Map as MapIcon, Building2 } from "lucide-react";
+import {
+  Globe,
+  X,
+  Map as MapIcon,
+  Building2,
+  CheckCircle2,
+  Search,
+} from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
-import { useCopilotStore } from "@/store/copilotStore";
-
+import { useCopilotStore, ScrapeProfile } from "@/store/copilotStore";
+import { scrapeProfilesApi } from "@/lib/api";
+import { toast } from "sonner";
 // ── TagInput ─────────────────────────────────────────────────────────────────
 
 interface TagInputProps {
@@ -199,8 +207,30 @@ function getCitiesForCountries(countryNames: string[]): string[] {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function Step3ScrapeProfile() {
-  const { copilotData, updateTargetProfile, setStep } = useCopilotStore();
+  const { copilotData, updateTargetProfile, updateCopilotData, setStep } =
+    useCopilotStore();
   const { industries, countries, cities } = copilotData.targetProfile;
+  const [loading, setLoading] = useState(false);
+  const [loadingProfiles, setLoadingProfiles] = useState(true);
+  const [profiles, setProfiles] = useState<ScrapeProfile[]>([]);
+
+  useEffect(() => {
+    scrapeProfilesApi
+      .getAll()
+      .then((res) => {
+        const fetched = res.data?.data || res.data || [];
+        setProfiles(fetched);
+        if (fetched.length > 0 && !copilotData.scrapeProfileId) {
+          // Defaults handled below if needed
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch profiles", err);
+      })
+      .finally(() => {
+        setLoadingProfiles(false);
+      });
+  }, [copilotData.scrapeProfileId]);
 
   // Derive available cities from selected countries
   const availableCities = useMemo(
@@ -226,7 +256,36 @@ export default function Step3ScrapeProfile() {
     updateTargetProfile({ countries: [], cities: [] });
   }, [updateTargetProfile]);
 
-  const canContinue = industries.length > 0;
+  const canContinue = !!copilotData.scrapeProfileId || industries.length > 0;
+
+  const handleONpress = async () => {
+    // If a profile is selected, just proceed using that profile.
+    if (copilotData.scrapeProfileId) {
+      setStep(4);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await scrapeProfilesApi.create({
+        name: industries[0],
+        searchQuery: industries[0],
+        cities: cities[0],
+        countries: countries[0],
+      });
+      // Optionally update copilotData.scrapeProfileId with newly created ID if returned
+      if (res.data?.id) {
+        updateCopilotData({ scrapeProfileId: res.data.id });
+      }
+      setStep(4);
+      toast.success("Scrape profile created successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create scrape profile");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -253,9 +312,12 @@ export default function Step3ScrapeProfile() {
             icon={<Building2 size={15} />}
             allowCustom
             selected={industries}
-            onAdd={(v) =>
-              updateTargetProfile({ industries: [...industries, v] })
-            }
+            onAdd={(v) => {
+              if (copilotData.scrapeProfileId) {
+                updateCopilotData({ scrapeProfileId: null });
+              }
+              updateTargetProfile({ industries: [...industries, v] });
+            }}
             onRemove={(v) =>
               updateTargetProfile({
                 industries: industries.filter((i) => i !== v),
@@ -278,7 +340,12 @@ export default function Step3ScrapeProfile() {
             icon={<Globe size={15} />}
             options={ALL_COUNTRY_NAMES}
             selected={countries}
-            onAdd={(v) => updateTargetProfile({ countries: [...countries, v] })}
+            onAdd={(v) => {
+              if (copilotData.scrapeProfileId) {
+                updateCopilotData({ scrapeProfileId: null });
+              }
+              updateTargetProfile({ countries: [...countries, v] });
+            }}
             onRemove={handleRemoveCountry}
             onClearAll={handleClearCountries}
             placeholder="Search countries…"
@@ -297,7 +364,12 @@ export default function Step3ScrapeProfile() {
             icon={<MapIcon size={15} />}
             options={availableCities}
             selected={cities}
-            onAdd={(v) => updateTargetProfile({ cities: [...cities, v] })}
+            onAdd={(v) => {
+              if (copilotData.scrapeProfileId) {
+                updateCopilotData({ scrapeProfileId: null });
+              }
+              updateTargetProfile({ cities: [...cities, v] });
+            }}
             onRemove={(v) =>
               updateTargetProfile({ cities: cities.filter((c) => c !== v) })
             }
@@ -315,11 +387,79 @@ export default function Step3ScrapeProfile() {
           />
         </div>
       </div>
+
+      {/* Divider */}
+      <div className="relative py-8">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-white px-3 text-xs font-semibold text-gray-800">
+            Your Scrape Profiles
+          </span>
+        </div>
+      </div>
+      <div>
+        <div className="space-y-4">
+          {loadingProfiles ? (
+            <div className="text-sm text-gray-500">Loading profiles...</div>
+          ) : profiles.length === 0 ? (
+            <div className="text-sm text-gray-500 bg-gray-50 border border-gray-100 rounded-lg p-6 text-center">
+              No existing scrape profiles found.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {profiles.map((profile) => (
+                <div
+                  key={profile.id}
+                  className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
+                    copilotData.scrapeProfileId === profile.id
+                      ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                      : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
+                  }`}
+                  onClick={() => {
+                    if (copilotData.scrapeProfileId === profile.id) {
+                      updateCopilotData({ scrapeProfileId: null });
+                    } else {
+                      // Optionally clear the custom targets? Not necessary, but good UX
+                      updateCopilotData({ scrapeProfileId: profile.id });
+                    }
+                  }}
+                >
+                  {copilotData.scrapeProfileId === profile.id && (
+                    <div className="absolute top-4 right-4 text-primary">
+                      <CheckCircle2
+                        size={20}
+                        className="fill-current text-white"
+                      />
+                    </div>
+                  )}
+                  <h4 className="font-semibold text-gray-900 pr-8 line-clamp-1">
+                    {profile.name}
+                  </h4>
+                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                    <div className="flex items-center gap-1.5">
+                      <Search size={14} className="text-gray-400" />
+                      <span>{profile.status}</span>
+                    </div>
+                    {profile.resultsCount !== undefined && (
+                      <div className="flex items-center gap-1.5">
+                        <Building2 size={14} className="text-gray-400" />
+                        <span>{profile.resultsCount} leads</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <StepsActions
         onPress={() => {
-          console.log("copilot data", copilotData);
-          setStep(4);
+          handleONpress();
         }}
+        isLoading={loading}
         canContinue={canContinue}
       />
     </>
