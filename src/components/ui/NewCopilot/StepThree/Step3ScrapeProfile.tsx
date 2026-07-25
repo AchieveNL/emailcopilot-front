@@ -5,9 +5,10 @@ import {
   Globe,
   X,
   Map as MapIcon,
+  MapPin,
   Building2,
   CheckCircle2,
-  Search,
+  LocateIcon,
 } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
@@ -220,6 +221,7 @@ export default function Step3ScrapeProfile() {
       .then((res) => {
         const fetched = res.data?.data || res.data || [];
         setProfiles(fetched);
+        console.log("Fetched scrape profiles:", fetched);
         if (fetched.length > 0 && !copilotData.scrapeProfileId) {
           // Defaults handled below if needed
         }
@@ -270,8 +272,8 @@ export default function Step3ScrapeProfile() {
       const res = await scrapeProfilesApi.create({
         name: industries[0],
         searchQuery: industries[0],
-        cities: cities[0],
-        countries: countries[0],
+        city: cities[0],
+        country: countries[0],
       });
       // Optionally update copilotData.scrapeProfileId with newly created ID if returned
       if (res.data?.id) {
@@ -439,13 +441,13 @@ export default function Step3ScrapeProfile() {
                   </h4>
                   <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
                     <div className="flex items-center gap-1.5">
-                      <Search size={14} className="text-gray-400" />
-                      <span>{profile.status}</span>
+                      <Building2 size={14} className="text-gray-400" />
+                      <span>{profile?.city}</span>
                     </div>
-                    {profile.resultsCount !== undefined && (
+                    {profile?.country !== undefined && (
                       <div className="flex items-center gap-1.5">
-                        <Building2 size={14} className="text-gray-400" />
-                        <span>{profile.resultsCount} leads</span>
+                        <MapPin size={14} className="text-gray-400" />
+                        <span>{profile?.country} leads</span>
                       </div>
                     )}
                   </div>

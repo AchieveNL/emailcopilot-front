@@ -52,13 +52,13 @@ const steps = [
 ];
 
 export default function Stepper() {
-  const { currentStep, setStep } = useCopilotStore();
+  const { currentStep, highestStep, setStep } = useCopilotStore();
 
   return (
     <div className=" py-6 mb-6">
       <div className="flex items-start justify-between relative">
         {steps.map((step, idx) => {
-          const done = currentStep > step.id;
+          const done = highestStep > step.id && currentStep !== step.id;
           const active = currentStep === step.id;
           const isLast = idx === steps.length - 1;
 
@@ -69,11 +69,11 @@ export default function Stepper() {
             >
               <button
                 onClick={() => {
-                  if (step.id <= currentStep) setStep(step.id as Step);
+                  if (step.id <= highestStep) setStep(step.id as Step);
                 }}
                 className={clsx(
                   "flex flex-col items-center text-center",
-                  step.id <= currentStep ? "cursor-pointer" : "cursor-default",
+                  step.id <= highestStep ? "cursor-pointer" : "cursor-default",
                 )}
               >
                 <div className="flex items-center  gap-2">

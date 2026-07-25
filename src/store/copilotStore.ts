@@ -49,6 +49,8 @@ export interface ScrapeProfile {
   name: string;
   url: string; // was wrongly "category" + "location"
   selector: string; // was missing
+  country: string; // was missing
+  city: string; // was missing
   fields: string[]; // was missing (jsonb string[])
   status: "idle" | "running" | "done" | "error"; // matches scrapeStatusEnum
   resultsCount: number; // was wrongly "count"
@@ -63,6 +65,7 @@ interface CopilotStore {
   launched: boolean;
   mode: CopilotMode;
   editingId: number | null;
+  highestStep: Step;
 
   setStep: (step: Step) => void;
   updateCopilotData: (data: Partial<CopilotData>) => void;
@@ -108,8 +111,13 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
   launched: false,
   mode: "create",
   editingId: null,
+  highestStep: 1,
 
-  setStep: (step) => set({ currentStep: step }),
+  setStep: (step) =>
+    set((state) => ({
+      currentStep: step,
+      highestStep: Math.max(state.highestStep, step) as Step,
+    })),
 
   updateCopilotData: (data) =>
     set((state) => ({
@@ -143,6 +151,7 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       copilotData: data,
       editingId: id ?? null,
       mode,
+      highestStep: 6,
     }),
 
   resetStore: () =>
@@ -152,6 +161,7 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       launched: false,
       mode: "create",
       editingId: null,
+      highestStep: 1,
     }),
 }));
 
@@ -194,6 +204,8 @@ export const mockScrapeProfiles: ScrapeProfile[] = [
     url: "https://maps.google.com/?q=dentist+california",
     selector: ".place-result",
     fields: ["name", "phone", "address", "website"],
+    city: "California",
+    country: "USA",
     status: "done",
     resultsCount: 2840,
     lastRun: "2024-05-01T10:00:00Z",
@@ -204,8 +216,11 @@ export const mockScrapeProfiles: ScrapeProfile[] = [
     url: "https://maps.google.com/?q=medical+clinic+new+york",
     selector: ".place-result",
     fields: ["name", "phone", "address"],
+    city: "New York",
+    country: "USA",
     status: "done",
     resultsCount: 1520,
+
     lastRun: "2024-04-28T08:30:00Z",
   },
   {
@@ -214,7 +229,10 @@ export const mockScrapeProfiles: ScrapeProfile[] = [
     url: "https://maps.google.com/?q=law+firm+texas",
     selector: ".place-result",
     fields: ["name", "phone", "email", "website"],
+    city: "Austin",
+    country: "USA",
     status: "idle",
+
     resultsCount: 3100,
     lastRun: null,
   },

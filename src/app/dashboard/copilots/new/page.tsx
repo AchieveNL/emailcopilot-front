@@ -10,7 +10,7 @@ import EmailProfileSidebar from "@/components/ui/NewCopilot/StepTwo/EmailProfile
 import Step1Settings from "@/components/ui/NewCopilot/StepOne/Step1Settings";
 import Step2EmailProfile from "@/components/ui/NewCopilot/StepTwo/Step2EmailProfile";
 import Step3ScrapeProfile from "@/components/ui/NewCopilot/StepThree/Step3ScrapeProfile";
-import Step4Launch from "@/components/ui/NewCopilot/StepFour/Step4Launch";
+import Step4Launch from "@/components/ui/NewCopilot/StepSix/Step4Launch";
 import TargetAudienceSummary from "@/components/ui/NewCopilot/StepThree/TargetAudienceSummary";
 import { useCopilotStore } from "@/store/copilotStore";
 import EmailTemplateStep from "@/components/ui/NewCopilot/StepFour/EmailTemplateStep";
@@ -25,7 +25,8 @@ import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
 import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTemplateSidbar";
 import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
-import {toast} from "sonner"
+import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
+import { toast } from "sonner";
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
 type RemoteOption = { id: number; name: string };
@@ -102,7 +103,10 @@ export default function NewCopilotPage() {
         />
       ),
       sideBar: () => (
-        <CopilotSummary draftId={draftId?.toString() ?? undefined} />
+        <LaunchSideBar
+          draftId={draftId?.toString() ?? undefined}
+          remoteContext={remoteContext}
+        />
       ),
     },
   ];
@@ -266,7 +270,14 @@ export default function NewCopilotPage() {
     try {
       setLaunching(true);
       const payload = {
-        ...copilotData,
+        name: copilotData.name,
+        description: copilotData.description,
+        goal: copilotData.goal,
+        emailProfileId: copilotData.emailProfileId,
+        scrapeProfileId: copilotData.scrapeProfileId,
+        templateId: copilotData.templateId,
+        sendLimit: copilotData.sendLimit || 10,
+
         userId: user?.id,
         status: "active" as const,
       };
@@ -281,8 +292,7 @@ export default function NewCopilotPage() {
       resetStore();
       router.push("/dashboard/copilots");
     } catch {
-   
-    toast.error('Failed to launch copilot. Please try again.');
+      toast.error("Failed to launch copilot. Please try again.");
     } finally {
       setLaunching(false);
     }
