@@ -32,7 +32,7 @@ const navItems = [
     label: "Target Audiences",
     icon: Database,
   },
-  { href: "/dashboard/templates", label: "Email templates", icon: FileText },
+  { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
   { href: "/dashboard/departured", label: "Departured", icon: Users },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */

@@ -17,6 +17,9 @@ import {
   AlignCenter,
   Undo2,
   Redo2,
+  FolderOpen,
+  ArrowRight,
+  X,
 } from "lucide-react";
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
@@ -36,89 +39,15 @@ export default function EmailTemplateStep() {
   const [subjectInput, setSubjectInput] = useState(
     "Quick idea to help {{companyName}} book more appointments",
   );
+  const [showTemplatePopup, setShowTemplatePopup] = useState(false);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
   const { copilotData, updateCopilotData, setStep } = useCopilotStore();
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false,
-      }),
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
-    ],
-    content: `Hi {{firstName}},\n\nI noticed that {{companyName}} provides private jet services for clients in {{location}}.\nI wanted to share a quick idea that could help you attract more qualified charter inquiries and increase bookings without relying solely on referrals or repeat clients.\n\nWould you be open to a quick 15-minute call next week to explore this?\n\nBest regards,\n{{senderName}}`,
-    editorProps: {
-      attributes: {
-        class:
-          "w-full min-h-[260px] p-4 text-sm text-slate-700 resize-none focus:outline-none leading-relaxed",
-      },
-    },
-  });
-
-  const insertVariable = (variableName: string) => {
-    if (!editor) return;
-
-    editor.chain().focus().insertContent(variableName).run();
-    if (variableInput.includes(variableName)) return;
-    setVariableInput([...variableInput, variableName]);
-  };
-
-  const normalizeVariable = (variable: string): string => {
-    return variable.toLowerCase().replace(/\{\{|\}\}/g, "");
-  };
-
-  const removeVariable = () => {
-    if (!editor) return;
-    const editorContent = editor.getHTML();
-    const subjectLower = subjectInput.toLowerCase();
-    const editorContentLower = editorContent.toLowerCase();
-
-    const variablesToRemove = variableInput.filter((variable) => {
-      const normalizedVar = normalizeVariable(variable);
-      const inSubject = subjectLower.includes(`{{${normalizedVar}}}`);
-      const inEditor = editorContentLower.includes(`{{${normalizedVar}}}`);
-      return !inSubject && !inEditor;
-    });
-
-    if (variablesToRemove.length > 0) {
-      setVariableInput(variableInput.filter((v) => !variablesToRemove.includes(v)));
-    }
-  };
-
-  useEffect(() => {
-    if (!editor) return;
-
-    const handleUpdate = () => {
-      const editorContent = editor.getHTML();
-      const subjectLower = subjectInput.toLowerCase();
-      const editorContentLower = editorContent.toLowerCase();
-
-      const variablesInContent = variablesList
-        .filter((variable) => {
-          const normalizedVar = normalizeVariable(variable.name);
-          return (
-            subjectLower.includes(`{{${normalizedVar}}}`) ||
-            editorContentLower.includes(`{{${normalizedVar}}}`)
-          );
-        })
-        .map((variable) => variable.name);
-
-      setVariableInput(variablesInContent);
-    };
-
-    editor.on("update", handleUpdate);
-    editor.on("selectionUpdate", handleUpdate);
- 
-    return () => {
-      editor.off("update", handleUpdate);
-      editor.off("selectionUpdate", handleUpdate);
-    };
-  }, [editor, subjectInput]);
-
-
+  const [templateName, setTemplateName] = useState(
+    copilotData?.name || "Intro - Book More Appointments",
+  );
 
   const variablesList = [
     {
@@ -166,17 +95,118 @@ export default function EmailTemplateStep() {
     // },
   ];
 
-  const handleSave = async () => {
-    setLoading(true);
-    const response = await templatesApi.create({
-      name: copilotData?.name || "initial template",
-      subject: subjectInput,
-      body: editor.getHTML(),
-      variables:variableInput
+  useEffect(() => {
+    if (showTemplatePopup) {
+      const fetchTemplates = async () => {
+        setIsLoadingTemplates(true);
+        try {
+          const res = await templatesApi.getAll();
+          setTemplates(res.data.data || res.data || []);
+        } catch (error) {
+          console.error("Failed to load templates:", error);
+        } finally {
+          setIsLoadingTemplates(false);
+        }
+      };
+      fetchTemplates();
+    }
+  }, [showTemplatePopup]);
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Link.configure({
+        openOnClick: false,
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ],
+    content: `Hi {{firstName}},\n\nI noticed that {{companyName}} provides private jet services for clients in {{location}}.\nI wanted to share a quick idea that could help you attract more qualified charter inquiries and increase bookings without relying solely on referrals or repeat clients.\n\nWould you be open to a quick 15-minute call next week to explore this?\n\nBest regards,\n{{senderName}}`,
+    editorProps: {
+      attributes: {
+        class:
+          "w-full min-h-[260px] p-4 text-sm text-slate-700 resize-none focus:outline-none leading-relaxed",
+      },
+    },
+  });
+
+  const insertVariable = (variableName: string) => {
+    if (!editor) return;
+
+    editor.chain().focus().insertContent(variableName).run();
+    if (variableInput.includes(variableName)) return;
+    setVariableInput([...variableInput, variableName]);
+  };
+
+  const normalizeVariable = (variable: string): string => {
+    return variable.toLowerCase().replace(/\{\{|\}\}/g, "");
+  };
+
+  const removeVariable = () => {
+    if (!editor) return;
+    const editorContent = editor.getHTML();
+    const subjectLower = subjectInput.toLowerCase();
+    const editorContentLower = editorContent.toLowerCase();
+
+    const variablesToRemove = variableInput.filter((variable) => {
+      const normalizedVar = normalizeVariable(variable);
+      const inSubject = subjectLower.includes(`{{${normalizedVar}}}`);
+      const inEditor = editorContentLower.includes(`{{${normalizedVar}}}`);
+      return !inSubject && !inEditor;
     });
 
-    updateCopilotData({ templateId: response.data.id });
-    console.log(copilotData)
+    if (variablesToRemove.length > 0) {
+      setVariableInput(
+        variableInput.filter((v) => !variablesToRemove.includes(v)),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleUpdate = () => {
+      const editorContent = editor.getHTML();
+      const subjectLower = subjectInput.toLowerCase();
+      const editorContentLower = editorContent.toLowerCase();
+
+      const variablesInContent = variablesList
+        .filter((variable) => {
+          const normalizedVar = normalizeVariable(variable.name);
+          return (
+            subjectLower.includes(`{{${normalizedVar}}}`) ||
+            editorContentLower.includes(`{{${normalizedVar}}}`)
+          );
+        })
+        .map((variable) => variable.name);
+
+      setVariableInput(variablesInContent);
+    };
+
+    editor.on("update", handleUpdate);
+    editor.on("selectionUpdate", handleUpdate);
+
+    return () => {
+      editor.off("update", handleUpdate);
+      editor.off("selectionUpdate", handleUpdate);
+    };
+  }, [editor, subjectInput]);
+
+  const handleSave = async () => {
+    setLoading(true);
+
+    if (!copilotData.templateId) {
+      const response = await templatesApi.create({
+        name: templateName || "initial template",
+        subject: subjectInput,
+        body: editor.getHTML(),
+        variables: variableInput,
+      });
+
+      updateCopilotData({ templateId: response.data.id, name: templateName });
+    }
+    console.log(copilotData);
     setLoading(false);
     setStep(5);
   };
@@ -223,12 +253,21 @@ export default function EmailTemplateStep() {
         <label className="text-sm font-semibold text-slate-800 whitespace-nowrap">
           Template name
         </label>
-        <div className="w-full relative">
+        <div className="w-full flex gap-3">
           <input
             type="text"
-            defaultValue={copilotData?.name || "Intro - Book More Appointments"}
-            className="w-full border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+            value={templateName}
+            onChange={(e) => setTemplateName(e.target.value)}
+            className="flex-1 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
           />
+          <button
+            type="button"
+            onClick={() => setShowTemplatePopup(true)}
+            className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            <FolderOpen className="w-4 h-4" />
+            Browse Templates
+          </button>
         </div>
       </div>
       <div className="flex justify-end text-xs text-slate-400 mb-6">
@@ -526,6 +565,140 @@ export default function EmailTemplateStep() {
         isLoading={loading}
         canContinue={!!(editor && editor.getText().trim().length > 0)}
       />
+
+      {/* Templates Popup */}
+      {showTemplatePopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh] border border-gray-200">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center shrink-0">
+              <div>
+                <h3 className="text-base font-bold text-gray-900">
+                  Email Templates
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Select a template to accelerate your outreach.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTemplatePopup(false)}
+                className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 overflow-y-auto flex-1 bg-gray-50/50">
+              {/* Loading */}
+              {isLoadingTemplates ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-3">
+                  <div
+                    className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin"
+                    style={{
+                      borderColor: "var(--color-primary-light)",
+                      borderTopColor: "var(--color-primary)",
+                    }}
+                  />
+                  <p className="text-xs font-medium text-gray-500">
+                    Fetching templates...
+                  </p>
+                </div>
+              ) : /* Empty */
+              templates.length === 0 ? (
+                <div className="text-center py-24 flex flex-col items-center gap-3">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center border"
+                    style={{
+                      backgroundColor: "var(--color-primary-light)",
+                      borderColor: "var(--color-primary)",
+                    }}
+                  >
+                    <Mail
+                      className="w-6 h-6"
+                      style={{ color: "var(--color-primary)" }}
+                    />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-900">
+                      No templates yet
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-1 max-w-xs">
+                      Once you save a template it will appear here, ready to
+                      use.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* Grid */
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {templates.map((template) => (
+                    <button
+                      key={template.id}
+                      onClick={() => {
+                        setTemplateName(template.name || "");
+                        setSubjectInput(template.subject || "");
+                        editor?.commands.setContent(template.body || "");
+                        if (template.variables)
+                          setVariableInput(template.variables);
+                        updateCopilotData({
+                          templateId: template.id,
+                          name: template.name || "",
+                        });
+                        setShowTemplatePopup(false);
+                      }}
+                      className="group flex flex-col text-left bg-white p-4 rounded-xl border border-gray-200 hover:border-[var(--color-primary)] hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                    >
+                      {/* Card header */}
+                      <div className="flex items-center gap-3 mb-3">
+                        <div
+                          className="p-2 rounded-lg border transition-colors duration-200"
+                          style={{
+                            backgroundColor: "var(--color-primary-light)",
+                            borderColor: "transparent",
+                            color: "var(--color-primary)",
+                          }}
+                        >
+                          <Mail className="w-4 h-4" />
+                        </div>
+                        <h4 className="font-semibold text-sm text-gray-900 group-hover:text-[var(--color-primary)] transition-colors duration-200 truncate">
+                          {template.name}
+                        </h4>
+                      </div>
+
+                      {/* Subject badge */}
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-100 mb-3 w-full overflow-hidden">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider shrink-0">
+                          Subj
+                        </span>
+                        <span className="text-xs text-gray-600 font-medium truncate">
+                          {template.subject}
+                        </span>
+                      </div>
+
+                      {/* Body preview */}
+                      <p
+                        className="text-xs text-gray-400 line-clamp-3 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: template.body }}
+                      />
+
+                      {/* Use template CTA */}
+                      <div
+                        className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-1.5 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{ color: "var(--color-primary)" }}
+                      >
+                        <ArrowRight className="w-3.5 h-3.5" />
+                        Use this template
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

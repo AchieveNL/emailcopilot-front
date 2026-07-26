@@ -39,7 +39,7 @@ const steps = [
   },
   {
     id: 5,
-    label: "Schedule",
+    label: "Flight Schedule",
     sub: "Choose when to send",
     icon: <CalendarDays size={16} />,
   },
