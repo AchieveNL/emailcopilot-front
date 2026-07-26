@@ -10,7 +10,7 @@ import {
   Calendar,
   Send,
   FileText,
-EllipsisVerticalIcon,
+  EllipsisVerticalIcon,
   Eye,
 } from "lucide-react";
 import { leadsApi, templatesApi } from "@/lib/api";
@@ -108,7 +108,11 @@ function TemplateCell({ lead }: { lead: Lead }) {
   } | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [popupPos, setPopupPos] = useState<{ top: number; left: number; position: 'top' | 'bottom' }>({ top: 0, left: 0, position: 'bottom' });
+  const [popupPos, setPopupPos] = useState<{
+    top: number;
+    left: number;
+    position: "top" | "bottom";
+  }>({ top: 0, left: 0, position: "bottom" });
 
   useEffect(() => {
     if (!isHovered || !lead.templateId || template) return;
@@ -140,11 +144,11 @@ function TemplateCell({ lead }: { lead: Lead }) {
         setIsHovered(true);
         const rect = e.currentTarget.getBoundingClientRect();
         const isNearBottom = rect.top > window.innerHeight / 2;
-        
+
         setPopupPos({
-          top: isNearBottom ? rect.top + 80 : rect.bottom  - 80,
+          top: isNearBottom ? rect.top + 80 : rect.bottom - 80,
           left: rect.left - rect.width / 2,
-          position: isNearBottom ? 'top' : 'bottom',
+          position: isNearBottom ? "top" : "bottom",
         });
       }}
       onMouseLeave={() => setIsHovered(false)}
@@ -156,9 +160,11 @@ function TemplateCell({ lead }: { lead: Lead }) {
         </span>
       </div>
       {isHovered && (
-        <div 
+        <div
           className={`fixed z-[100] w-96  rounded-2xl ${
-            popupPos.position === 'top' ? '-translate-y-full -translate-x-1/2' : '-translate-x-1/2'
+            popupPos.position === "top"
+              ? "-translate-y-full -translate-x-1/2"
+              : "-translate-x-1/2"
           }`}
           style={{ top: popupPos.top, left: popupPos.left }}
         >
@@ -187,7 +193,7 @@ export default function LeadsPage() {
       // const res = await leadsApi.getAll({ status: "sent", page, limit });
       // setLeads(res.data.data);
       // setMeta(res.data.meta);
-           setLeads(MOCK_LEADS);
+      setLeads(MOCK_LEADS);
       setMeta({ ...MOCK_META, limit, page });
     } catch {
       // Fallback to mock data if API fails or for offline development
@@ -252,7 +258,7 @@ export default function LeadsPage() {
                       Template
                     </th>
                     <th className="text-center font-semibold text-gray-900 px-6 py-5">
-                      Sent At
+                      Departured at
                     </th>
                     <th className="text-center font-semibold text-gray-900 px-6 py-5">
                       Actions

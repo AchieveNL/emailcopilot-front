@@ -81,10 +81,24 @@ function TagInput({
     if (e.key === "Backspace" && query === "" && selected.length > 0) {
       onRemove(selected[selected.length - 1]);
     }
-    if (e.key === "Enter" && query.trim() !== "") {
-      e.preventDefault();
-      if (allowCustom && !selected.includes(query.trim())) {
-        onAdd(query.trim());
+    if ((e.key === "Enter" || e.key === "Tab") && query.trim() !== "") {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+      if (allowCustom) {
+        if (!selected.includes(query.trim())) {
+          onAdd(query.trim());
+        }
+        setQuery("");
+        setOpen(false);
+      } else if (filtered.length > 0) {
+        const match =
+          filtered.find(
+            (o) => o.toLowerCase() === query.trim().toLowerCase()
+          ) || filtered[0];
+        if (!selected.includes(match)) {
+          onAdd(match);
+        }
         setQuery("");
         setOpen(false);
       }
@@ -442,12 +456,12 @@ export default function Step3ScrapeProfile() {
                   <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
                     <div className="flex items-center gap-1.5">
                       <Building2 size={14} className="text-gray-400" />
-                      <span>{profile?.city}</span>
+                      <span>{profile?.city || "All"} </span>
                     </div>
                     {profile?.country !== undefined && (
                       <div className="flex items-center gap-1.5">
                         <MapPin size={14} className="text-gray-400" />
-                        <span>{profile?.country} leads</span>
+                        <span>{profile?.country || "All"} </span>
                       </div>
                     )}
                   </div>

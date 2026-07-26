@@ -20,6 +20,7 @@
     "@tiptap/starter-kit": "^3.28.0",
     "axios": "^1.16.0",
     "clsx": "^2.1.1",
+    "countries-and-timezones": "^3.9.0",
     "country-state-city": "^3.2.1",
     "gsap": "^3.15.0",
     "lucide-react": "^1.14.0",
