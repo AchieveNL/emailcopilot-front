@@ -12,6 +12,7 @@ import {
   FileText,
   EllipsisVerticalIcon,
   Eye,
+  X,
 } from "lucide-react";
 import { leadsApi, templatesApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
@@ -101,7 +102,13 @@ const MOCK_META: PaginatedMeta = {
   totalPages: 2,
 };
 
-function TemplateCell({ lead }: { lead: Lead }) {
+function TemplateCell({
+  lead,
+  onViewFull,
+}: {
+  lead: Lead;
+  onViewFull?: (subject: string, body: string) => void;
+}) {
   const [template, setTemplate] = useState<{
     subject: string;
     body: string;
@@ -171,6 +178,11 @@ function TemplateCell({ lead }: { lead: Lead }) {
           <EmailPreviewCard
             subject={isLoading ? "Loading..." : template?.subject}
             body={isLoading ? "Fetching template preview..." : template?.body}
+            onViewFull={() => {
+              if (template?.subject && template?.body) {
+                onViewFull?.(template.subject, template.body);
+              }
+            }}
           />
         </div>
       )}
@@ -269,10 +281,10 @@ export default function LeadsPage() {
                   {leads.map((lead) => (
                     <tr
                       key={lead.id}
-                      onClick={() => {
-                        setSelectedLead(lead);
-                        setIsSidebarOpen(true);
-                      }}
+                      // onClick={() => {
+                      //   setSelectedLead(lead);
+                      //   setIsSidebarOpen(true);
+                      // }}
                       className="border-b text-xs border-gray-50 hover:bg-gray-50/50 transition-colors"
                     >
                       <td className="px-6 py-5">
@@ -371,7 +383,7 @@ export default function LeadsPage() {
                           className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center"
                           title="Show emails reached"
                         >
-                          <EllipsisVerticalIcon size={18} />
+                          <ChevronRight size={18} />
                         </button>
                       </td>
                     </tr>

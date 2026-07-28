@@ -94,7 +94,7 @@ function TagInput({
       } else if (filtered.length > 0) {
         const match =
           filtered.find(
-            (o) => o.toLowerCase() === query.trim().toLowerCase()
+            (o) => o.toLowerCase() === query.trim().toLowerCase(),
           ) || filtered[0];
         if (!selected.includes(match)) {
           onAdd(match);
@@ -305,7 +305,7 @@ export default function Step3ScrapeProfile() {
 
   return (
     <>
-      <h2 className="text-lg font-bold mb-1">Define your target profile</h2>
+      <h2 className="text-lg font-bold mb-1">Define your target Audience</h2>
       <p className="text-sm text-gray-500 mb-12">
         Tell your copilot who you want to reach and we'll find the best matches.
       </p>

@@ -27,7 +27,7 @@ const steps = [
   },
   {
     id: 3,
-    label: "Target profile",
+    label: "Target Audience",
     sub: "Choose who to reach",
     icon: <Crosshair size={16} />,
   },
