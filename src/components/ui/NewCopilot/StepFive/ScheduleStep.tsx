@@ -102,6 +102,10 @@ export default function ScheduleStep() {
     setStep(6);
   };
 
+  useEffect(() => {
+    const timezones = ct.getAllTimezones();
+    console.log("Available Timezones:", timezones["Europe/Amsterdam"]);
+  }, []);
   return (
     <div className="w-full mx-auto bg-transparent min-h-[600px] text-slate-800">
       {/* Header Area */}
@@ -323,7 +327,7 @@ export default function ScheduleStep() {
               >
                 {timezones.map((tz) => (
                   <option key={tz.name} value={tz.name}>
-                    {tz.name.split("/")[1] + " - " + tz.name.split("/")[0]} (GMT
+                    {tz.name.split("/")[0] + " - " + tz.name.split("/")[1]} (GMT
                     {tz.utcOffset >= 0 ? "+" : ""}
                     {tz.utcOffset / 60}:00)
                   </option>

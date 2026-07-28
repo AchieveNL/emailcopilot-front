@@ -1,5 +1,6 @@
 "use client";
 import { Mail } from "lucide-react";
+import { useState } from "react";
 
 interface EmailPreviewCardProps {
   subject?: string;
@@ -20,6 +21,8 @@ Best regards,
 {{sender_name}}`,
   onViewFull,
 }: EmailPreviewCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <div className="bg-white border   border-gray-200 rounded-2xl shadow-sm w-90 overflow-hidden">
       {/* Header */}
@@ -41,7 +44,11 @@ Best regards,
         {/* Email body */}
         <div className="space-y-1">
           <p className="text-xs font-semibold text-gray-900">Email body</p>
-          <p className="text-xs text-gray-400 whitespace-pre-line leading-relaxed line-clamp-[10]">
+          <p
+            className={`text-xs text-gray-400 whitespace-pre-line leading-relaxed ${
+              isExpanded ? "" : "line-clamp-[10]"
+            }`}
+          >
             {body}
           </p>
         </div>
@@ -51,11 +58,14 @@ Best regards,
       <div className="px-5 pb-5">
         <button
           type="button"
-          onClick={onViewFull}
+          onClick={(e) => {
+            setIsExpanded(!isExpanded);
+           
+          }}
           className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-700 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] transition-all"
         >
           <Mail size={14} />
-          View full message
+          {isExpanded ? "Show less" : "View full message"}
         </button>
       </div>
     </div>
