@@ -416,7 +416,7 @@ export default function EmailTemplateStep() {
             </label>
             <input
               type="text"
-              defaultValue={subjectInput}
+              value={subjectInput}
               onChange={(e) => {
                 setSubjectInput(e.target.value);
                 removeVariable();
