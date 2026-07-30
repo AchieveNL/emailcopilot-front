@@ -182,12 +182,12 @@ export default function Step4Launch({
                   Sequence
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  4 steps
+                  6 steps
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Total touches
                 </div>
-                <div className="text-gray-500 group-hover:text-blue-500">4</div>
+                <div className="text-gray-500 group-hover:text-blue-500">6</div>
               </div>
             </div>
           </div>
