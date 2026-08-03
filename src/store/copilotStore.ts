@@ -96,7 +96,7 @@ const defaultCopilotData: CopilotData = {
     },
     sendLimitActive: false,
     sendingSpeed: "Normal (Recommended)",
-    timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+    timezone: "Europe/Brussels",
   },
   targetProfile: {
     industries: [],

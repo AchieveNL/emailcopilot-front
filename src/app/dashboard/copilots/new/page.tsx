@@ -39,6 +39,7 @@ export type NewCopilotContext = {
 };
 
 export default function NewCopilotPage() {
+  const defaultTimezone = "Europe/Brussels";
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -174,7 +175,7 @@ export default function NewCopilotPage() {
                   runAt: "",
                 },
                 sendingSpeed: "Normal (Recommended)",
-                timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+                  timezone: defaultTimezone,
               },
               targetProfile: copilot.targetProfile || {
                 industries: [],
@@ -213,7 +214,7 @@ export default function NewCopilotPage() {
                   runAt: "",
                 },
                 sendingSpeed: "Normal (Recommended)",
-                timezone: "(GMT-08:00) Pacific Time (US & Canada)",
+                  timezone: defaultTimezone,
               },
               targetProfile: copilot.targetProfile || {
                 industries: [],
@@ -276,7 +277,7 @@ export default function NewCopilotPage() {
         emailProfileId: copilotData.emailProfileId,
         scrapeProfileId: copilotData.scrapeProfileId,
         templateId: copilotData.templateId,
-        sendLimit: copilotData.sendLimit || 10,
+        sendLimit: copilotData.sendLimit,
 
         userId: user?.id,
         status: "active" as const,

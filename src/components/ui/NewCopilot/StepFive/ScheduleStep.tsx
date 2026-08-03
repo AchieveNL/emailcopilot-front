@@ -1,18 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import StepsActions from "../StepsActions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
 import ct from "countries-and-timezones";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-const TIMEZONES = [
-  "Timezone: (GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
-  "Timezone: (GMT-08:00) Pacific Time (US & Canada)",
-  "Timezone: (GMT+00:00) Greenwich Mean Time : London",
-];
+const DEFAULT_TIMEZONE = "Europe/Brussels";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => {
   const hour = i.toString().padStart(2, "0");
@@ -73,7 +68,10 @@ export default function ScheduleStep() {
     utcOffset: tz.utcOffset,
   }));
 
-  const timezone = copilotData?.settings?.timezone || timezones[0]?.name;
+  const timezone =
+    copilotData?.settings?.timezone ||
+    timezones.find((tz) => tz.name === DEFAULT_TIMEZONE)?.name ||
+    DEFAULT_TIMEZONE;
   const setTimezone = (val: string) => updateSettings({ timezone: val });
 
   const [loading, setLoading] = useState(false);
@@ -102,10 +100,6 @@ export default function ScheduleStep() {
     setStep(6);
   };
 
-  useEffect(() => {
-    const timezones = ct.getAllTimezones();
-    console.log("Available Timezones:", timezones["Europe/Amsterdam"]);
-  }, []);
   return (
     <div className="w-full mx-auto bg-transparent min-h-[600px] text-slate-800">
       {/* Header Area */}
@@ -120,8 +114,8 @@ export default function ScheduleStep() {
 
       <div className="flex flex-col gap-8 w-full max-w-4xl">
         {/* Daily send limit */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-100 pb-8">
-          <div className="max-w-[280px]">
+        <div className="grid grid-cols-6 gap-6 border-b border-slate-100 pb-8">
+          <div className="col-span-2 ">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Daily send limit
             </h3>
@@ -129,69 +123,71 @@ export default function ScheduleStep() {
               Maximum number of new emails to send per day.
             </p>
           </div>
-          {sendLimitActive ? (
-            <div className="flex-1 flex flex-col pt-1">
-              <div className="flex items-center">
-                <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
-                  <button
-                    type="button"
-                    onClick={() => setSendLimit(Math.max(1, sendLimit - 1))}
-                    className="px-4 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <div className="px-4 py-2 min-w-[60px] text-center text-sm font-medium border-x border-slate-200">
-                    {sendLimit}
+          <div className="col-span-4 flex items-start gap-4 flex-1 pt-1">
+            {sendLimitActive ? (
+              <div className=" w-full flex flex-col pt-1">
+                <div className="flex items-center">
+                  <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <button
+                      type="button"
+                      onClick={() => setSendLimit(Math.max(1, sendLimit - 1))}
+                      className="px-4 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <div className="px-4 py-2 min-w-[60px] text-center text-sm font-medium border-x border-slate-200">
+                      {sendLimit}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSendLimit(sendLimit + 1)}
+                      className="px-4 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setSendLimit(sendLimit + 1)}
-                    className="px-4 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
+                </div>
+                <div className="text-xs text-slate-400 mt-2">
+                  Recommended: 20-50 per day for best deliverability
                 </div>
               </div>
-              <div className="text-xs text-slate-400 mt-2">
-                Recommended: 20-50 per day for best deliverability
-              </div>
-            </div>
-          ) : (
-            <div className=" w-full flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
-              <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
+            ) : (
+              <div className=" w-full flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+                <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
 
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 mb-1">
-                  Unlimited sending
-                </h3>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1">
+                    Unlimited sending
+                  </h3>
 
-                <p className="text-xs text-slate-700 font-medium leading-relaxed">
-                  Your copilot will send as many emails as possible within the
-                  active hours each day.{" "}
-                </p>
+                  <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                    Your copilot will send as many emails as possible within the
+                    active hours each day.{" "}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={() => setSendLimitActive(!sendLimitActive)}
-              className={`w-11 h-6 rounded-full transition-colors relative flex items-center shrink-0 ${
-                sendLimitActive ? "bg-blue-600" : "bg-slate-300"
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute shadow-sm transition-transform ${
-                  sendLimitActive ? "translate-x-5" : "translate-x-1"
+            )}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setSendLimitActive(!sendLimitActive)}
+                className={`w-11 h-6 rounded-full transition-colors relative flex items-center shrink-0 ${
+                  sendLimitActive ? "bg-blue-600" : "bg-slate-300"
                 }`}
-              ></div>
-            </button>
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full absolute shadow-sm transition-transform ${
+                    sendLimitActive ? "translate-x-5" : "translate-x-1"
+                  }`}
+                ></div>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Active days */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-100 pb-8">
-          <div className="max-w-[280px]">
+        <div className="grid grid-cols-6 gap-6 border-b border-slate-100 pb-8">
+          <div className="col-span-2">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Active days
             </h3>
@@ -200,7 +196,7 @@ export default function ScheduleStep() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 flex-1 pt-1">
+          <div className="col-span-4 flex flex-wrap gap-2 flex-1 pt-1">
             {DAYS.map((day) => {
               const isActive = activeDays.includes(day);
               return (
@@ -222,8 +218,8 @@ export default function ScheduleStep() {
         </div>
 
         {/* Sending hours */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-100 pb-8">
-          <div className="max-w-[280px]">
+        <div className="grid grid-cols-6 gap-6 border-b border-slate-100 pb-8">
+          <div className="col-span-2">
             <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center pr-2">
               Sending hours{" "}
               <span className="font-normal text-slate-400 text-xs ml-1">
@@ -234,82 +230,86 @@ export default function ScheduleStep() {
               Set the daily time window when your copilot can send emails.
             </p>
           </div>
-          {sendingHoursActive ? (
-            <div className="flex flex-wrap items-center gap-4 flex-1 pt-1">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-slate-700">From</span>
-                <div className="relative">
-                  <select
-                    value={fromTime}
-                    onChange={(e) => setFromTime(e.target.value)}
-                    className="appearance-none pl-9 pr-10 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-700"
-                  >
-                    {HOURS.map((hour) => (
-                      <option key={hour} value={hour}>
-                        {hour}
-                      </option>
-                    ))}
-                  </select>
-                  <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="col-span-4 flex items-start gap-4 flex-1 pt-1">
+            {sendingHoursActive ? (
+              <div className="flex flex-wrap items-center gap-4 flex-1 pt-1">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-slate-700">
+                    From
+                  </span>
+                  <div className="relative">
+                    <select
+                      value={fromTime}
+                      onChange={(e) => setFromTime(e.target.value)}
+                      className="appearance-none pl-9 pr-10 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-700"
+                    >
+                      {HOURS.map((hour) => (
+                        <option key={hour} value={hour}>
+                          {hour}
+                        </option>
+                      ))}
+                    </select>
+                    <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-slate-700">To</span>
+                  <div className="relative">
+                    <select
+                      value={toTime}
+                      onChange={(e) => setToTime(e.target.value)}
+                      className="appearance-none pl-9 pr-10 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-700"
+                    >
+                      {HOURS.map((hour) => (
+                        <option key={hour} value={hour}>
+                          {hour}
+                        </option>
+                      ))}
+                    </select>
+                    <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
+            ) : (
+              <div className="w-full flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+                <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
 
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-slate-700">To</span>
-                <div className="relative">
-                  <select
-                    value={toTime}
-                    onChange={(e) => setToTime(e.target.value)}
-                    className="appearance-none pl-9 pr-10 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-700"
-                  >
-                    {HOURS.map((hour) => (
-                      <option key={hour} value={hour}>
-                        {hour}
-                      </option>
-                    ))}
-                  </select>
-                  <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1">
+                    Sending hours is off
+                  </h3>
+
+                  <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                    Your copilot can send emails at any time, 24/7{" "}
+                  </p>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="w-full flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
-              <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
+            )}
 
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 mb-1">
-                  Sending hours is off
-                </h3>
-
-                <p className="text-xs text-slate-700 font-medium leading-relaxed">
-                  Your copilot can send emails at any time, 24/7{" "}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={() => setSendingHoursActive(!sendingHoursActive)}
-              className={`w-11 h-6 rounded-full transition-colors relative flex items-center shrink-0 ${
-                sendingHoursActive ? "bg-blue-600" : "bg-slate-300"
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute shadow-sm transition-transform ${
-                  sendingHoursActive ? "translate-x-5" : "translate-x-1"
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setSendingHoursActive(!sendingHoursActive)}
+                className={`w-11 h-6 rounded-full transition-colors relative flex items-center shrink-0 ${
+                  sendingHoursActive ? "bg-blue-600" : "bg-slate-300"
                 }`}
-              ></div>
-            </button>
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full absolute shadow-sm transition-transform ${
+                    sendingHoursActive ? "translate-x-5" : "translate-x-1"
+                  }`}
+                ></div>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Default Timezone */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-2">
-          <div className="max-w-[280px]">
+        <div className="grid grid-cols-6 gap-6 pb-2">
+          <div className="col-span-2">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Default Timezone
             </h3>
@@ -318,7 +318,7 @@ export default function ScheduleStep() {
             </p>
           </div>
 
-          <div className="flex-1 pt-1 justify-between flex">
+          <div className="col-span-4 flex-1 pt-1 justify-between flex">
             <div className="relative w-full max-w-md">
               <select
                 value={timezone}

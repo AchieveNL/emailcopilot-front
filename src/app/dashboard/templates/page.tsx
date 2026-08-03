@@ -95,6 +95,7 @@ export default function TemplatesPage() {
   async function handleDuplicate(id: number) {
     try {
       await templatesApi.duplicate(id);
+
       fetchTemplates();
     } catch {
       toast.error("Failed to duplicate.");
