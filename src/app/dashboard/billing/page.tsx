@@ -4,7 +4,6 @@ import React from "react";
 import { useBilling, Plan } from "@/lib/useBilling";
 import { CreditCard, Check, Download } from "lucide-react";
 
-
 export default function BillingPage() {
   const {
     plans,
@@ -39,7 +38,7 @@ export default function BillingPage() {
   async function handleCancel() {
     if (
       !confirm(
-        "Cancel your subscription? You'll keep access until the end of your billing period."
+        "Cancel your subscription? You'll keep access until the end of your billing period.",
       )
     )
       return;
@@ -94,10 +93,11 @@ export default function BillingPage() {
               <p className="text-sm font-semibold text-gray-900">
                 {currentPlan.name} Plan
                 <span
-                  className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${isActive
+                  className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${
+                    isActive
                       ? "bg-emerald-50 text-emerald-600"
                       : "bg-red-50 text-red-600"
-                    }`}
+                  }`}
                 >
                   {isActive ? "Active" : isPending ? "Pending" : "Inactive"}
                 </span>
@@ -105,8 +105,8 @@ export default function BillingPage() {
               <p className="text-xs text-gray-500">
                 {subscription?.currentPeriodEnd
                   ? `Renews on ${new Date(
-                    subscription.currentPeriodEnd
-                  ).toLocaleDateString()}`
+                      subscription.currentPeriodEnd,
+                    ).toLocaleDateString()}`
                   : ""}
               </p>
             </div>
@@ -137,8 +137,9 @@ export default function BillingPage() {
           return (
             <div
               key={plan.id}
-              className={`bg-white rounded-xl p-6 shadow-sm border-2 transition-all ${plan.highlight ? "border-emerald-500" : "border-gray-200"
-                } relative`}
+              className={`bg-white rounded-xl p-6 shadow-sm border-2 transition-all ${
+                plan.highlight ? "border-emerald-500" : "border-gray-200"
+              } relative`}
             >
               {plan.highlight && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-medium">
@@ -173,12 +174,13 @@ export default function BillingPage() {
               <button
                 onClick={() => !isCurrentPlan && handleSubscribe(plan.id)}
                 disabled={isCurrentPlan || subscribing}
-                className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${isCurrentPlan
+                className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isCurrentPlan
                     ? "bg-gray-100 text-gray-400 cursor-default"
                     : plan.highlight
                       ? "bg-emerald-600 text-white hover:bg-emerald-700"
                       : "border border-gray-200 text-gray-700 hover:bg-gray-50"
-                  } disabled:opacity-50`}
+                } disabled:opacity-50`}
               >
                 {isCurrentPlan
                   ? "Current Plan"
@@ -214,13 +216,14 @@ export default function BillingPage() {
               {invoices.map((inv, idx) => (
                 <tr
                   key={inv.id}
-                  className={`text-sm ${idx < invoices.length - 1 ? "border-b border-gray-100" : ""
-                    }`}
+                  className={`text-sm ${
+                    idx < invoices.length - 1 ? "border-b border-gray-100" : ""
+                  }`}
                 >
                   <td className="px-6 py-4 text-gray-900">
                     {new Date(inv.paidAt || inv.createdAt).toLocaleDateString(
                       "en-US",
-                      { month: "long", day: "numeric", year: "numeric" }
+                      { month: "long", day: "numeric", year: "numeric" },
                     )}
                   </td>
                   <td className="px-6 py-4 text-gray-900 font-medium">
@@ -228,8 +231,9 @@ export default function BillingPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[inv.status]
-                        }`}
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
+                        statusColors[inv.status]
+                      }`}
                     >
                       {inv.status}
                     </span>

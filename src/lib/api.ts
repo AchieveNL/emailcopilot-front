@@ -84,6 +84,7 @@ export const copilotsApi = {
     status: "draft" | "active" | "paused" | "archived" | "running", // matches copilotStatusEnum
   ) => api.patch(`/copilots/${id}/status`, { status }),
   run: (id: number) => api.post(`/copilots/${id}/run`),
+  duplicate: (id: number) => api.post(`/copilots/${id}/duplicate`),
 };
 
 // ─── Settings ─────────────────────────────────────────────────────────────────

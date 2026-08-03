@@ -10,7 +10,6 @@ import {
   MoreVertical,
   Mail,
   MousePointerClick,
-  MessageSquare,
   Search,
   ChevronDown,
   Trash2,
@@ -168,7 +167,15 @@ function CopilotMenu({
       )
     )
       return;
-    router.push(`/dashboard/copilots/new?duplicate=${copilot.id}`);
+    copilotsApi
+      .duplicate(copilot.id)
+      .then(() => {
+        onRefresh();
+        toast.success("Copilot duplicated.");
+      })
+      .catch(() => {
+        toast.error("Failed to duplicate.");
+      });
   }
 
   return (
@@ -205,7 +212,7 @@ function CopilotMenu({
                   size={13}
                   className={runningScrape ? "animate-pulse" : ""}
                 />
-                {runningScrape ? "Running..." : "Run Scrape"}
+                {runningScrape ? "Running..." : "launch"}
               </button>
             )}
             {copilot.status === "active" ? (
@@ -252,6 +259,7 @@ export default function CopilotsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
   const [search, setSearch] = useState("");
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"updatedAt" | "emailsSent" | "name">(
     "updatedAt",
   );
@@ -519,7 +527,7 @@ export default function CopilotsPage() {
                           size={13}
                           className={isActivating ? "animate-pulse" : ""}
                         />
-                        {isActivating ? "Activating..." : "Activate Copilot"}
+                        {isActivating ? "Activating..." : "launch"}
                       </button>
                     )}
                     {[

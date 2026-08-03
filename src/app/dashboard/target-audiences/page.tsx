@@ -61,7 +61,7 @@ export default function ScrapeProfilesPage() {
       setForm({ name: "", searchQuery: "" });
       fetchProfiles();
     } catch {
-      toast.error("Failed to create scrape profile.");
+      toast.error("Failed to create Target Audience.");
     } finally {
       setSaving(false);
     }
@@ -80,7 +80,7 @@ export default function ScrapeProfilesPage() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Delete this scrape profile?")) return;
+    if (!confirm("Delete this Target Audience?")) return;
     try {
       await scrapeProfilesApi.delete(id);
       fetchProfiles();
@@ -143,7 +143,7 @@ export default function ScrapeProfilesPage() {
             <Globe size={20} className="text-gray-500" />
           </div>
           <h2 className="font-bold text-gray-900 mb-2">
-            No scrape profiles yet
+            No Target Audiences yet
           </h2>
           <p className="text-sm text-gray-500 mb-5">
             Define a web source to extract leads automatically.
@@ -152,7 +152,7 @@ export default function ScrapeProfilesPage() {
             onClick={() => setShowModal(true)}
             className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
           >
-            <Plus size={15} /> Add Scrape Profile
+            <Plus size={15} /> Add Target Audience
           </button>
         </div>
       ) : (
@@ -221,7 +221,7 @@ export default function ScrapeProfilesPage() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-5">
-              Add Scrape Profile
+              Add Target Audience
             </h2>
             <div className="space-y-4">
               <div>
