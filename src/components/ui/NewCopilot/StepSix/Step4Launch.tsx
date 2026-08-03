@@ -221,7 +221,7 @@ export default function Step4Launch({
                   {formatActiveDays(copilotData.settings?.schedule?.activeDays)}
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
-                  Sending hours
+                  Timezone
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
                   {copilotData.settings?.timezone

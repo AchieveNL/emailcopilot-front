@@ -6,19 +6,14 @@ import {
   Send,
   LayoutDashboard,
   Mail,
-  Database,
   FileText,
-  Settings,
-  Plug,
   CreditCard,
-  Crown,
-  ChevronDown,
-  Plus,
+  Target,
   AlertTriangle,
   Users,
 } from "lucide-react";
 import clsx from "clsx";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useBilling } from "@/lib/useBilling";
 import UserCard from "../ui/UserCard";
 import Logo from "../homepage/Logo";
@@ -30,7 +25,7 @@ const navItems = [
   {
     href: "/dashboard/target-audiences",
     label: "Target Audiences",
-    icon: Database,
+    icon: Target,
   },
   { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
   { href: "/dashboard/departured", label: "Departured", icon: Users },

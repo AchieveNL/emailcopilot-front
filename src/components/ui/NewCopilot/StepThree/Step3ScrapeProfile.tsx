@@ -411,7 +411,7 @@ export default function Step3ScrapeProfile() {
         </div>
         <div className="relative flex justify-center">
           <span className="bg-white px-3 text-xs font-semibold text-gray-800">
-            Your Scrape Profiles
+            Your Target Audience
           </span>
         </div>
       </div>
