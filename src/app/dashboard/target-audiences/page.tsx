@@ -259,7 +259,7 @@ export default function ScrapeProfilesPage() {
               <button
                 onClick={handleCreate}
                 disabled={saving}
-                className="flex-1 bg-gray-900 text-white rounded-lg py-2.5 text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50"
+                className="flex-1 bg-primary text-white rounded-lg py-2.5 text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
                 {saving ? "Creating..." : "Create Profile"}
               </button>
