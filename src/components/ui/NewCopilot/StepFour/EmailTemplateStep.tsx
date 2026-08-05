@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Extension } from "@tiptap/core";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -22,6 +23,49 @@ import {
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
 import { useCopilotStore } from "@/store/copilotStore";
+
+const initialEmailBody = `
+<p>Hi {{firstName}},</p>
+<p>I noticed that {{companyName}} provides private jet services for clients in {{location}}.<br />
+I wanted to share a quick idea that could help you attract more qualified charter inquiries and increase bookings without relying solely on referrals or repeat clients.</p>
+<p>Would you be open to a quick 15-minute call next week to explore this?</p>
+<p>Best regards,<br />
+{{senderName}}</p>`;
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const toEditorContent = (value: string) => {
+  const trimmedValue = value.trim();
+
+  if (trimmedValue.startsWith("<")) {
+    return value;
+  }
+
+  return value
+    .trim()
+    .split(/\n\s*\n/)
+    .map((paragraph) => {
+      const lines = paragraph.split(/\n/).map(escapeHtml);
+      return `<p>${lines.join("<br />")}</p>`;
+    })
+    .join("");
+};
+
+const EnterLineBreak = Extension.create({
+  name: "enterLineBreak",
+
+  addKeyboardShortcuts() {
+    return {
+      Enter: () => this.editor.commands.setHardBreak(),
+    };
+  },
+});
 
 export default function EmailTemplateStep() {
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");
@@ -111,6 +155,7 @@ export default function EmailTemplateStep() {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      EnterLineBreak,
       Link.configure({
         openOnClick: false,
       }),
@@ -118,7 +163,7 @@ export default function EmailTemplateStep() {
         types: ["heading", "paragraph"],
       }),
     ],
-    content: `Hi {{firstName}},\n\nI noticed that {{companyName}} provides private jet services for clients in {{location}}.\nI wanted to share a quick idea that could help you attract more qualified charter inquiries and increase bookings without relying solely on referrals or repeat clients.\n\nWould you be open to a quick 15-minute call next week to explore this?\n\nBest regards,\n{{senderName}}`,
+    content: initialEmailBody,
     editorProps: {
       attributes: {
         class:
@@ -612,7 +657,9 @@ export default function EmailTemplateStep() {
                   onClick={() => {
                     setTemplateName(template.name || "");
                     setSubjectInput(template.subject || "");
-                    editor?.commands.setContent(template.body || "");
+                    editor?.commands.setContent(
+                      toEditorContent(template.body || ""),
+                    );
                     if (template.variables)
                       setVariableInput(template.variables);
                     updateCopilotData({

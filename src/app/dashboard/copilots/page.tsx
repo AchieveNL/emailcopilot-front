@@ -212,7 +212,7 @@ function CopilotMenu({
                   size={13}
                   className={runningScrape ? "animate-pulse" : ""}
                 />
-                {runningScrape ? "Running..." : "launch"}
+                {runningScrape ? "Running..." : "Launch"}
               </button>
             )}
             {copilot.status === "active" ? (
