@@ -601,7 +601,7 @@ export default function EmailTemplateStep() {
         </div>
         <div className="relative flex justify-center">
           <span className="bg-white px-3 text-xs font-semibold text-gray-800">
-            Your Target Audience
+            Your Templates
           </span>
         </div>
       </div>
