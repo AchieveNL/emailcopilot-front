@@ -272,6 +272,7 @@ export default function CopilotsPage() {
     try {
       setLoading(true);
       const res = await copilotsApi.getAll();
+      console.log("Fetched copilots:", res.data);
       setCopilots(res.data);
       if (res.data.length === 0) {
         router.push("/dashboard/copilots/new");
