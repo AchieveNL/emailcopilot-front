@@ -144,8 +144,13 @@ export const billingApi = {
 // GET /leads?status=sent&page=1&limit=20 → { data: Lead[], meta: PaginatedMeta }
 
 export const leadsApi = {
-  getAll: (params?: { status?: string; page?: number; limit?: number }) =>
-    api.get("/leads", { params }),
+  getAll: (params?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+    copilotId?: number;
+  }) => api.get("/leads", { params }),
+
   getById: (id: number) => api.get(`/leads/${id}`),
 };
 
