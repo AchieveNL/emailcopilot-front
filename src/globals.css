@@ -513,6 +513,9 @@ tr {
   text-align: left;
   font-weight: 600;
 }
+tr {
+  cursor: pointer;
+}
 
 .editor p {
   margin-bottom: 16px;

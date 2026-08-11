@@ -28,7 +28,7 @@ const navItems = [
     icon: Target,
   },
   { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
-  { href: "/dashboard/Departure", label: "Departure", icon: Users },
+  { href: "/dashboard/departure", label: "Departure", icon: Users },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
