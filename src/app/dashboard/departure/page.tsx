@@ -56,7 +56,7 @@ function Tooltip({
   text,
   children,
 }: {
-  text: string;
+  text: string | null | undefined;
   children: React.ReactNode;
 }) {
   return (
