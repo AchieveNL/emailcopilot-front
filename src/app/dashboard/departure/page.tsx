@@ -9,7 +9,6 @@ import {
   Building,
   Globe,
   Users,
-  ChevronDown,
 } from "lucide-react";
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
@@ -17,34 +16,34 @@ import { Pagination } from "@/components/ui/Pagination";
 // import EmailPreviewCard from "@/components/ui/EmialPreview";
 import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 
-const leadsApiMock: Lead[] = [
-  {
-    id: 1,
-    createdAt: "2023-01-01T00:00:00Z",
-    updatedAt: "2023-01-01T00:00:00Z",
-    companyName: "Acme Corp",
-    email: "john@acme.com",
-    website: "https://acme.com",
-    phone: "+1-555-1234",
-    sourceQuery: "software engineer",
-    address: "123 Main St, Anytown, USA",
-    status: "sent",
-    sentAt: "2023-01-01T00:00:00Z",
-  },
-  {
-    id: 2,
-    createdAt: "2023-01-01T00:00:00Z",
-    updatedAt: "2023-01-01T00:00:00Z",
-    companyName: "Globex Inc",
-    email: "jane@globex.com",
-    website: "https://globex.com",
-    phone: "+1-555-5678",
-    sourceQuery: "sales manager",
-    address: "456 Oak Ave, Somewhere, USA",
-    status: "sent",
-    sentAt: "2023-01-01T00:00:00Z",
-  },
-];
+// const leadsApiMock: Lead[] = [
+//   {
+//     id: 1,
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "software engineer",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//   },
+//   {
+//     id: 2,
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "sales manager",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//   },
+// ];
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -57,22 +56,22 @@ function Tooltip({
   text,
   children,
 }: {
-  text: string;
+  text: string | null | undefined;
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative inline-block group">
+    <div className="relative flex-1 min-w-0 group">
       {children}
 
       <div
         role="tooltip"
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full
+        className="pointer-events-none absolute border border-gray-100 bottom-full mb-2 left-1/2 -translate-x-1/2
                    opacity-0 group-hover:opacity-100 transition-opacity duration-150
-                   px-3 py-1.5 rounded-md bg-gray-900 text-white text-sm whitespace-nowrap
-                   z-10"
+                   px-3 py-1.5 rounded-md bg-white text-gray-600 text-sm whitespace-nowrap
+                   z-50"
       >
         {text}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45" />
       </div>
     </div>
   );
@@ -97,10 +96,10 @@ export default function LeadsPage() {
         copilotId,
       });
       console.log("Fetched leads:", res.data);
-      // setLeads(res.data.data);
-      // setMeta(res.data.meta);
-      setLeads(leadsApiMock);
-      setMeta(MOCK_META);
+      setLeads(res.data.data);
+      setMeta(res.data.meta);
+      // setLeads(leadsApiMock);
+      // setMeta(MOCK_META);
     } catch {
       console.error("Failed to fetch leads");
     } finally {
@@ -203,11 +202,11 @@ export default function LeadsPage() {
                           <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
                             <Building size={12} className=" text-primary" />
                           </div>
-                          <div>
+                          <Tooltip text={lead.companyName}>
                             <div className="font-semibold line-clamp-1 text-gray-900">
                               {lead.companyName}
                             </div>
-                          </div>
+                          </Tooltip>
                         </div>
                       </td>
                       <td className="px-6 py-5 ">
@@ -216,9 +215,11 @@ export default function LeadsPage() {
                             <Globe size={12} />
                           </div>
 
-                          <span className="font-semibold text- line-clamp-1 text-gray-900">
-                            {lead.website}
-                          </span>
+                          <Tooltip text={lead?.website}>
+                            <span className="font-semibold text- line-clamp-1 text-gray-900">
+                              {lead.website}
+                            </span>
+                          </Tooltip>
                         </div>
                       </td>
                       <td className="px-6 py-5 relative">
@@ -229,26 +230,25 @@ export default function LeadsPage() {
                           <div className="w-6 h-6 rounded border border-blue-200 flex items-center justify-center text-blue-500 bg-white group-hover:border-blue-300 transition-colors shrink-0">
                             <Mail size={12} />
                           </div>
-                          <span className="underline line-clamp-1 decoration-blue-200 underline-offset-4 group-hover:decoration-blue-400 transition-colors">
-                            {lead.email}
-                          </span>
+                          <Tooltip text={lead.email}>
+                            <span className="underline line-clamp-1 decoration-blue-200 underline-offset-4 group-hover:decoration-blue-400 transition-colors">
+                              {lead.email}
+                            </span>
+                          </Tooltip>
                         </a>
                       </td>
                       {/* <TemplateCell lead={lead} /> */}
                       <td className="px-6 py-5  text-gray-600">
-                        <div className="flex items-center line-clamp-1 gap-2 group relative whitespace-nowrap">
+                        <div className="flex items-center gap-2 group relative whitespace-nowrap">
                           {lead.phone ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
                                 <Phone size={12} />
                               </div>
-                              <span className="font-semibold line-clamp-1 text-gray-900">
-                                {lead.phone}
-                              </span>
                               <Tooltip text={lead.phone}>
-                                <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                                  <Phone size={12} />
-                                </div>
+                                <span className="font-semibold line-clamp-1 text-gray-900">
+                                  {lead.phone}
+                                </span>
                               </Tooltip>
                             </>
                           ) : (
@@ -257,15 +257,17 @@ export default function LeadsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-5  text-gray-600">
-                        <div className="flex items-center line-clamp-1 gap-2 whitespace-nowrap">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
                           {lead.sourceQuery ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
                                 <Search size={12} />
                               </div>
-                              <span className="font-semibold line-clamp-1 text-gray-900">
-                                {lead.sourceQuery}
-                              </span>
+                              <Tooltip text={lead.sourceQuery}>
+                                <span className="font-semibold line-clamp-1 text-gray-900">
+                                  {lead.sourceQuery}
+                                </span>
+                              </Tooltip>
                             </>
                           ) : (
                             <span className="text-gray-500">-</span>
@@ -273,27 +275,23 @@ export default function LeadsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-5  ">
-                        <div
-                          className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center "
-                          title="Show emails reached"
-                        >
+                        <div className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center ">
                           <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white">
                             <MapPin size={12} />
                           </div>
                           {lead.address ? (
-                            <span className="font-semibold line-clamp-1 text-gray-900">
-                              {lead.address}
-                            </span>
+                            <Tooltip text={lead.address}>
+                              <span className="font-semibold line-clamp-1 text-gray-900">
+                                {lead.address}
+                              </span>
+                            </Tooltip>
                           ) : (
                             <span className="text-gray-500">-</span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-5 ">
-                        <div
-                          className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center"
-                          title="Show emails reached"
-                        >
+                        <div className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center">
                           <div className="text-xs capitalize bg-primary/10 text-primary mt-1 p-1 rounded-md  leading-relaxed">
                             {lead.status ? lead.status : "Sent"}
                           </div>
