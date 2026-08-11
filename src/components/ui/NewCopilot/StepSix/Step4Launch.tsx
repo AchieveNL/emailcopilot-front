@@ -144,7 +144,8 @@ export default function Step4Launch({
                   Location
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {copilotData.targetProfile?.countries?.join(", ") || "N/A"}
+                  {copilotData.targetProfile?.countries?.join(", ") || "N/A"},
+                  {copilotData.targetProfile?.cities?.join(", ") || "N/A"}
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Est. audience size

@@ -437,8 +437,12 @@ export default function Step3ScrapeProfile() {
                     if (copilotData.scrapeProfileId === profile.id) {
                       updateCopilotData({ scrapeProfileId: null });
                     } else {
-                      // Optionally clear the custom targets? Not necessary, but good UX
                       updateCopilotData({ scrapeProfileId: profile.id });
+                      updateTargetProfile({
+                        countries: profile.country ? [profile.country] : [],
+                        cities: profile.city ? [profile.city] : [],
+                        industries: profile.name ? [profile.name] : [],
+                      });
                     }
                   }}
                 >

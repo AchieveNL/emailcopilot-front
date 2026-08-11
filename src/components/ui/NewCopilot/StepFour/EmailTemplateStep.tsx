@@ -471,7 +471,7 @@ export default function EmailTemplateStep() {
             </div>
 
             <div className="border border-slate-200 rounded-xl overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all bg-white">
-              <EditorContent editor={editor} />
+              <EditorContent className="editor" editor={editor} />
 
               {/* Toolbar */}
               <div className="border-t border-slate-100 p-2 flex items-center justify-between">

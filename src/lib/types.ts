@@ -50,7 +50,7 @@ export type Lead = {
   website: string | null;
   phone: string | null;
   address: string | null;
-  searchQuery: string | null;
+  sourceQuery: string | null;
   sentAt: string | null;
 };
 
