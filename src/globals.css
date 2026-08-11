@@ -507,3 +507,13 @@ button:disabled {
     @apply bg-linear-to-r from-indigo-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent;
   }
 }
+
+th,
+tr {
+  text-align: left;
+  font-weight: 600;
+}
+
+.editor p {
+  margin-bottom: 16px;
+}

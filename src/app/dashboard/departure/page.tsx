@@ -9,6 +9,7 @@ import {
   Building,
   Globe,
   Users,
+  ChevronDown,
 } from "lucide-react";
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
@@ -16,34 +17,34 @@ import { Pagination } from "@/components/ui/Pagination";
 // import EmailPreviewCard from "@/components/ui/EmialPreview";
 import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 
-// const leadsApiMock: Lead[] = [
-//   {
-//     id: 1,
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "john@acme.com",
-//     website: "https://acme.com",
-//     phone: "+1-555-1234",
-//     searchQuery: "software engineer",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//   },
-//   {
-//     id: 2,
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     searchQuery: "sales manager",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//   },
-// ];
+const leadsApiMock: Lead[] = [
+  {
+    id: 1,
+    createdAt: "2023-01-01T00:00:00Z",
+    updatedAt: "2023-01-01T00:00:00Z",
+    companyName: "Acme Corp",
+    email: "john@acme.com",
+    website: "https://acme.com",
+    phone: "+1-555-1234",
+    sourceQuery: "software engineer",
+    address: "123 Main St, Anytown, USA",
+    status: "sent",
+    sentAt: "2023-01-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    createdAt: "2023-01-01T00:00:00Z",
+    updatedAt: "2023-01-01T00:00:00Z",
+    companyName: "Globex Inc",
+    email: "jane@globex.com",
+    website: "https://globex.com",
+    phone: "+1-555-5678",
+    sourceQuery: "sales manager",
+    address: "456 Oak Ave, Somewhere, USA",
+    status: "sent",
+    sentAt: "2023-01-01T00:00:00Z",
+  },
+];
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -52,93 +53,30 @@ const MOCK_META: PaginatedMeta = {
   totalPages: 2,
 };
 
-// function TemplateCell({
-//   lead,
-//   onViewFull,
-// }: {
-//   lead: Lead;
-//   onViewFull?: (subject: string, body: string) => void;
-// }) {
-//   const [template, setTemplate] = useState<{
-//     subject: string;
-//     body: string;
-//   } | null>(null);
-//   const [isHovered, setIsHovered] = useState(false);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [popupPos, setPopupPos] = useState<{
-//     top: number;
-//     left: number;
-//     position: "top" | "bottom";
-//   }>({ top: 0, left: 0, position: "bottom" });
+function Tooltip({
+  text,
+  children,
+}: {
+  text: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative inline-block group">
+      {children}
 
-//   useEffect(() => {
-//     if (!isHovered || !lead.templateId || template) return;
-
-//     const controller = new AbortController();
-
-//     setIsLoading(true);
-
-//     templatesApi
-//       .getById(lead.templateId, { signal: controller.signal })
-//       .then((res) => {
-//         setTemplate(res.data);
-//       })
-//       .catch((err) => {
-//         if (err.name !== "CanceledError") {
-//           console.error(err);
-//         }
-//       })
-//       .finally(() => {
-//         setIsLoading(false);
-//       });
-
-//     return () => controller.abort();
-//   }, [isHovered, lead.templateId, template]);
-//   return (
-//     <td
-//       className="px-6 py-5 align-middle cursor-pointer pt-6 text-gray-600 group relative"
-//       onMouseEnter={(e) => {
-//         setIsHovered(true);
-//         const rect = e.currentTarget.getBoundingClientRect();
-//         const isNearBottom = rect.top > window.innerHeight / 2;
-
-//         setPopupPos({
-//           top: isNearBottom ? rect.top + 80 : rect.bottom - 80,
-//           left: rect.left - rect.width / 2,
-//           position: isNearBottom ? "top" : "bottom",
-//         });
-//       }}
-//       onMouseLeave={() => setIsHovered(false)}
-//     >
-//       <div className="flex items-center gap-2">
-//         <FileText size={16} className="text-gray-400 shrink-0" />
-//         <span className="truncate line-clamp-1 max-w-[200px]">
-//           {lead.templateName}
-//         </span>
-//       </div>
-//       {isHovered && (
-//         <div
-//           className={`fixed z-[100] w-96  rounded-2xl ${
-//             popupPos.position === "top"
-//               ? "-translate-y-full -translate-x-1/2"
-//               : "-translate-x-1/2"
-//           }`}
-//           style={{ top: popupPos.top, left: popupPos.left }}
-//         >
-//           <EmailPreviewCard
-//             subject={isLoading ? "Loading..." : template?.subject}
-//             body={isLoading ? "Fetching template preview..." : template?.body}
-//             onViewFull={() => {
-//               if (template?.subject && template?.body) {
-//                 onViewFull?.(template.subject, template.body);
-//               }
-//             }}
-//           />
-//         </div>
-//       )}
-//     </td>
-//   );
-// }
+      <div
+        role="tooltip"
+        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full
+                   opacity-0 group-hover:opacity-100 transition-opacity duration-150
+                   px-3 py-1.5 rounded-md bg-gray-900 text-white text-sm whitespace-nowrap
+                   z-10"
+      >
+        {text}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+      </div>
+    </div>
+  );
+}
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -159,10 +97,10 @@ export default function LeadsPage() {
         copilotId,
       });
       console.log("Fetched leads:", res.data);
-      setLeads(res.data.data);
-      setMeta(res.data.meta);
-      // setLeads(leadsApiMock);
-      // setMeta(MOCK_META);
+      // setLeads(res.data.data);
+      // setMeta(res.data.meta);
+      setLeads(leadsApiMock);
+      setMeta(MOCK_META);
     } catch {
       console.error("Failed to fetch leads");
     } finally {
@@ -188,12 +126,10 @@ export default function LeadsPage() {
   return (
     <div className="py-8 px-4 max-w-350 mx-auto w-full">
       <div className="mb-8">
-        <div className="text-blue-500 font-medium text-sm mb-4">Departured</div>
+        <div className="text-blue-500 font-medium text-sm mb-4">Departure</div>
         <div className="flex items-center justify-between mb-2">
           <div className="">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              Departured
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">Departure</h1>
             <p className="text-gray-500 text-sm">
               Recipients who have been emailed by
               <span className="font-bold text-gray-950 ">
@@ -233,26 +169,26 @@ export default function LeadsPage() {
               <table className="w-full text-sm max-h-75 min-w-225">
                 <thead>
                   <tr className="border-b border-gray-100 bg-white">
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-semibold text-gray-900 px-6 py-5">
                       Company
                     </th>
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-semibold text-gray-900 px-6 py-5">
                       Website
                     </th>
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-semibold text-gray-900 px-6 py-5">
                       Email
                     </th>
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-semibold text-gray-900 px-6 py-5">
                       Phone
                     </th>
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
-                      Search Query
+                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                      Target Audience
                     </th>
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-semibold text-gray-900 px-6 py-5">
                       Address
                     </th>
-                    <th className="text-center font-semibold text-gray-900 px-6 py-5">
-                      status
+                    <th className="font-semibold text-gray-900 px-6 py-5">
+                      Status
                     </th>
                   </tr>
                 </thead>
@@ -274,7 +210,7 @@ export default function LeadsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-middle pt-6">
+                      <td className="px-6 py-5 ">
                         <div className="flex items-center gap-3">
                           <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
                             <Globe size={12} />
@@ -285,7 +221,7 @@ export default function LeadsPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-middle pt-6 group relative">
+                      <td className="px-6 py-5 relative">
                         <a
                           href={`mailto:${lead.email}`}
                           className="flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium group transition-colors"
@@ -299,8 +235,8 @@ export default function LeadsPage() {
                         </a>
                       </td>
                       {/* <TemplateCell lead={lead} /> */}
-                      <td className="px-6 py-5 align-middle pt-6 text-gray-600">
-                        <div className="flex items-center line-clamp-1 gap-2 whitespace-nowrap">
+                      <td className="px-6 py-5  text-gray-600">
+                        <div className="flex items-center line-clamp-1 gap-2 group relative whitespace-nowrap">
                           {lead.phone ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
@@ -309,21 +245,26 @@ export default function LeadsPage() {
                               <span className="font-semibold line-clamp-1 text-gray-900">
                                 {lead.phone}
                               </span>
+                              <Tooltip text={lead.phone}>
+                                <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
+                                  <Phone size={12} />
+                                </div>
+                              </Tooltip>
                             </>
                           ) : (
                             <span className="text-gray-500">-</span>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-middle pt-6 text-gray-600">
+                      <td className="px-6 py-5  text-gray-600">
                         <div className="flex items-center line-clamp-1 gap-2 whitespace-nowrap">
-                          {lead.searchQuery ? (
+                          {lead.sourceQuery ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
                                 <Search size={12} />
                               </div>
                               <span className="font-semibold line-clamp-1 text-gray-900">
-                                {lead.searchQuery}
+                                {lead.sourceQuery}
                               </span>
                             </>
                           ) : (
@@ -331,12 +272,12 @@ export default function LeadsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-middle pt-6 text-right">
+                      <td className="px-6 py-5  ">
                         <div
-                          className="p-2 text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center"
+                          className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center "
                           title="Show emails reached"
                         >
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
+                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white">
                             <MapPin size={12} />
                           </div>
                           {lead.address ? (
@@ -348,12 +289,12 @@ export default function LeadsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-middle pt-6 text-right">
+                      <td className="px-6 py-5 ">
                         <div
-                          className="p-2 text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center"
+                          className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center"
                           title="Show emails reached"
                         >
-                          <div className="text-xs bg-primary/10 text-primary mt-1 p-1 rounded-md  leading-relaxed">
+                          <div className="text-xs capitalize bg-primary/10 text-primary mt-1 p-1 rounded-md  leading-relaxed">
                             {lead.status ? lead.status : "Sent"}
                           </div>
                         </div>
