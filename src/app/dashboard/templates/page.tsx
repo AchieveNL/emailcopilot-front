@@ -50,6 +50,7 @@ export default function TemplatesPage() {
       setLoading(true);
       const res = await templatesApi.getAll();
       setTemplates(res.data);
+      console.log("Fetched templates:", res.data);
     } catch {
       setTemplates([]);
     } finally {
@@ -124,7 +125,7 @@ export default function TemplatesPage() {
     <div className="py-8 px-4 w-full mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Templates</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Email Templates</h1>
           <p className="text-gray-500 text-sm mt-1">
             Reusable email templates for your copilots.
           </p>

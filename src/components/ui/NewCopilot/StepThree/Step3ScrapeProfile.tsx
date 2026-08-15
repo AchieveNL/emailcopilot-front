@@ -235,7 +235,7 @@ export default function Step3ScrapeProfile() {
       .then((res) => {
         const fetched = res.data?.data || res.data || [];
         setProfiles(fetched);
-        console.log("Fetched scrape profiles:", fetched);
+        console.log("Fetched target audience:", fetched);
         if (fetched.length > 0 && !copilotData.scrapeProfileId) {
           // Defaults handled below if needed
         }
@@ -294,10 +294,10 @@ export default function Step3ScrapeProfile() {
         updateCopilotData({ scrapeProfileId: res.data.id });
       }
       setStep(4);
-      toast.success("Scrape profile created successfully");
+      toast.success("Target audience created successfully");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create scrape profile");
+      toast.error("Failed to create target audience");
     } finally {
       setLoading(false);
     }
@@ -305,7 +305,7 @@ export default function Step3ScrapeProfile() {
 
   return (
     <>
-      <h2 className="text-lg font-bold mb-1">Define your target Audience</h2>
+      <h2 className="text-lg font-bold mb-1">Define your Target Audience</h2>
       <p className="text-sm text-gray-500 mb-12">
         Tell your copilot who you want to reach and we'll find the best matches.
       </p>
@@ -430,8 +430,8 @@ export default function Step3ScrapeProfile() {
                   key={profile.id}
                   className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
                     copilotData.scrapeProfileId === profile.id
-                      ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                      : "border-gray-200 hover:border-primary/50 hover:bg-gray-50"
+                      ? "border-primary/20 bg-primary/5"
+                      : "border-gray-200 hover:border-primary/20 hover:bg-primary/5"
                   }`}
                   onClick={() => {
                     if (copilotData.scrapeProfileId === profile.id) {
@@ -459,15 +459,13 @@ export default function Step3ScrapeProfile() {
                   </h4>
                   <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
                     <div className="flex items-center gap-1.5">
+                      <MapPin size={14} className="text-gray-400" />
+                      <span>{profile?.country || "All"} </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
                       <Building2 size={14} className="text-gray-400" />
                       <span>{profile?.city || "All"} </span>
                     </div>
-                    {profile?.country !== undefined && (
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={14} className="text-gray-400" />
-                        <span>{profile?.country || "All"} </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}

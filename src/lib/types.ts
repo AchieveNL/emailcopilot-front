@@ -42,6 +42,7 @@ export type LimitsResponse = LimitsResponseActive | LimitsResponseInactive;
 
 export type Lead = {
   id: number;
+  copilotName: string;
   createdAt: string;
   updatedAt: string;
   status: string;
@@ -52,6 +53,7 @@ export type Lead = {
   address: string | null;
   sourceQuery: string | null;
   sentAt: string | null;
+  templateId: number | null;
 };
 
 export type PaginatedMeta = {

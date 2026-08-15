@@ -9,8 +9,6 @@ import TextAlign from "@tiptap/extension-text-align";
 import {
   Mail,
   ChevronRight,
-  ChevronDown,
-  Search,
   Bold,
   Italic,
   Link as LinkIcon,
@@ -253,7 +251,7 @@ export default function EmailTemplateStep() {
   };
 
   return (
-    <div className="w-full  mx-auto  bg-transparent min-h-[600px] text-slate-800">
+    <div className="w-full  mx-auto  bg-transparent min-h-150 text-slate-800">
       {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
@@ -433,14 +431,14 @@ export default function EmailTemplateStep() {
                 This is the first email your leads will receive.
               </p>
             </div>
-            <button
+            {/* <button
               type="button"
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-blue-100 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-sm font-semibold"
             >
               <Search className="w-4 h-4" />
               Preview
               <ChevronDown className="w-4 h-4 ml-1" />
-            </button>
+            </button> */}
           </div>
 
           {/* Subject Line */}
@@ -681,7 +679,7 @@ export default function EmailTemplateStep() {
                     >
                       <Mail className="w-4 h-4" />
                     </div>
-                    <h4 className="font-semibold text-sm text-gray-900 group-hover:text-[var(--color-primary)] transition-colors duration-200 truncate">
+                    <h4 className="font-semibold text-sm text-gray-900 group-hover:text-primary transition-colors duration-200 truncate">
                       {template.name}
                     </h4>
                   </div>
