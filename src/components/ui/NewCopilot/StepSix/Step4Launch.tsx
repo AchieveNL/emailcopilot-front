@@ -250,7 +250,7 @@ export default function Step4Launch({
             />
             <div className="w-full">
               <h3 className="text-sm font-semibold text-emerald-500 mb-4">
-                You're ready to take off !
+                You`&apos;`re ready to take off!
               </h3>
               <div className="grid grid-cols-2 gap-y-4 text-sm text-emerald-600">
                 <div className="flex items-center gap-2">
@@ -275,7 +275,7 @@ export default function Step4Launch({
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">
                     <Check size={12} strokeWidth={3} />
                   </div>
-                  <span>Schedule</span>
+                  <span>Flight Schedule</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">

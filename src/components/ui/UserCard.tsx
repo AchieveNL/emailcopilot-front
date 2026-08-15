@@ -3,6 +3,7 @@ import { useClerk } from "@clerk/nextjs";
 import { ChevronUp, Crown, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { handlePlanNameChange } from "@/lib/helpers";
 
 export default function UserCard({
   user,
@@ -24,11 +25,11 @@ export default function UserCard({
     };
 
     if (showUserMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showUserMenu]);
 
@@ -38,10 +39,10 @@ export default function UserCard({
       <div className="bg-gray-50  rounded-xl p-4">
         {isActive && (
           <>
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-baseline gap-2 mb-3">
               <Crown size={14} className="text-gray-700" />
-              <span className="font-bold text-sm">
-                {limits?.planId ? `${limits.planId} Plan` : "Starter plan"}
+              <span className="font-bold text-sm capitalize">
+                {handlePlanNameChange(limits?.planId || "starter")}
               </span>
             </div>
             <div className="mb-3">
@@ -62,9 +63,9 @@ export default function UserCard({
         )}
         <Link
           href={"/dashboard/billing"}
-          className="flex justify-center border border-gray-300 w-full bg-white text-gray-900 text-sm font-medium py-2 rounded-lg hover:bg-gray-900 hover:text-white transition-colors"
+          className="flex justify-center border border-gray-300 hover:border-primary/10 w-full bg-white text-gray-900 text-sm font-medium py-2 rounded-lg hover:bg-primary/5 hover:text-primary transition-colors"
         >
-          Upgrade Plan
+          Manage Plan
         </Link>
       </div>
 
@@ -77,7 +78,8 @@ export default function UserCard({
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
               <span className="text-sm font-bold text-gray-700">
-                {user?.firstName?.[0] || user?.emailAddresses?.[0].emailAddress[0]?.toUpperCase()}
+                {user?.firstName?.[0] ||
+                  user?.emailAddresses?.[0].emailAddress[0]?.toUpperCase()}
               </span>
             </div>
             <div>
@@ -96,18 +98,18 @@ export default function UserCard({
             <button
               onClick={() => openUserProfile()}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              style={{ color: 'var(--color-primary)' }}
+              style={{ color: "var(--color-primary)" }}
             >
-              <User size={16} style={{ color: 'var(--color-secondary)' }} />
+              <User size={16} style={{ color: "var(--color-secondary)" }} />
               Profile
             </button>
             <hr className="w-full border-gray-200" />
             <button
               onClick={() => signOut()}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
-              style={{ color: '#dc2626' }}
+              style={{ color: "#dc2626" }}
             >
-              <LogOut size={16} style={{ color: '#dc2626' }} />
+              <LogOut size={16} style={{ color: "#dc2626" }} />
               Sign Out
             </button>
           </div>

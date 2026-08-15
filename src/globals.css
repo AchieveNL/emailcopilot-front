@@ -513,6 +513,10 @@ tr {
   text-align: left;
   font-weight: 600;
 }
+th {
+  white-space: nowrap;
+}
+
 tr {
   cursor: pointer;
 }

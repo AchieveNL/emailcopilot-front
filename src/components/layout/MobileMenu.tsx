@@ -23,7 +23,7 @@ const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/copilots", label: "Copilots", icon: Send },
     { href: "/dashboard/email-profiles", label: "Email Profiles", icon: Mail, badge: 3 },
-    { href: "/dashboard/scrape-profiles", label: "Scrape Profiles", icon: Database, badge: 4 },
+    { href: "/dashboard/scrape-profiles", label: "Target Audiences", icon: Database, badge: 4 },
     { href: "/dashboard/templates", label: "Templates", icon: FileText },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
     { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
