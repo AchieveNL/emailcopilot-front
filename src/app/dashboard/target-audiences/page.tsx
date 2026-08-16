@@ -14,6 +14,7 @@ import {
 import { scrapeProfilesApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { StringDecoder } from "string_decoder";
 
 type ScrapeProfile = {
   id: number;
@@ -34,6 +35,7 @@ export default function ScrapeProfilesPage() {
   const [form, setForm] = useState({ name: "", searchQuery: "" });
   const [saving, setSaving] = useState(false);
   const [runningId, setRunningId] = useState<number | null>(null);
+  const [urlId, setUrlId] = useState<string | null>(null);
 
   const { user } = useUser();
 
@@ -116,6 +118,24 @@ export default function ScrapeProfilesPage() {
     },
   };
 
+  useEffect(() => {
+    if (!window.location.hash || profiles.length === 0) return;
+
+    const elementId = window.location.hash.substring(1);
+    setUrlId(elementId);
+
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    const timeout = setTimeout(() => {
+      setUrlId("");
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [profiles]);
+
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -163,10 +183,11 @@ export default function ScrapeProfilesPage() {
             return (
               <div
                 key={profile.id}
-                className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm"
+                id={`${profile.name.replace(" ", "-")}`}
+                className={` rounded-xl p-5 shadow-sm ${profile.name.replace(" ", "-") === urlId?.replace(" ", "-") ? "bg-primary/5 border border-primary/20" : "bg-white border border-gray-200"}`}
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                     <Globe size={18} className="text-gray-600" />
                   </div>
                   <div className="flex-1 min-w-0">
