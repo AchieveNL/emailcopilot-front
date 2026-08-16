@@ -91,7 +91,7 @@ export function CopilotsPopup({ isOpen, onClose }: CopilotPopupProps) {
       />
 
       {/* Modal */}
-      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[85vh] max-h-180 w-[90vw] max-w-225 bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden">
+      <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[85vh] max-h-180 w-[90vw] max-w-225 bg-white rounded-2xl shadow-2xl z-120 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white/80 backdrop-blur-xl shrink-0">
           <div>
@@ -126,11 +126,8 @@ export function CopilotsPopup({ isOpen, onClose }: CopilotPopupProps) {
                 <div
                   key={copilot?.id}
                   onClick={() => onClose(copilot?.id, copilot?.name)}
-                  className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-200 cursor-pointer group relative overflow-hidden flex flex-col"
+                  className="bg-white p-4 rounded-2xl   hover:border-primary/20 hover:bg-primary/5 transition-all duration-200 cursor-pointer group relative overflow-hidden flex  border border-gray-200 flex-col"
                 >
-                  {/* Decorative left border on hover */}
-                  <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-
                   {/* Name + status */}
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="font-semibold text-gray-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
