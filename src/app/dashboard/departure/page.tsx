@@ -20,38 +20,38 @@ import { templatesApi } from "@/lib/api";
 import { useRef } from "react";
 import axios from "axios";
 
-const leadsApiMock: Lead[] = [
-  {
-    id: 1,
-    copilotName: "John Doe",
-    createdAt: "2023-01-01T00:00:00Z",
-    updatedAt: "2023-01-01T00:00:00Z",
-    companyName: "Acme Corp",
-    email: "john@acme.com",
-    website: "https://acme.com",
-    phone: "+1-555-1234",
-    sourceQuery: "lld",
-    address: "123 Main St, Anytown, USA",
-    status: "sent",
-    sentAt: "2023-01-01T00:00:00Z",
-    templateId: 1,
-  },
-  {
-    id: 2,
-    copilotName: "Jane Smith",
-    createdAt: "2023-01-01T00:00:00Z",
-    updatedAt: "2023-01-01T00:00:00Z",
-    companyName: "Globex Inc",
-    email: "jane@globex.com",
-    website: "https://globex.com",
-    phone: "+1-555-5678",
-    sourceQuery: "kdk",
-    address: "456 Oak Ave, Somewhere, USA",
-    status: "sent",
-    sentAt: "2023-01-01T00:00:00Z",
-    templateId: 2,
-  },
-];
+// const leadsApiMock: Lead[] = [
+//   {
+//     id: 1,
+//     copilotName: "John Doe",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "lld",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 1,
+//   },
+//   {
+//     id: 2,
+//     copilotName: "Jane Smith",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "kdk",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 2,
+//   },
+// ];
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -154,10 +154,10 @@ export default function LeadsPage() {
         copilotId,
       });
       console.log("Fetched leads:", res.data);
-      // setLeads(res.data.data);
-      // setMeta(res.data.meta);
-      setLeads(leadsApiMock);
-      setMeta(MOCK_META);
+      setLeads(res.data.data);
+      setMeta(res.data.meta);
+      // setLeads(leadsApiMock);
+      // setMeta(MOCK_META);
     } catch {
       console.error("Failed to fetch leads");
     } finally {
