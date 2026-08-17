@@ -30,7 +30,7 @@ function Footer() {
 
           <div className="flex flex-col items-start md:items-center gap-4 lg:gap-6 order-1 lg:order-2">
             <Logo />
-            <div className="flex flex-col md:flex-row items-start lg:items-center gap-3 md:gap-6">
+            <div className="flex flex-col md:flex-row items-start lg:items-center gap-3 lg:gap-6">
               <Link href="/terms">
                 <span
                   className=" hover:text-gray-700 transition"

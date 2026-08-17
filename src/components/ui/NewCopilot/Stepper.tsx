@@ -55,7 +55,7 @@ export default function Stepper() {
   const { currentStep, highestStep, setStep } = useCopilotStore();
 
   return (
-    <div className=" py-6 mb-6">
+    <div className=" max-w-full overflow-x-auto py-6 mb-6">
       <div className="flex items-start justify-between relative">
         {steps.map((step, idx) => {
           const done = highestStep > step.id && currentStep !== step.id;

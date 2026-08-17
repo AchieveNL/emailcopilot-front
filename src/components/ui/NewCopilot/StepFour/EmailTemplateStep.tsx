@@ -68,7 +68,7 @@ const EnterLineBreak = Extension.create({
 export default function EmailTemplateStep() {
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");
   const [activeStep, setActiveStep] = useState(1);
-  const [smartSending, setSmartSending] = useState(true);
+  // const [smartSending, setSmartSending] = useState(true);
   const [loading, setLoading] = useState(false);
   const [variableInput, setVariableInput] = useState([
     "CompanyName",
@@ -262,7 +262,7 @@ export default function EmailTemplateStep() {
             Write the email your copilot will send to your target audience.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <div className="text-right">
             <div className="text-sm font-semibold text-slate-800">
               Smart sending
@@ -284,11 +284,11 @@ export default function EmailTemplateStep() {
               }`}
             ></div>
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Template Name Input */}
-      <div className="flex items-center gap-4 mb-2">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
         <label className="text-sm font-semibold text-slate-800 whitespace-nowrap">
           Template name
         </label>

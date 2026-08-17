@@ -31,7 +31,7 @@ export default function Step1Settings() {
 
       <div className="space-y-10">
         {/* Name */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6">
           <div>
             <label
               className="block text-sm font-semibold text-gray-900 mb-1.5"
@@ -43,7 +43,7 @@ export default function Step1Settings() {
               Internal name to identify your copilot.
             </p>
           </div>
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <input
               id="name"
               type="text"
@@ -56,7 +56,7 @@ export default function Step1Settings() {
         </div>
 
         {/* Description */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6">
           <div>
             <label
               className="block text-sm font-semibold text-gray-900 mb-1.5"
@@ -68,7 +68,7 @@ export default function Step1Settings() {
               Describe what this copilot does and who it’s for.
             </p>
           </div>
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <textarea
               id="desc"
               rows={3}
@@ -83,7 +83,7 @@ export default function Step1Settings() {
         </div>
 
         {/* Goal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6">
           <div>
             <label
               className="block text-sm font-semibold text-gray-900 mb-1.5"
@@ -97,7 +97,7 @@ export default function Step1Settings() {
             </p>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <textarea
               id="goal"
               rows={3}

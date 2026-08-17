@@ -41,7 +41,7 @@ function TargetAudienceSummary() {
     colorClass = "text-red-600 bg-red-100";
   }
   return (
-    <div className="bg-white border border-gray-200 h-fit rounded-xl p-5">
+    <div className="w-full ">
       <h3 className="font-bold text-sm text-gray-900">
         Target Profile Summary
       </h3>

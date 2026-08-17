@@ -114,8 +114,8 @@ export default function ScheduleStep() {
 
       <div className="flex flex-col gap-8 w-full max-w-4xl">
         {/* Daily send limit */}
-        <div className="grid grid-cols-6 gap-6 border-b border-slate-100 pb-8">
-          <div className="col-span-2 ">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 border-b border-slate-100 pb-8">
+          <div className=" col-span-1 lg:col-span-2 ">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Daily send limit
             </h3>
@@ -123,7 +123,7 @@ export default function ScheduleStep() {
               Maximum number of new emails to send per day.
             </p>
           </div>
-          <div className="col-span-4 flex items-start gap-4 flex-1 pt-1">
+          <div className="col-span-1 lg:col-span-4 flex items-start gap-4 flex-1 pt-1">
             {sendLimitActive ? (
               <div className=" w-full flex flex-col pt-1">
                 <div className="flex items-center">
@@ -186,8 +186,8 @@ export default function ScheduleStep() {
         </div>
 
         {/* Active days */}
-        <div className="grid grid-cols-6 gap-6 border-b border-slate-100 pb-8">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 border-b border-slate-100 pb-8">
+          <div className="col-span-1 lg:col-span-2">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Active days
             </h3>
@@ -196,7 +196,7 @@ export default function ScheduleStep() {
             </p>
           </div>
 
-          <div className="col-span-4 flex flex-wrap gap-2 flex-1 pt-1">
+          <div className="col-span-1 lg:col-span-4 flex flex-wrap gap-2 flex-1 pt-1">
             {DAYS.map((day) => {
               const isActive = activeDays.includes(day);
               return (
@@ -218,8 +218,8 @@ export default function ScheduleStep() {
         </div>
 
         {/* Sending hours */}
-        <div className="grid grid-cols-6 gap-6 border-b border-slate-100 pb-8">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 border-b border-slate-100 pb-8">
+          <div className="col-span-1 lg:col-span-2">
             <h3 className="text-sm font-bold text-slate-900 mb-1 flex items-center pr-2">
               Sending hours{" "}
               <span className="font-normal text-slate-400 text-xs ml-1">
@@ -230,7 +230,7 @@ export default function ScheduleStep() {
               Set the daily time window when your copilot can send emails.
             </p>
           </div>
-          <div className="col-span-4 flex items-start gap-4 flex-1 pt-1">
+          <div className="col-span-1 lg:col-span-4 flex items-start gap-4 flex-1 pt-1">
             {sendingHoursActive ? (
               <div className="flex flex-wrap items-center gap-4 flex-1 pt-1">
                 <div className="flex items-center gap-3">
@@ -308,8 +308,8 @@ export default function ScheduleStep() {
         </div>
 
         {/* Default Timezone */}
-        <div className="grid grid-cols-6 gap-6 pb-2">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 pb-2">
+          <div className="col-span-1 lg:col-span-2">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Default Timezone
             </h3>

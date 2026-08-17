@@ -131,7 +131,7 @@ export default function BillingPage() {
       )}
 
       {/* Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
         {plans.map((plan) => {
           const isCurrentPlan = subscription?.planId === plan.id;
           return (
