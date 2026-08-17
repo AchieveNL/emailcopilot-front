@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
-import { useEffect } from "react";
 
 interface LaunchSideBarProps {
   draftId?: string;

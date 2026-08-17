@@ -8,7 +8,6 @@ import {
   MapPin,
   Building2,
   CheckCircle2,
-  LocateIcon,
 } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
@@ -137,7 +136,7 @@ function TagInput({
           type="text"
           value={query}
           placeholder={selected.length === 0 ? placeholder : ""}
-          className="no-focus-ring flex-1 min-w-[80px] outline-none focus:outline-none focus:ring-0 focus:border-none text-sm bg-transparent placeholder:text-gray-400"
+          className="no-focus-ring flex-1 min-w-20 outline-none focus:outline-none focus:ring-0 focus:border-none text-sm bg-transparent placeholder:text-gray-400"
           onChange={(e) => {
             setQuery(e.target.value);
             setOpen(true);
@@ -307,7 +306,8 @@ export default function Step3ScrapeProfile() {
     <>
       <h2 className="text-lg font-bold mb-1">Define your Target Audience</h2>
       <p className="text-sm text-gray-500 mb-12">
-        Tell your copilot who you want to reach and we'll find the best matches.
+        Tell your copilot who you want to reach and we`&apos;`ll find the best
+        matches.
       </p>
 
       <div className="space-y-8">
