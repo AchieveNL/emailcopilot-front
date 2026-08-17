@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { Shield } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
@@ -7,7 +5,7 @@ import { useCopilotStore } from "@/store/copilotStore";
 function CopilotSummary({ draftId }: { draftId?: string }) {
   const { copilotData } = useCopilotStore();
   return (
-    <div className="col-span-1 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
+    <div className="w-full ">
       <h2 className="text-lg font-bold mb-1">Copilot Summary</h2>
       <p className="text-md text-gray-500 mb-5">
         Here’s a summary of your copilot.

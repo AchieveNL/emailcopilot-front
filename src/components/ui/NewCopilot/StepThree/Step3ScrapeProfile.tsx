@@ -106,7 +106,7 @@ function TagInput({
   };
 
   return (
-    <div ref={containerRef} className="md:col-span-2 relative">
+    <div ref={containerRef} className="lg:col-span-2 relative">
       <div
         className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 min-h-10.5 flex-wrap cursor-text"
         onClick={() => inputRef.current?.focus()}
@@ -312,7 +312,7 @@ export default function Step3ScrapeProfile() {
 
       <div className="space-y-8">
         {/* Industry */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6 items-start">
           <div>
             <h3 className="text-sm relative font-bold text-gray-900">
               Industry
@@ -345,7 +345,7 @@ export default function Step3ScrapeProfile() {
         </div>
 
         {/* Country */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6 items-start">
           <div>
             <h3 className="text-sm font-bold text-gray-900">Country</h3>
             <p className="text-xs text-gray-500 mt-1">
@@ -369,7 +369,7 @@ export default function Step3ScrapeProfile() {
         </div>
 
         {/* Cities */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6 items-start">
           <div>
             <h3 className="text-sm font-bold text-gray-900">City</h3>
             <p className="text-xs text-gray-500 mt-1">
@@ -424,7 +424,7 @@ export default function Step3ScrapeProfile() {
               No existing scrape profiles found.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {profiles.map((profile) => (
                 <div
                   key={profile.id}

@@ -4,7 +4,7 @@ import React from "react";
 import { ShieldCheck, Send, TrendingUp, Inbox } from "lucide-react";
 function EmailProfileSidebar() {
   return (
-    <div className="bg-white border border-gray-200 h-fit rounded-lg p-5">
+    <div className="w-full  ">
       <h3 className="font-bold text-sm text-gray-900 mb-4">
         Why connect my email account?
       </h3>

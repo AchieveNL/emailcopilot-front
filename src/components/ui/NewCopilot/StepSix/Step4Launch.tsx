@@ -54,7 +54,7 @@ export default function Step4Launch({
         Everything looks good! Review your settings before launching.
       </p>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
         {/* Card 1: Setup */}
         <div
           onClick={() => setStep(1)}
@@ -133,7 +133,7 @@ export default function Step4Launch({
               <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary mb-4">
                 Target audience
               </h3>
-              <div className="grid grid-cols-[130px_1fr] gap-y-3 text-sm">
+              <div className="grid grid-cols-1 lg:grid-cols-[130px_1fr] gap-y-3 text-sm">
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Industry
                 </div>
@@ -172,7 +172,7 @@ export default function Step4Launch({
               <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary mb-4">
                 Email Template
               </h3>
-              <div className="grid grid-cols-[110px_1fr] gap-y-3 text-sm">
+              <div className="grid grid-cols-1 lg:grid-cols-[110px_1fr] gap-y-3 text-sm">
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Template
                 </div>
@@ -208,7 +208,7 @@ export default function Step4Launch({
               <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary mb-4">
                 Schedule
               </h3>
-              <div className="grid grid-cols-[110px_1fr] gap-y-3 text-sm">
+              <div className="grid grid-cols-1 lg:grid-cols-[110px_1fr] gap-y-3 text-sm">
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Daily send limit
                 </div>
@@ -252,7 +252,7 @@ export default function Step4Launch({
               <h3 className="text-sm font-semibold text-emerald-500 mb-4">
                 You`&apos;`re ready to take off!
               </h3>
-              <div className="grid grid-cols-2 gap-y-4 text-sm text-emerald-600">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-4 text-sm text-emerald-600">
                 <div className="flex items-center gap-2">
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">
                     <Check size={12} strokeWidth={3} />

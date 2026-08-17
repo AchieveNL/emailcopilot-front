@@ -175,7 +175,7 @@ export default function NewCopilotPage() {
                   runAt: "",
                 },
                 sendingSpeed: "Normal (Recommended)",
-                  timezone: defaultTimezone,
+                timezone: defaultTimezone,
               },
               targetProfile: copilot.targetProfile || {
                 industries: [],
@@ -214,7 +214,7 @@ export default function NewCopilotPage() {
                   runAt: "",
                 },
                 sendingSpeed: "Normal (Recommended)",
-                  timezone: defaultTimezone,
+                timezone: defaultTimezone,
               },
               targetProfile: copilot.targetProfile || {
                 industries: [],
@@ -377,9 +377,9 @@ export default function NewCopilotPage() {
       <Stepper />
 
       {/* Content grid */}
-      <div className="grid grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         {/* Main form */}
-        <div className="col-span-3">
+        <div className="col-span-1 lg:col-span-3">
           <div className="bg-white border border-gray-200 rounded-xl p-6 ">
             {STEPS[currentStep - 1].component()}
           </div>
@@ -388,7 +388,9 @@ export default function NewCopilotPage() {
         </div>
 
         {/* Sidebar */}
-        {STEPS[currentStep - 1].sideBar()}
+        <div className="hidden lg:flex col-span-1 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
+          {STEPS[currentStep - 1].sideBar()}
+        </div>
       </div>
     </div>
   );

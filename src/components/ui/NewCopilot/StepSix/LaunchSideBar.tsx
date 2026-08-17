@@ -40,88 +40,84 @@ export default function LaunchSideBar({
   };
 
   return (
-    <div className="col-span-1 space-y-5 h-fit">
-      <div className="bg-white border border-gray-200 rounded-xl p-5">
-        <h2 className="text-[15px] font-bold text-gray-900 mb-10">
-          Estimated performance
-        </h2>
+    <div className="w-full ">
+      <h2 className="text-[15px] font-bold text-gray-900 mb-10">
+        Estimated performance
+      </h2>
 
-        <div className="flex flex-col gap-8 mt-5">
-          {/* Copilot name */}
-          <div className="flex items-start gap-6">
-            <Navigation size={20} className="text-gray-700 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-bold text-gray-900 mb-1">
-                Copilot name
-              </p>
-              <p className="text-[13px] text-gray-500">
-                {copilotData.name || "Private Jet Operators"}
-              </p>
-            </div>
+      <div className="flex flex-col gap-8 mt-5">
+        {/* Copilot name */}
+        <div className="flex items-start gap-6">
+          <Navigation size={20} className="text-gray-700 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">
+              Copilot name
+            </p>
+            <p className="text-[13px] text-gray-500">
+              {copilotData.name || "Private Jet Operators"}
+            </p>
           </div>
+        </div>
 
-          {/* Email account */}
-          <div className="flex items-start gap-6">
-            <Mail size={20} className="text-gray-700 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-bold text-gray-900 mb-1">
-                Email account
-              </p>
-              <p className="text-[13px] text-gray-500">
-                {selectedEmailProfile?.name || "karim@achieve.nl"}
-              </p>
-            </div>
+        {/* Email account */}
+        <div className="flex items-start gap-6">
+          <Mail size={20} className="text-gray-700 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">
+              Email account
+            </p>
+            <p className="text-[13px] text-gray-500">
+              {selectedEmailProfile?.name || "karim@achieve.nl"}
+            </p>
           </div>
+        </div>
 
-          {/* Target audience */}
-          <div className="flex items-start gap-6">
-            <Users size={20} className="text-gray-700 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-bold text-gray-900 mb-1">
-                Target audience
-              </p>
-              <p className="text-[13px] text-gray-500">
-                {copilotData.targetProfile?.industries?.length
-                  ? copilotData.targetProfile.industries.join(", ")
-                  : "Private Jet Operators"}
-              </p>
-            </div>
+        {/* Target audience */}
+        <div className="flex items-start gap-6">
+          <Users size={20} className="text-gray-700 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">
+              Target audience
+            </p>
+            <p className="text-[13px] text-gray-500">
+              {copilotData.targetProfile?.industries?.length
+                ? copilotData.targetProfile.industries.join(", ")
+                : "Private Jet Operators"}
+            </p>
           </div>
+        </div>
 
-          {/* Email template */}
-          <div className="flex items-start gap-6">
-            <FileText size={20} className="text-gray-700 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-bold text-gray-900 mb-1">
-                Email template
-              </p>
-              <p className="text-[13px] text-gray-500">
-                {selectedTemplate?.name || "Book More Appointments"}
-              </p>
-            </div>
+        {/* Email template */}
+        <div className="flex items-start gap-6">
+          <FileText size={20} className="text-gray-700 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">
+              Email template
+            </p>
+            <p className="text-[13px] text-gray-500">
+              {selectedTemplate?.name || "Book More Appointments"}
+            </p>
           </div>
+        </div>
 
-          {/* Schedule */}
-          <div className="flex items-start gap-6">
-            <CalendarDays size={20} className="text-gray-700 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-bold text-gray-900 mb-1">
-                Schedule
-              </p>
-              <p className="text-[13px] text-gray-500">
-                {copilotData.sendLimit || 30} emails per day,{" "}
-                {formatActiveDays(copilotData.settings?.schedule?.activeDays)}
-              </p>
-            </div>
+        {/* Schedule */}
+        <div className="flex items-start gap-6">
+          <CalendarDays size={20} className="text-gray-700 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">Schedule</p>
+            <p className="text-[13px] text-gray-500">
+              {copilotData.sendLimit || 30} emails per day,{" "}
+              {formatActiveDays(copilotData.settings?.schedule?.activeDays)}
+            </p>
           </div>
+        </div>
 
-          {/* Status */}
-          <div className="flex items-start gap-6">
-            <ShieldCheck size={20} className="text-gray-700 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-[13px] font-bold text-gray-900 mb-1">Status</p>
-              <p className="text-[13px] text-gray-500">Ready to take-off</p>
-            </div>
+        {/* Status */}
+        <div className="flex items-start gap-6">
+          <ShieldCheck size={20} className="text-gray-700 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">Status</p>
+            <p className="text-[13px] text-gray-500">Ready to take-off</p>
           </div>
         </div>
       </div>

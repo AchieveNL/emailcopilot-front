@@ -25,7 +25,7 @@ export default function EmailTemplateSidbar() {
     // },
   ];
   return (
-    <div className="col-span-1 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
+    <div className="w-full  ">
       <h2 className="text-lg font-bold mb-1">Template summary</h2>
       <p className="text-xs text-primary mb-5">1-Step sequence</p>
 
