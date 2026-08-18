@@ -325,7 +325,7 @@ export default function NewCopilotPage() {
           <div className="flex items-center mb-4 gap-2 text-sm font-medium ">
             <Link
               href="/dashboard/copilots"
-              className="text-primary hover:text-gray-600 transition-colors"
+              className="text-primary hover:text-gray-600 text-sm lg:text-base transition-colors"
             >
               Copilots
             </Link>
@@ -333,8 +333,10 @@ export default function NewCopilotPage() {
             <span className="text-primary">{getPageTitle()}</span>
           </div>
 
-          <p className="text-gray-800 text-lg font-bold">Create New Copilot</p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-800 text-sm lg:text-lg font-bold">
+            Create New Copilot
+          </p>
+          <p className="text-gray-500 text-xs lg:text-sm">
             Build your outbound copilot in 6 simple steps.
           </p>
         </div>

@@ -74,13 +74,19 @@ export default function Step4Launch({
                   Copilot name
                 </div>
                 <div className="text-gray-700 group-hover:text-blue-500">
-                  {copilotData.name || "N/A"}
+                  {copilotData.name || "not specified"}
+                </div>
+                <div className="font-semibold text-gray-700 group-hover:text-primary">
+                  description
+                </div>
+                <div className="text-gray-700 group-hover:text-blue-500">
+                  {copilotData.description || "not specified"}
                 </div>
                 <div className="font-semibold text-gray-700 group-hover:text-primary">
                   Goal
                 </div>
                 <div className="text-gray-700 group-hover:text-blue-500">
-                  {copilotData.goal || "N/A"}
+                  {copilotData.goal || "not specified"}
                 </div>
               </div>
             </div>
@@ -144,8 +150,8 @@ export default function Step4Launch({
                   Location
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {copilotData.targetProfile?.countries?.join(", ") || "N/A"},
-                  {copilotData.targetProfile?.cities?.join(", ") || "N/A"}
+                  {copilotData.targetProfile?.countries?.join(", ") || "All"},
+                  {copilotData.targetProfile?.cities?.join(", ") || "All"}
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Est. audience size
@@ -206,7 +212,7 @@ export default function Step4Launch({
             />
             <div className="w-full">
               <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary mb-4">
-                Schedule
+                Flight Schedule
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-[110px_1fr] gap-y-3 text-sm">
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
@@ -229,7 +235,11 @@ export default function Step4Launch({
                     ?.split(" ")
                     ?.slice(0, 2)
                     ?.join(" ")}
-                  <br />
+                </div>
+                <div className="font-semibold text-gray-900 group-hover:text-primary">
+                  Time
+                </div>
+                <div className="text-gray-500 group-hover:text-blue-500">
                   {copilotData.settings?.schedule?.fromTime} -{" "}
                   {copilotData.settings?.schedule?.toTime}
                 </div>
