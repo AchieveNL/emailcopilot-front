@@ -5,11 +5,12 @@ import {
   MapPin,
   Mail,
   Phone,
-  Search,
   Building,
   Globe,
   Users,
-  Bot,
+  Send,
+  Target,
+  Calendar,
 } from "lucide-react";
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
@@ -21,6 +22,156 @@ import { useRef } from "react";
 import axios from "axios";
 
 // const leadsApiMock: Lead[] = [
+//   {
+//     id: 1,
+//     copilotName: "John Doe",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "lld",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 1,
+//   },
+//   {
+//     id: 2,
+//     copilotName: "Jane Smith",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "kdk",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 2,
+//   },
+//   {
+//     id: 1,
+//     copilotName: "John Doe",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "lld",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 1,
+//   },
+//   {
+//     id: 2,
+//     copilotName: "Jane Smith",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "kdk",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 2,
+//   },
+//   {
+//     id: 1,
+//     copilotName: "John Doe",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "lld",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 1,
+//   },
+//   {
+//     id: 2,
+//     copilotName: "Jane Smith",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "kdk",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 2,
+//   },
+//   {
+//     id: 1,
+//     copilotName: "John Doe",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "lld",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 1,
+//   },
+//   {
+//     id: 2,
+//     copilotName: "Jane Smith",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "kdk",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 2,
+//   },
+//   {
+//     id: 1,
+//     copilotName: "John Doe",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Acme Corp",
+//     email: "john@acme.com",
+//     website: "https://acme.com",
+//     phone: "+1-555-1234",
+//     sourceQuery: "lld",
+//     address: "123 Main St, Anytown, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 1,
+//   },
+//   {
+//     id: 2,
+//     copilotName: "Jane Smith",
+//     createdAt: "2023-01-01T00:00:00Z",
+//     updatedAt: "2023-01-01T00:00:00Z",
+//     companyName: "Globex Inc",
+//     email: "jane@globex.com",
+//     website: "https://globex.com",
+//     phone: "+1-555-5678",
+//     sourceQuery: "kdk",
+//     address: "456 Oak Ave, Somewhere, USA",
+//     status: "sent",
+//     sentAt: "2023-01-01T00:00:00Z",
+//     templateId: 2,
+//   },
 //   {
 //     id: 1,
 //     copilotName: "John Doe",
@@ -68,14 +219,14 @@ function Tooltip({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex-1 min-w-0 group z-100 w-40">
+    <div className="relative flex-1 min-w-0 group z-10 w-40">
       {children}
 
       <div
         role="tooltip"
         className=" w-40 pointer-events-none absolute border border-gray-100 bottom-full mb-2 left-1/2 -translate-x-1/2
                    opacity-0 group-hover:opacity-100 transition-opacity duration-150
-                   px-3 py-1.5 rounded-md bg-white text-gray-600 text-xs
+                   px-3 py-1.5 rounded-md bg-white text-gray-600 text-[10px]
                    text-center shadow-md whitespace-pre-line 
                    z-100"
       >
@@ -95,15 +246,15 @@ export default function LeadsPage() {
   const [copilotName, setCopilotName] = useState<string | null>("All Copilots");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [hoveredLeadId, setHoveredLeadId] = useState<number | null>(null);
+  const [activeLeadId, setActiveLeadId] = useState<number | null>(null);
   const [templateData, setTemplateData] = useState<{
     subject?: string;
     body?: string;
   } | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const handleMouseEnter = async (lead: Lead) => {
-    setHoveredLeadId(lead.id);
+  const handleShowPreview = async (lead: Lead) => {
+    setActiveLeadId(lead.id);
     setTemplateData(null);
 
     if (abortControllerRef.current) {
@@ -136,8 +287,9 @@ export default function LeadsPage() {
     }
   };
 
-  const handleMouseLeave = () => {
-    setHoveredLeadId(null);
+  const handleClosePreview = () => {
+    setActiveLeadId(null);
+    setTemplateData(null);
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
@@ -221,8 +373,8 @@ export default function LeadsPage() {
       ) : (
         <>
           <div className="bg-white min-h-120 border border-gray-200 rounded-xl  overflow-hidden mb-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm max-h-75 min-w-225">
+            <div className="overflow-auto max-h-125">
+              <table className="w-full text-sm min-w-225">
                 <thead>
                   <tr className="border-b border-gray-100 bg-white">
                     <th className=" font-semibold text-gray-900 px-6 py-5">
@@ -246,11 +398,14 @@ export default function LeadsPage() {
                     <th className=" font-semibold text-gray-900 px-6 py-5">
                       Address
                     </th>
-                    {/* <th className="font-semibold text-gray-900 px-6 py-5">
-                      Status
-                    </th> */}
+                    <th className="font-semibold text-gray-900 px-6 py-5">
+                      Departured at
+                    </th>
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Template
+                    </th>
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-50 sticky right-0 bg-white border-l border-gray-100">
+                      Status
                     </th>
                   </tr>
                 </thead>
@@ -258,12 +413,12 @@ export default function LeadsPage() {
                   {leads.map((lead) => (
                     <tr
                       key={lead.id}
-                      className="border-b text-xs border-gray-50 hover:bg-gray-50/50 transition-colors"
+                      className=" border-b text-xs border-gray-50 hover:bg-gray-50/50 transition-colors"
                     >
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                            <Bot size={12} />
+                            <Send size={12} />
                           </div>
                           <Tooltip text={lead.copilotName || "Unknown Copilot"}>
                             <div className="font-semibold line-clamp-1 text-gray-900">
@@ -293,6 +448,7 @@ export default function LeadsPage() {
                           <Tooltip text={lead?.website}>
                             <a
                               target="_blank"
+                              rel="noopener noreferrer"
                               href={lead.website || "#"}
                               className="font-semibold text- line-clamp-1 text-gray-900"
                             >
@@ -304,6 +460,8 @@ export default function LeadsPage() {
                       <td className="px-6 py-5 relative">
                         <a
                           href={`mailto:${lead.email}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium group transition-colors"
                         >
                           <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
@@ -312,6 +470,7 @@ export default function LeadsPage() {
                           <Tooltip text={lead.email}>
                             <a
                               target="_blank"
+                              rel="noopener noreferrer"
                               href={`mailto:${lead.email}`}
                               className="underline line-clamp-1 decoration-blue-200 underline-offset-4 group-hover:decoration-blue-400 transition-colors"
                             >
@@ -331,6 +490,7 @@ export default function LeadsPage() {
                               <Tooltip text={lead.phone}>
                                 <a
                                   target="_blank"
+                                  rel="noopener noreferrer"
                                   href={`https://wa.me/${lead.phone.replace("+", "")}`}
                                   className="font-semibold line-clamp-1 text-gray-900"
                                 >
@@ -348,7 +508,7 @@ export default function LeadsPage() {
                           {lead.sourceQuery ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                                <Search size={12} />
+                                <Target size={12} />
                               </div>
                               <Tooltip text={lead.sourceQuery}>
                                 <a
@@ -385,22 +545,38 @@ export default function LeadsPage() {
                           )}
                         </div>
                       </td>
-                      {/* <td className="px-6 py-5 ">
-                        <div className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center">
-                          <div className="text-xs capitalize bg-primary/10 text-primary mt-1 p-1 rounded-md  leading-relaxed">
-                            {lead.status ? lead.status : "Sent"}
+
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
+                            <Calendar size={12} />
                           </div>
+                          <Tooltip text={lead.sentAt || "Unknown Sent At"}>
+                            <div className="font-semibold line-clamp-1 text-gray-900">
+                              {lead.sentAt || "Unknown Sent At"}
+                            </div>
+                          </Tooltip>
                         </div>
-                      </td> */}
+                      </td>
                       <td className="px-6 py-5 relative">
                         <div
                           className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
-                          onMouseEnter={() => handleMouseEnter(lead)}
-                          onMouseLeave={handleMouseLeave}
+                          onClick={() => handleShowPreview(lead)}
                         >
-                          <div className="text-xs capitalize bg-primary/10 text-primary mt-1 p-1 rounded-md  leading-relaxed">
+                          <div className="text-xs capitalize bg-primary/10 text-primary mt-1 px-2 py-1.5 rounded-md  leading-relaxed">
                             show
                           </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 sticky right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <Tooltip text={lead.status || "Sent"}>
+                            <div className="w-fit px-2 py-1.5 rounded border border-green-200  text-green-400 bg-green-100 ">
+                              <div className="font-semibold line-clamp-1 text-green-900">
+                                {lead.status || "Sent"}
+                              </div>
+                            </div>
+                          </Tooltip>
                         </div>
                       </td>
                     </tr>
@@ -421,7 +597,7 @@ export default function LeadsPage() {
         </>
       )}
 
-      {hoveredLeadId && (
+      {activeLeadId && (
         <EmailPreviewCard
           subject={
             templateData?.subject ||
@@ -431,6 +607,7 @@ export default function LeadsPage() {
             templateData?.body ||
             (templateData === null ? "Loading..." : undefined)
           }
+          onClose={handleClosePreview}
         />
       )}
 

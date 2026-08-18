@@ -528,7 +528,7 @@ export default function CopilotsPage() {
                           size={13}
                           className={isActivating ? "animate-pulse" : ""}
                         />
-                        {isActivating ? "Activating..." : "launch"}
+                        {isActivating ? "Activating..." : "Launch"}
                       </button>
                     )}
                     {[

@@ -90,6 +90,7 @@ export default function MobileMenu() {
                 <Link
                   key={href}
                   href={href}
+                  onClick={closeMenu}
                   className={clsx(
                     "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
                     active
