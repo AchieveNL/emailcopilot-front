@@ -306,9 +306,9 @@ export default function EmailTemplateStep() {
       </div>
 
       {/* Main Content Split Area */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col xl:flex-row gap-6">
         {/* Left Sidebar */}
-        <div className="w-full lg:w-60 flex flex-col gap-4">
+        <div className="w-full  xl:w-60 flex flex-col gap-4">
           {/* Tabs */}
           <div className="flex  bg-slate-100 rounded-xl border border-slate-200">
             <button

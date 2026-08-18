@@ -150,6 +150,20 @@ export default function NewCopilotPage() {
     loadOptions();
   }, []);
 
+  // show alert when user tries to leave the page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   useEffect(() => {
     const editId = searchParams.get("edit");
     const duplicateId = searchParams.get("duplicate");
@@ -379,9 +393,9 @@ export default function NewCopilotPage() {
       <Stepper />
 
       {/* Content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-4  gap-6 mt-6">
         {/* Main form */}
-        <div className="col-span-1 lg:col-span-3">
+        <div className="col-span-1 lg:col-span-4 xl:col-span-3 ">
           <div className="bg-white border border-gray-200 rounded-xl p-6 ">
             {STEPS[currentStep - 1].component()}
           </div>
@@ -390,7 +404,7 @@ export default function NewCopilotPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="hidden lg:flex col-span-1 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
+        <div className="hidden lg:flex lg:col-span-2 xl:col-span-1 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
           {STEPS[currentStep - 1].sideBar()}
         </div>
       </div>
