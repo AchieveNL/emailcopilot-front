@@ -54,7 +54,7 @@ export default function Step4Launch({
         Everything looks good! Review your settings before launching.
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-8">
         {/* Card 1: Setup */}
         <div
           onClick={() => setStep(1)}
