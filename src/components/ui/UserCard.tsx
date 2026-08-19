@@ -12,7 +12,7 @@ export default function UserCard({
 }: {
   user: any;
   isActive: boolean;
-  onpress: () => void;
+  onpress?: () => void;
 }) {
   const { limits } = useBilling();
   const [showUserMenu, setShowUserMenu] = useState(false);
