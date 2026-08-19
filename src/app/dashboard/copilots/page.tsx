@@ -312,6 +312,25 @@ export default function CopilotsPage() {
   const totalOpened = copilots.reduce((s, c) => s + c.emailsOpened, 0);
   const totalReplied = copilots.reduce((s, c) => s + c.emailsReplied, 0);
   const activeCount = copilots.filter((c) => c.status === "active").length;
+  const [urlId, setUrlId] = useState<string>("");
+
+  useEffect(() => {
+    if (!window.location.hash || copilots.length === 0) return;
+
+    const elementId = window.location.hash.substring(1);
+    setUrlId(elementId);
+
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    const timeout = setTimeout(() => {
+      setUrlId("");
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [copilots]);
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -459,9 +478,10 @@ export default function CopilotsPage() {
             const or = openRate(copilot.emailsSent, copilot.emailsOpened);
             const rr = replyRate(copilot.emailsSent, copilot.emailsReplied);
             return (
+              //here ________________________________ here
               <div
                 key={copilot.id}
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all group"
+                className={` rounded-xl shadow-sm hover:shadow-md transition-all group ${copilot.name.replace(" ", "-") === urlId?.replace(" ", "-") ? "bg-primary/5 border border-primary/20" : "bg-white border border-gray-200"}`}
               >
                 <div className="p-5 flex items-center gap-5">
                   <div className="flex-1 min-w-0">
