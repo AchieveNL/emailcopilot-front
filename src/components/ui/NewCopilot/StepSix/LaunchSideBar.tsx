@@ -103,7 +103,7 @@ export default function LaunchSideBar({
         <div className="flex items-start gap-6">
           <CalendarDays size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-[13px] font-bold text-gray-900 mb-1">Schedule</p>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">Flight Schedule</p>
             <p className="text-[13px] text-gray-500">
               {copilotData.sendLimit || 30} emails per day,{" "}
               {formatActiveDays(copilotData.settings?.schedule?.activeDays)}

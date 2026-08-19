@@ -99,7 +99,7 @@ export default function Sidebar() {
                     className={clsx(
                       "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
                       active
-                        ? "bg-primary/10 text-primary font-semibold"
+                        ? "bg-primary/5 text-primary font-semibold"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                     )}
                   >

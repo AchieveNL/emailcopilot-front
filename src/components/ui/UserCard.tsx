@@ -8,9 +8,11 @@ import { handlePlanNameChange } from "@/lib/helpers";
 export default function UserCard({
   user,
   isActive,
+  onpress,
 }: {
   user: any;
   isActive: boolean;
+  onpress: () => void;
 }) {
   const { limits } = useBilling();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -63,6 +65,7 @@ export default function UserCard({
         )}
         <Link
           href={"/dashboard/billing"}
+          onClick={onpress}
           className="flex justify-center border border-gray-300 hover:border-primary/10 w-full bg-white text-gray-900 text-sm font-medium py-2 rounded-lg hover:bg-primary/5 hover:text-primary transition-colors"
         >
           Manage Plan
