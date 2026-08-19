@@ -16,7 +16,6 @@ import {
   Users,
   Target,
   CreditCard,
-  Plus,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -54,16 +53,16 @@ export default function MobileMenu() {
       {/* Hamburger Button - Only visible on mobile */}
       <button
         onClick={toggleMenu}
-        className="md:hidden absolute top-4 right-4 z-50 p-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors"
+        className="md:hidden fixed top-5 right-0 z-50 p-2 bg-primary text-white rounded-s-lg hover:bg-primary/80 transition-colors"
         aria-label="Toggle menu"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="md:hidden fixed inset-0 bg-black/10 backdrop-blur-sm z-40"
           onClick={closeMenu}
         />
       )}
@@ -94,7 +93,7 @@ export default function MobileMenu() {
                   className={clsx(
                     "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
                     active
-                      ? "bg-primary/10 text-primary font-semibold"
+                      ? "bg-primary/5 text-primary font-semibold"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                   )}
                 >
@@ -111,7 +110,11 @@ export default function MobileMenu() {
           </nav>
         </div>
 
-        <UserCard user={user} isActive={true} />
+        <UserCard
+          user={user}
+          isActive={true}
+          onpress={() => setIsOpen(false)}
+        />
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 import { templatesApi } from "@/lib/api";
 import { useRef } from "react";
 import axios from "axios";
+import { formatDateTime } from "@/lib/helpers";
 
 // const leadsApiMock: Lead[] = [
 //   {
@@ -28,7 +29,7 @@ import axios from "axios";
 //     createdAt: "2023-01-01T00:00:00Z",
 //     updatedAt: "2023-01-01T00:00:00Z",
 //     companyName: "Acme Corp",
-//     email: "john@acme.com",
+//     email: "johnhhhhhhhhhhhhhhh@acme.com",
 //     website: "https://acme.com",
 //     phone: "+1-555-1234",
 //     sourceQuery: "lld",
@@ -219,15 +220,15 @@ function Tooltip({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex-1 min-w-0 group z-10 w-40">
+    <div className="relative inline-block group z-10">
       {children}
 
       <div
         role="tooltip"
-        className=" w-40 pointer-events-none absolute border border-gray-100 bottom-full mb-2 left-1/2 -translate-x-1/2
+        className=" min-w-30 max-w-40 pointer-events-none absolute border border-gray-100 bottom-full mb-2 left-1/2 -translate-x-1/2
                    opacity-0 group-hover:opacity-100 transition-opacity duration-150
                    px-3 py-1.5 rounded-md bg-white text-gray-600 text-[10px]
-                   text-center shadow-md whitespace-pre-line 
+                   text-center shadow-md whitespace-wrap  wrap-break-word
                    z-100"
       >
         {text}
@@ -337,7 +338,7 @@ export default function LeadsPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <div className="">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">Departure</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">Departure</h1>
             <p className="text-gray-500 text-sm">
               Recipients who have been emailed by
               <span className="font-bold text-gray-950 ">
@@ -362,7 +363,7 @@ export default function LeadsPage() {
         </div>
       ) : leads.length === 0 ? (
         <div className=" min-h-120 flex flex-col items-center justify-center p-12 text-center ">
-          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mx-auto mb-4">
             <Users size={20} className="text-primary" />
           </div>
           <h2 className="font-bold text-gray-900 mb-2">No leads yet</h2>
@@ -392,7 +393,7 @@ export default function LeadsPage() {
                     <th className=" font-semibold text-gray-900 px-6 py-5">
                       Phone
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-semibold sticky right-20 text-gray-900 px-6  z-50  py-5">
                       Target Audience
                     </th>
                     <th className=" font-semibold text-gray-900 px-6 py-5">
@@ -404,7 +405,7 @@ export default function LeadsPage() {
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-50 sticky right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-50  sticky right-0 bg-white border-l border-gray-100">
                       Status
                     </th>
                   </tr>
@@ -421,9 +422,14 @@ export default function LeadsPage() {
                             <Send size={12} />
                           </div>
                           <Tooltip text={lead.copilotName || "Unknown Copilot"}>
-                            <div className="font-semibold line-clamp-1 text-gray-900">
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={lead.website || "#"}
+                              className="font-semibold line-clamp-1 text-gray-900"
+                            >
                               {lead.copilotName || "Unknown Copilot"}
-                            </div>
+                            </a>
                           </Tooltip>
                         </div>
                       </td>
@@ -503,11 +509,11 @@ export default function LeadsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5  text-gray-600">
-                        <div className="flex items-center gap-2 whitespace-nowrap">
+                      <td className="px-6 py-5 sticky right-20 z-50 bg-white  text-gray-600">
+                        <div className="flex items-center gap-2 z-50 whitespace-nowrap">
                           {lead.sourceQuery ? (
                             <>
-                              <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
+                              <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white ">
                                 <Target size={12} />
                               </div>
                               <Tooltip text={lead.sourceQuery}>
@@ -553,7 +559,9 @@ export default function LeadsPage() {
                           </div>
                           <Tooltip text={lead.sentAt || "Unknown Sent At"}>
                             <div className="font-semibold line-clamp-1 text-gray-900">
-                              {lead.sentAt || "Unknown Sent At"}
+                              {lead.sentAt
+                                ? formatDateTime(lead.sentAt)
+                                : "Unknown"}
                             </div>
                           </Tooltip>
                         </div>
@@ -563,16 +571,16 @@ export default function LeadsPage() {
                           className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
                           onClick={() => handleShowPreview(lead)}
                         >
-                          <div className="text-xs capitalize bg-primary/10 text-primary mt-1 px-2 py-1.5 rounded-md  leading-relaxed">
+                          <div className="text-xs capitalize bg-primary/5 text-primary mt-1 w-fit px-3 py-1 rounded-lg  leading-relaxed">
                             show
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
-                        <div className="flex items-center gap-2">
+                      <td className="px-6 py-5 sticky status align-middle right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
+                        <div className="flex items-center gap-2 w-20">
                           <Tooltip text={lead.status || "Sent"}>
-                            <div className="w-fit px-2 py-1.5 rounded border border-green-200  text-green-400 bg-green-100 ">
-                              <div className="font-semibold line-clamp-1 text-green-900">
+                            <div className="w-fit px-3 py-1 rounded-lg     bg-green-100 ">
+                              <div className="font-semibold line-clamp-1 capitalize text-green-900">
                                 {lead.status || "Sent"}
                               </div>
                             </div>

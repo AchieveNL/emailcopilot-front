@@ -58,7 +58,7 @@ export default function Step4Launch({
         {/* Card 1: Setup */}
         <div
           onClick={() => setStep(1)}
-          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/10  hover:border-transparent transition-colors"
+          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors"
         >
           <div className="flex items-start gap-3">
             <SlidersHorizontal
@@ -77,7 +77,7 @@ export default function Step4Launch({
                   {copilotData.name || "not specified"}
                 </div>
                 <div className="font-semibold text-gray-700 group-hover:text-primary">
-                  description
+                  Description
                 </div>
                 <div className="text-gray-700 group-hover:text-blue-500">
                   {copilotData.description || "not specified"}
@@ -96,7 +96,7 @@ export default function Step4Launch({
         {/* Card 2: Email account */}
         <div
           onClick={() => setStep(2)}
-          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/10  hover:border-transparent transition-colors "
+          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors "
         >
           <div className="flex items-start gap-3">
             <Mail
@@ -128,7 +128,7 @@ export default function Step4Launch({
         {/* Card 3: Target audience */}
         <div
           onClick={() => setStep(3)}
-          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/10  hover:border-transparent transition-colors "
+          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors "
         >
           <div className="flex items-start gap-3">
             <Target
@@ -167,7 +167,7 @@ export default function Step4Launch({
         {/* Card 4: Email Template */}
         <div
           onClick={() => setStep(4)}
-          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/10  hover:border-transparent transition-colors "
+          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors "
         >
           <div className="flex items-start gap-3">
             <FileText
@@ -203,7 +203,7 @@ export default function Step4Launch({
         {/* Card 5: Schedule */}
         <div
           onClick={() => setStep(5)}
-          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/10  hover:border-transparent transition-colors "
+          className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors "
         >
           <div className="flex items-start gap-3">
             <CalendarDays

@@ -258,7 +258,14 @@ export default function NewCopilotPage() {
     try {
       setSavingDraft(true);
       const payload = {
-        ...copilotData,
+        name: copilotData.name,
+        description: copilotData.description,
+        goal: copilotData.goal,
+        emailProfileId: copilotData.emailProfileId,
+        scrapeProfileId: copilotData.scrapeProfileId,
+        templateId: copilotData.templateId,
+        sendLimit: copilotData.sendLimit,
+
         status: "draft" as const,
       };
 

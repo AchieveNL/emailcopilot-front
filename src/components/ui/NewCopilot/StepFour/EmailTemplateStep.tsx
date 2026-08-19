@@ -402,7 +402,7 @@ export default function EmailTemplateStep() {
                   key={variable.id}
                   onClick={() => insertVariable(variable.name)}
                   className="flex items-center justify-between p-3 group rounded-xl border border-slate-100 bg-white hover:border-primary/50
-                   hover:bg-primary/10 transition-all text-left group"
+                   hover:bg-primary/5 transition-all text-left group"
                 >
                   <div className="flex-1">
                     <div className="text-xs font-bold text-slate-900 mb-1">

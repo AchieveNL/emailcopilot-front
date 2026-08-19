@@ -34,10 +34,13 @@ export default function Step1Settings() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6">
           <div>
             <label
-              className="block text-sm font-semibold text-gray-900 mb-1.5"
+              className="block text-sm font-semibold relative text-gray-900 mb-1.5"
               htmlFor="name"
             >
               Copilot Name
+              <span className="text-sm font-semibold  text-red-500 absolute">
+                *
+              </span>
             </label>
             <p className="mt-1.5 text-xs text-gray-500">
               Internal name to identify your copilot.

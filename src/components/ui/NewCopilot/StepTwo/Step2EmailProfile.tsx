@@ -129,7 +129,7 @@ export default function Step2EmailProfile({
                     <span className="flex items-center gap-1 text-[8px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                       <CheckCircle size={8} /> Recommended
                     </span>
-                    <span className="flex items-center gap-1 text-[8px] font-medium text-primary bg-primary/10  px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[8px] font-medium text-primary bg-primary/5  px-2 py-0.5 rounded-full">
                       <Zap size={8} /> Easy setup
                     </span>
                   </div>
@@ -166,7 +166,7 @@ export default function Step2EmailProfile({
                     <span className="flex items-center gap-1 text-[8px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                       <CheckCircle size={8} /> Recommended
                     </span>
-                    <span className="flex items-center gap-1 text-[8px] font-medium text-primary bg-primary/10  px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[8px] font-medium text-primary bg-primary/5  px-2 py-0.5 rounded-full">
                       <Zap size={8} /> Easy setup
                     </span>
                   </div>
