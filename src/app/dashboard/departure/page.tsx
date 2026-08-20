@@ -400,7 +400,7 @@ export default function LeadsPage() {
                     <th className=" font-semibold text-gray-900 px-6 py-5">
                       Phone
                     </th>
-                    <th className=" font-semibold sticky right-20 text-gray-900 px-6  z-50  py-5">
+                    <th className=" font-semibold sticky right-20 bg-white text-gray-900 px-6  z-50  py-5">
                       Target Audience
                     </th>
                     <th className=" font-semibold text-gray-900 px-6 py-5">
@@ -583,8 +583,8 @@ export default function LeadsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky status align-middle right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
-                        <div className="flex items-center gap-2 w-20">
+                      <td className="px-6 py-5 sticky status w-20 align-middle right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
+                        <div className="flex items-center gap-2 ">
                           <Tooltip text={lead.status || "Sent"}>
                             <div className="w-fit px-3 py-1 rounded-lg     bg-green-100 ">
                               <div className="font-semibold line-clamp-1 capitalize text-green-900">
