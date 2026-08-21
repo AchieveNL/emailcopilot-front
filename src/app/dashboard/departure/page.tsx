@@ -384,7 +384,7 @@ export default function LeadsPage() {
             <div className="overflow-auto max-h-125">
               <table className="w-full text-sm min-w-225">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-white">
+                  <tr className="border-b sticky top-0 z-60 border-gray-100 bg-white">
                     <th className=" font-semibold text-gray-900 px-6 py-5">
                       Copilot
                     </th>
@@ -400,7 +400,7 @@ export default function LeadsPage() {
                     <th className=" font-semibold text-gray-900 px-6 py-5">
                       Phone
                     </th>
-                    <th className=" font-semibold sticky right-20 bg-white text-gray-900 px-6  z-50  py-5">
+                    <th className=" font-semibold  bg-white text-gray-900 px-6    py-5">
                       Target Audience
                     </th>
                     <th className=" font-semibold text-gray-900 px-6 py-5">
@@ -412,7 +412,7 @@ export default function LeadsPage() {
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-50  sticky right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-50  sticky top-0 right-0 bg-white border-l border-gray-100">
                       Status
                     </th>
                   </tr>
@@ -516,8 +516,8 @@ export default function LeadsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky right-20 z-50 bg-white  text-gray-600">
-                        <div className="flex items-center gap-2 z-50 whitespace-nowrap">
+                      <td className="px-6 py-5  bg-white  text-gray-600">
+                        <div className="flex items-center gap-2  whitespace-nowrap">
                           {lead.sourceQuery ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white ">
