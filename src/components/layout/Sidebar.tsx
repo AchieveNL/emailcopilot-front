@@ -74,16 +74,7 @@ export default function Sidebar() {
             <Logo />
             <hr className="w-full border-gray-200 mb-6" />
 
-            {/* Create Button */}
-            {/* <div className="px-4 mb-4">
-              <Link
-                href="/dashboard/copilots/new"
-                className="w-full bg-gray-900 text-white rounded-lg py-2.5 px-4 font-medium flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors text-sm"
-              >
-                <Plus size={15} />
-                Create New Copilot
-              </Link>
-            </div> */}
+      
 
             {/* Nav */}
             <nav className="px-3 space-y-0.5">

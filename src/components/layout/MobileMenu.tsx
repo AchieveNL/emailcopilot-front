@@ -49,7 +49,7 @@ export default function MobileMenu() {
   };
 
   return (
-    <div>
+    <div className="z-120 relative">
       {/* Hamburger Button - Only visible on mobile */}
       <button
         onClick={toggleMenu}
@@ -76,7 +76,8 @@ export default function MobileMenu() {
       >
         <div>
           {/* Logo */}
-          <Logo />
+      <Logo />
+            <hr className="w-full border-gray-200 mb-6" />
 
           {/* Nav */}
           <nav className="px-3 space-y-0.5">

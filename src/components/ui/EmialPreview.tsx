@@ -45,7 +45,7 @@ Best regards,
         </div>
 
         {/* Content */}
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 max-h-76 overflow-y-auto">
           {/* Subject line */}
           <div className="space-y-1">
             <p className="text-xs font-semibold text-gray-900">Subject line</p>

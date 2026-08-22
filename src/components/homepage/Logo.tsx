@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function Logo() {
   return (
-    <div className=" px-0 lg:px-6 py-5 flex items-center gap-3">
+    <div className=" px-3 lg:px-6 py-5 flex items-center gap-3">
       <Link href="/" className="flex items-center gap-3">
         <Image src="/EmailcopilotLogo.svg" alt="Logo" loading="eager" width={208} height={40} />
       </Link>
