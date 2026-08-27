@@ -14,6 +14,11 @@ function stripHtml(html: string) {
     .replace(/<[^>]+>/g, "") // remove remaining tags
     .trim();
 }
+
+
+
+
+
 function EmailPreviewCard({
   subject = "Quick idea to help {{company}} book more appointments",
   body = `Hi {{first_name}},
