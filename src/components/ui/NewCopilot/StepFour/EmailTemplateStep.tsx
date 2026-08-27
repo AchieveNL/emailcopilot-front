@@ -23,12 +23,17 @@ import { templatesApi } from "@/lib/api";
 import { useCopilotStore } from "../../../../../store/copilotStore";
 
 const initialEmailBody = `
-<p>Hi {{firstName}},</p>
-<p>I noticed that {{companyName}} provides private jet services for clients in {{location}}.<br />
-I wanted to share a quick idea that could help you attract more qualified charter inquiries and increase bookings without relying solely on referrals or repeat clients.</p>
+<p>Hi,</p>
+
+<p>I came across {{companyName}} and noticed your private jet services.</p>
+
+<p>I wanted to share a quick idea that could help you attract more qualified charter inquiries and increase bookings without relying solely on referrals or repeat clients.</p>
+
 <p>Would you be open to a quick 15-minute call next week to explore this?</p>
+
 <p>Best regards,<br />
-{{senderName}}</p>`;
+{{senderName}}</p>
+`;
 
 const escapeHtml = (value: string) =>
   value
@@ -71,10 +76,11 @@ export default function EmailTemplateStep() {
   // const [smartSending, setSmartSending] = useState(true);
   const [loading, setLoading] = useState(false);
   const [variableInput, setVariableInput] = useState([
-    "CompanyName",
-    "FirstName",
-    "Location",
-    "SenderName",
+    "companyName",
+    "email",
+    "website",
+    "phone",
+    "senderName",
   ]);
   const [subjectInput, setSubjectInput] = useState(
     "Quick idea to help {{companyName}} book more appointments",
@@ -92,22 +98,28 @@ export default function EmailTemplateStep() {
   const variablesList = [
     {
       id: 1,
-      name: "{{CompanyName}}",
+      name: "{{companyName}}",
       desc: "The recipient's company name",
     },
     {
       id: 2,
-      name: "{{FirstName}}",
-      desc: "The recipient's first name",
+      name: "{{email}}",
+      desc: "The recipient's email address",
     },
     {
       id: 3,
-      name: "{{Location}}",
-      desc: "The recipient's location",
+      name: "{{website}}",
+      desc: "The recipient's website",
     },
     {
       id: 4,
-      name: "{{SenderName}}",
+      name: "{{phone}}",
+      desc: "The recipient's phone number",
+    },
+
+    {
+      id: 5,
+      name: "{{senderName}}",
       desc: "Your name as the sender",
     },
   ];
@@ -118,21 +130,6 @@ export default function EmailTemplateStep() {
       title: "Step 1 - Initial Email",
       desc: "A personalized cold email",
     },
-    // {
-    //   id: 2,
-    //   title: "Step 2 - Follow-up 1",
-    //   desc: "Send 2 days after no reply",
-    // },
-    // {
-    //   id: 3,
-    //   title: "Step 3 - Follow-up 2",
-    //   desc: "Send 4 days after no reply",
-    // },
-    // {
-    //   id: 4,
-    //   title: "Step 4 - Follow-up 3",
-    //   desc: "Send 6 days after no reply",
-    // },
   ];
 
   useEffect(() => {
