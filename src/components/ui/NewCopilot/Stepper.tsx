@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 import clsx from "clsx";
-import { useCopilotStore, type Step } from "@/store/copilotStore";
+import { useCopilotStore, type Step } from "../../../../store/copilotStore";
 import {
   SlidersVertical,
   Mail,
@@ -21,7 +21,7 @@ const steps = [
   },
   {
     id: 2,
-    label: "Email accounts",
+    label: "Email Accounts",
     sub: "Choose who's sending",
     icon: <Mail size={16} />,
   },

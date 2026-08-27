@@ -29,9 +29,9 @@ type Copilot = {
   emailsSent: number;
   emailsOpened: number;
   emailsReplied: number;
-  emailProfileName: string | null;
+  emailAccountName: string | null;
   templateName: string | null;
-  scrapeProfileId: number | null; // added
+  targetAudienceId: number | null; // added
   createdAt: string;
   updatedAt: string;
 };
@@ -124,7 +124,7 @@ function CopilotMenu({
   }
 
   async function handleRunScrape() {
-    if (!copilot.scrapeProfileId) return;
+    if (!copilot.targetAudienceId) return;
     try {
       setRunningScrape(true);
       await copilotsApi.run(copilot.id);
@@ -202,7 +202,7 @@ function CopilotMenu({
             >
               <Copy size={13} /> Duplicate
             </button>
-            {copilot.scrapeProfileId && (
+            {copilot.targetAudienceId && (
               <button
                 onClick={handleRunScrape}
                 disabled={runningScrape}
@@ -272,7 +272,7 @@ export default function CopilotsPage() {
     try {
       setLoading(true);
       const res = await copilotsApi.getAll();
-      console.log("Fetched copilots:", res.data);
+      console.log("Fetched copilots from copilot page :", res.data);
       setCopilots(res.data);
       if (res.data.length === 0) {
         router.push("/dashboard/copilots/new");
@@ -504,9 +504,9 @@ export default function CopilotsPage() {
                       </p>
                     )}
                     <div className="flex items-center gap-3 flex-wrap">
-                      {copilot.emailProfileName && (
+                      {copilot.emailAccountName && (
                         <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <Mail size={11} /> {copilot.emailProfileName}
+                          <Mail size={11} /> {copilot.emailAccountName}
                         </span>
                       )}
                       {copilot.templateName && (

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Mail, Calendar, Clock, ShieldCheck, Globe } from "lucide-react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 
 const DEFAULT_TIMEZONE = "Europe/Brussels";
 

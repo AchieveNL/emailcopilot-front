@@ -80,8 +80,8 @@ function HeroVisuals() {
         lg:top-10 lg:right-[-20px] lg:px-4 lg:py-2 lg:pl-2.5 lg:scale-100
       "
       >
-        <div className="w-[26px] h-[26px] sm:w-[30px] sm:h-[30px] rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-          <TrendingUp size={14} className="text-green-600" strokeWidth={2.5} />
+        <div className="w-[26px] h-[26px] sm:w-[30px] sm:h-[30px] rounded-full bg-success/5 flex items-center justify-center flex-shrink-0">
+          <TrendingUp size={14} className="text-success" strokeWidth={2.5} />
         </div>
         <div>
           <strong className="block text-[0.72rem] sm:text-[0.8rem] font-extrabold text-[#0f0f12] tracking-[-0.01em]">

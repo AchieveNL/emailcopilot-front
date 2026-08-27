@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 
 import StepsActions from "../StepsActions";
 
@@ -17,6 +17,7 @@ export default function Step1Settings() {
       description: copilotData.description,
     });
     console.log("Updated copilot data:", copilotData);
+
     setStep(2);
 
     setIsLoading(false);
@@ -51,7 +52,10 @@ export default function Step1Settings() {
               id="name"
               type="text"
               value={copilotData.name}
-              onChange={(e) => updateCopilotData({ name: e.target.value })}
+              onChange={(e) => {
+                updateCopilotData({ name: e.target.value });
+                console.log("Updated copilot name:", e.target.value);
+              }}
               placeholder="e.g. Private Jet Operators"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />

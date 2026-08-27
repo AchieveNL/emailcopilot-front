@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FAQS } from "@/store/hompageData";
+import { FAQS } from "../../../store/hompageData";
 import { Plus } from "lucide-react";
 import ScrollFloat from "./ScrollFloat";
 import { AnimatedItem } from "./AnimatedList";
@@ -51,7 +51,13 @@ function Faqs() {
           }}
         >
           {FAQS.map((faq, i) => (
-            <AnimatedItem key={i} index={i} delay={0.05 * i} className="w-full" once={false}>
+            <AnimatedItem
+              key={i}
+              index={i}
+              delay={0.05 * i}
+              className="w-full"
+              once={false}
+            >
               <div
                 className="faq-item"
                 style={{
@@ -87,7 +93,9 @@ function Faqs() {
                       borderRadius: 99,
                       // Button color changes when active, uses plan-specific colors for cohesive design
                       background:
-                        openFaq === i ? getButtonColor(i)[1] : "rgba(0,0,0,0.06)",
+                        openFaq === i
+                          ? getButtonColor(i)[1]
+                          : "rgba(0,0,0,0.06)",
                       // Button border changes when active
                       border: "1px solid transparent",
                       // Active state border color matches the button's background color
@@ -106,7 +114,8 @@ function Faqs() {
                       color={openFaq === i ? getButtonColor(i)[0] : "#0f0f12"}
                       strokeWidth={2.5}
                       style={{
-                        transform: openFaq === i ? "rotate(45deg)" : "rotate(0)",
+                        transform:
+                          openFaq === i ? "rotate(45deg)" : "rotate(0)",
                         transition: "transform 0.2s",
                       }}
                     />

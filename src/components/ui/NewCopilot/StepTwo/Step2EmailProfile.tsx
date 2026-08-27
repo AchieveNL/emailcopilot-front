@@ -12,12 +12,12 @@ import {
 } from "lucide-react";
 
 import Image from "next/image";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 import OtherProviderPopUp from "@/components/ui/NewCopilot/StepTwo/OtherProviderPopUp";
 import StepsActions from "../StepsActions";
 import { useState, useEffect } from "react";
-import { emailProfilesApi } from "@/lib/api";
+import { emailAccountsApi } from "@/lib/api";
 import { toast } from "sonner";
 
 interface Step2EmailProfileProps {
@@ -49,7 +49,8 @@ export default function Step2EmailProfile({
   const fetchProfiles = async () => {
     try {
       setLoadingProfiles(true);
-      const res = await emailProfilesApi.getAll();
+      const res = await emailAccountsApi.getAll();
+      console.log("Fetched profiles from API:", res.data);
       setUserProfiles(res.data);
     } catch (error) {
       console.error(error);
@@ -65,9 +66,9 @@ export default function Step2EmailProfile({
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this account?")) return;
     try {
-      await emailProfilesApi.delete(id);
-      if (copilotData.emailProfileId === id) {
-        updateCopilotData({ emailProfileId: null });
+      await emailAccountsApi.delete(id);
+      if (copilotData.emailAccountId === id) {
+        updateCopilotData({ emailAccountId: null });
       }
       fetchProfiles();
     } catch (error) {
@@ -85,7 +86,7 @@ export default function Step2EmailProfile({
   };
 
   const canContinue =
-    copilotData.emailProfileId !== null ||
+    copilotData.emailAccountId !== null ||
     selectedProfileName === "gmail" ||
     selectedProfileName === "outlook";
 
@@ -126,7 +127,7 @@ export default function Step2EmailProfile({
                     <span className="font-semibold text-sm text-gray-900">
                       Connect with Gmail
                     </span>
-                    <span className="flex items-center gap-1 text-[8px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[8px] font-medium text-success bg-success/5 px-2 py-0.5 rounded-full">
                       <CheckCircle size={8} /> Recommended
                     </span>
                     <span className="flex items-center gap-1 text-[8px] font-medium text-primary bg-primary/5  px-2 py-0.5 rounded-full">
@@ -163,7 +164,7 @@ export default function Step2EmailProfile({
                     <span className="font-semibold text-sm text-gray-900">
                       Connect with Outlook
                     </span>
-                    <span className="flex items-center gap-1 text-[8px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[8px] font-medium text-success bg-success/5 px-2 py-0.5 rounded-full">
                       <CheckCircle size={8} /> Recommended
                     </span>
                     <span className="flex items-center gap-1 text-[8px] font-medium text-primary bg-primary/5  px-2 py-0.5 rounded-full">
@@ -242,12 +243,12 @@ export default function Step2EmailProfile({
                   <button
                     type="button"
                     className={`flex-1 flex items-center justify-between gap-4 p-4 rounded-xl border ${
-                      copilotData.emailProfileId === profile.id
+                      copilotData.emailAccountId === profile.id
                         ? "border-primary/20 bg-primary-light"
                         : "border-gray-200 hover:border-primary/20 hover:bg-primary/5"
                     } transition-colors text-left`}
                     onClick={() => {
-                      updateCopilotData({ emailProfileId: profile.id });
+                      updateCopilotData({ emailAccountId: profile.id });
                       console.log("copilotdata", copilotData);
                       setSelectedProfileName(profile.id.toString());
                     }}

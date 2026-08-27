@@ -1,5 +1,5 @@
 "use client";
-import { PLANS } from "@/store/hompageData";
+import { PLANS } from "../../../store/hompageData";
 import { CheckCircleIcon } from "lucide-react";
 import Link from "next/link";
 import ScrollFloat from "./ScrollFloat";
@@ -145,7 +145,7 @@ function Pricing() {
                   <div className="mt-8 px-4 pb-4">
                     {/* adjust the button styles based on the plan */}
                     <Link
-                      href={"login"}
+                      href={"/sign-in"}
                       className={`w-full py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 transition-opacity shadow-sm `}
                       style={{
                         color: plan.textcolor,

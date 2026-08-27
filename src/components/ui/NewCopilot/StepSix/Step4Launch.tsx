@@ -11,7 +11,7 @@ import {
   ArrowLeft,
   Rocket,
 } from "lucide-react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 
 interface Step4LaunchProps {
@@ -27,11 +27,11 @@ export default function Step4Launch({
 }: Step4LaunchProps) {
   const { copilotData, setStep } = useCopilotStore();
 
-  const selectedEmailProfile = remoteContext.emailProfiles.find(
-    (p) => p.id === copilotData.emailProfileId,
+  const selectedEmailProfile = remoteContext.emailAccount.find(
+    (p) => p.id === copilotData.emailAccountId,
   );
-  const selectedScrapeProfile = remoteContext.scrapeProfiles.find(
-    (p) => p.id === copilotData.scrapeProfileId,
+  const selectedScrapeProfile = remoteContext.targetAudiences.find(
+    (p) => p.id === copilotData.targetAudienceId,
   );
   const selectedTemplate = remoteContext.templates?.find(
     (t) => t.id === copilotData.templateId,
@@ -93,7 +93,7 @@ export default function Step4Launch({
           </div>
         </div>
 
-        {/* Card 2: Email account */}
+        {/* Card 2: Email Account */}
         <div
           onClick={() => setStep(2)}
           className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors "
@@ -105,7 +105,7 @@ export default function Step4Launch({
             />
             <div className="w-full">
               <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary mb-4">
-                Email account
+                Email Account
               </h3>
               <div className="grid grid-cols-[110px_1fr] gap-y-3 text-sm">
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
@@ -115,7 +115,7 @@ export default function Step4Launch({
                   {selectedEmailProfile?.name || "N/A"}
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
-                  Email account
+                  Email Account
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
                   Connected
@@ -125,7 +125,7 @@ export default function Step4Launch({
           </div>
         </div>
 
-        {/* Card 3: Target audience */}
+        {/* Card 3: Target Audience */}
         <div
           onClick={() => setStep(3)}
           className="group bg-white border  border-gray-100 rounded-xl p-5 hover:bg-primary/5  hover:border-transparent transition-colors "
@@ -137,7 +137,7 @@ export default function Step4Launch({
             />
             <div className="w-full">
               <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary mb-4">
-                Target audience
+                Target Audience
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-[130px_1fr] gap-y-3 text-sm">
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
@@ -260,7 +260,7 @@ export default function Step4Launch({
             />
             <div className="w-full">
               <h3 className="text-sm font-semibold text-emerald-500 mb-4">
-                You`&apos;`re ready to take off!
+                You&apos;re ready to take off!
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-4 text-sm text-emerald-600">
                 <div className="flex items-center gap-2">
@@ -273,13 +273,13 @@ export default function Step4Launch({
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">
                     <Check size={12} strokeWidth={3} />
                   </div>
-                  <span>Email template</span>
+                  <span>Email Template</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">
                     <Check size={12} strokeWidth={3} />
                   </div>
-                  <span>Email account</span>
+                  <span>Email Account</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">
@@ -291,7 +291,7 @@ export default function Step4Launch({
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">
                     <Check size={12} strokeWidth={3} />
                   </div>
-                  <span>Target audience</span>
+                  <span>Target Audience</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="bg-emerald-500 text-white rounded-full p-0.5">

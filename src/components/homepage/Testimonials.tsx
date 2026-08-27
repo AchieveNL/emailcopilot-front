@@ -1,5 +1,5 @@
 "use client";
-import { TESTIMONIALS } from "@/store/hompageData";
+import { TESTIMONIALS } from "../../../store/hompageData";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import ScrollFloat from "./ScrollFloat";

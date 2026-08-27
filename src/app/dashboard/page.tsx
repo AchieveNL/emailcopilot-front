@@ -12,7 +12,7 @@ export default function DashboardPage() {
   const stats = [
     { label: "Emails Sent", value: limits?.usage?.emailsSent, icon: Send },
     { label: "Active Copilots", value: limits?.usage?.copilotsCount, icon: BarChart3 },
-    { label: "Email Profiles", value: limits?.usage?.emailProfilesCount, change: `${limits?.usage?.emailProfilesCount}/${limits?.limits?.emailProfiles}`, icon: Users },
+    { label: "Email Profiles", value: limits?.usage?.emailAccountsCount, change: `${limits?.usage?.emailAccountsCount}/${limits?.limits?.emailProfiles}`, icon: Users },
   ];
 
   return (
@@ -34,7 +34,7 @@ export default function DashboardPage() {
             {s.change ? (
               <>
                 <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-                <div className="text-xs text-green-600 font-medium mt-1">{s.change} this month</div>
+                <div className="text-xs text-success font-medium mt-1">{s.change} this month</div>
               </>
             ) : (
               <div className="text-2xl font-bold text-gray-900">{s.value}</div>

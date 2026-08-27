@@ -3,7 +3,7 @@
 import React from "react";
 import { useBilling, Plan } from "@/lib/useBilling";
 import { CreditCard, Check, Download } from "lucide-react";
-
+import { handlePlanNameChange } from "@/lib/helpers";
 export default function BillingPage() {
   const {
     plans,
@@ -91,7 +91,7 @@ export default function BillingPage() {
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-900">
-                {currentPlan.name} Plan
+                {handlePlanNameChange(currentPlan.name)} Plan
                 <span
                   className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${
                     isActive
@@ -148,7 +148,7 @@ export default function BillingPage() {
               )}
               <div className="mb-4">
                 <h3 className="font-bold text-gray-900 text-lg mb-2">
-                  {plan.name}
+                  {handlePlanNameChange(plan.name)}
                 </h3>
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-bold text-gray-900">

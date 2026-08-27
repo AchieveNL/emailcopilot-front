@@ -28,11 +28,11 @@ Contains Next.js app router pages and layouts:
   - `copilots/` - Copilot management and creation
     - `new/` - Create new copilot page
   - `dashboard/` - Main dashboard view
-  - `email-profiles/` - Email account management
+  - `email-profiles/` - Email Account management
   - `integrations/` - Third-party integrations
-  - `scrape-profiles/` - Web scraping configuration
+  - `target-audiences/` - Web scraping configuration
   - `settings/` - User settings
-  - `templates/` - Email templates
+  - `templates/` - Email Templates
 
 #### Components (`src/components/`)
 

@@ -48,7 +48,7 @@ emailcopilot/
 │ │ └── new/
 │ │ ├── page.tsx # Step 4
 │ ├── email-profiles/page.tsx
-│ ├── scrape-profiles/page.tsx
+│ ├── target-audiences/page.tsx
 │ ├── templates/page.tsx
 │ ├── billing/page.tsx
 │ ├── sign-in/

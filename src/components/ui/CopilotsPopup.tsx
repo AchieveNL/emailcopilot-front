@@ -25,7 +25,7 @@ interface CopilotDataPopup {
     profileName: string;
     email: string;
   };
-  scrapeProfile?: {
+  targetAudience?: {
     id: number;
     name: string;
     country: string;
@@ -158,9 +158,9 @@ export function CopilotsPopup({ isOpen, onClose }: CopilotPopupProps) {
                       </div>
                       <span
                         className="truncate"
-                        title={copilot?.scrapeProfile?.name || "No Source"}
+                        title={copilot?.targetAudience?.name || "No Source"}
                       >
-                        {copilot?.scrapeProfile?.name || "No Source"}
+                        {copilot?.targetAudience?.name || "No Source"}
                       </span>
                     </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { Building2, Globe, Map, Users } from "lucide-react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 
 function TargetAudienceSummary() {
   const { copilotData } = useCopilotStore();
@@ -26,10 +26,10 @@ function TargetAudienceSummary() {
 
   if (estimatedSize > 6000) {
     label = "Massive";
-    colorClass = "text-green-600 bg-green-100";
+    colorClass = "text-success bg-success/5";
   } else if (estimatedSize > 4000) {
     label = "Large";
-    colorClass = "text-green-600 bg-green-100";
+    colorClass = "text-success bg-success/5";
   } else if (estimatedSize > 1000) {
     label = "Healthy";
     colorClass = "text-amber-600 bg-amber-100";
