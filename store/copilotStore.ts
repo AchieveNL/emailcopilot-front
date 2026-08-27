@@ -9,9 +9,19 @@ export interface CopilotData {
   name: string;
   description: string;
   goal: string;
-  emailProfileId: number | null;
-  scrapeProfileId: number | null;
+  emailAccountId: number | null;
+  targetAudienceId: number | null;
   templateId: number | null;
+  flightScheduleId: number | null;
+  flightSchedule: {
+    name: string;
+    sendLimit: number | null;
+    sendLimitActive: boolean;
+    activeDays: number[];
+    sendingHours: { start: string; end: string };
+    sendingHoursActive: boolean;
+    timezone: string;
+  };
   sendLimit: number;
   settings: {
     schedule: {
@@ -43,7 +53,7 @@ export interface EmailProfile {
   sentToday: number;
 }
 
-// Matches schema: scrapeProfiles table
+// Matches schema: targetAudiences table
 export interface ScrapeProfile {
   id: number; // serial PK — number, not string
   name: string;
@@ -70,6 +80,9 @@ interface CopilotStore {
   setStep: (step: Step) => void;
   updateCopilotData: (data: Partial<CopilotData>) => void;
   updateSettings: (settings: Partial<CopilotData["settings"]>) => void;
+  updateFlightSchedule: (
+    schedule: Partial<CopilotData["flightSchedule"]>,
+  ) => void;
   updateTargetProfile: (profile: Partial<CopilotData["targetProfile"]>) => void;
   setLaunched: (launched: boolean) => void;
   setMode: (mode: CopilotMode) => void;
@@ -82,10 +95,20 @@ const defaultCopilotData: CopilotData = {
   name: "",
   description: "",
   goal: "",
-  emailProfileId: null,
-  scrapeProfileId: null,
+  emailAccountId: null,
+  targetAudienceId: null,
   templateId: null,
   sendLimit: 10,
+  flightScheduleId: null,
+  flightSchedule: {
+    name: "Default",
+    sendLimit: 10,
+    sendLimitActive: false,
+    activeDays: [1, 2, 3, 4, 5],
+    sendingHours: { start: "08:00", end: "17:00" },
+    sendingHoursActive: false,
+    timezone: "Europe/Brussels",
+  },
   settings: {
     schedule: {
       runAt: "",
@@ -129,6 +152,14 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       copilotData: {
         ...state.copilotData,
         settings: { ...state.copilotData.settings, ...settings },
+      },
+    })),
+
+  updateFlightSchedule: (schedule) =>
+    set((state) => ({
+      copilotData: {
+        ...state.copilotData,
+        flightSchedule: { ...state.copilotData.flightSchedule, ...schedule },
       },
     })),
 

@@ -8,6 +8,12 @@ interface EmailPreviewCardProps {
   onClose?: () => void;
 }
 
+function stripHtml(html: string) {
+  return html
+    .replace(/<\/p>\s*<p>/gi, "\n\n") // paragraph breaks
+    .replace(/<[^>]+>/g, "") // remove remaining tags
+    .trim();
+}
 function EmailPreviewCard({
   subject = "Quick idea to help {{company}} book more appointments",
   body = `Hi {{first_name}},
@@ -22,6 +28,7 @@ Best regards,
   onClose,
 }: EmailPreviewCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  console.log("body template:", body);
 
   return (
     <>
@@ -60,7 +67,7 @@ Best regards,
                 isExpanded ? "" : "line-clamp-10"
               }`}
             >
-              {body}
+              {stripHtml(body)}
             </p>
           </div>
         </div>

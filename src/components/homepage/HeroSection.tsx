@@ -1,6 +1,5 @@
 import HeroCopy from "./HeroCopy";
 import HeroVisuals from "./HeroVisuals";
-import Orb from "./Orb";
 import Threads from "./Threads";
 export default function HeroSection() {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import { Shield } from "lucide-react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 
 function CopilotSummary({ draftId }: { draftId?: string }) {
   const { copilotData } = useCopilotStore();

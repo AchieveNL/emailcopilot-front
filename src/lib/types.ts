@@ -16,8 +16,8 @@ export type PlanUsage = {
   copilotsCount: number;
   copilotsRemaining: number | null; // null = unlimited
 
-  emailProfilesCount: number;
-  emailProfilesRemaining: number;
+  emailAccountsCount: number;
+  emailAccountsRemaining: number;
 };
 
 // Inactive / no subscription

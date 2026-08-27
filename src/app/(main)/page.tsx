@@ -18,7 +18,7 @@ export default function HomePage() {
       }}
       className="flex flex-col gap-0 items-center relative"
     >
-      <div className="fixed inset-0 pointer-events-none z-[9999]">
+      <div className="fixed inset-0 pointer-events-none z-9999">
         <Ribbons
           colors={["#4f46e5", "#2563eb", "#06b6d4"]}
           singleLineGradient={true}

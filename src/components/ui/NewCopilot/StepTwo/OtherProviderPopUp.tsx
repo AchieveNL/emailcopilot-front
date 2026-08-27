@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
-import { emailProfilesApi } from "@/lib/api";
-import { useCopilotStore } from "@/store/copilotStore";
+import { emailAccountsApi } from "@/lib/api";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 
@@ -53,17 +53,22 @@ function OtherProviderPopUp({ onClose, editProfile }: OtherProviderPopUpProps) {
       if (editProfile) {
         const { smtpPass, ...rest } = form;
         const payload = !smtpPass ? rest : form;
-        await emailProfilesApi.update(editProfile.id, payload);
+        await emailAccountsApi.update(editProfile.id, payload);
         onClose(true);
       } else {
-        const res = await emailProfilesApi.create({ ...form, userId: user?.id });
+        const res = await emailAccountsApi.create({
+          ...form,
+          userId: user?.id,
+        });
         if (res.data?.id) {
-          updateCopilotData({ emailProfileId: res.data.id });
+          updateCopilotData({ emailAccountId: res.data.id });
         }
         onClose(true);
       }
     } catch (error) {
-      toast.error(editProfile ? "Failed to update profile." : "Failed to create profile.");
+      toast.error(
+        editProfile ? "Failed to update profile." : "Failed to create profile.",
+      );
       console.error(error);
     } finally {
       setSaving(false);
@@ -162,7 +167,9 @@ function OtherProviderPopUp({ onClose, editProfile }: OtherProviderPopUpProps) {
               id="port"
               type="number"
               value={form.smtpPort}
-              onChange={(e) => setForm({ ...form, smtpPort: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                setForm({ ...form, smtpPort: parseInt(e.target.value) || 0 })
+              }
               className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-colors"
             />
           </div>
@@ -223,7 +230,13 @@ function OtherProviderPopUp({ onClose, editProfile }: OtherProviderPopUpProps) {
             }
           >
             {saving && <Loader2 size={16} className="animate-spin" />}
-            {saving ? (editProfile ? "Saving..." : "Adding...") : (editProfile ? "Save Changes" : "Add Account")}
+            {saving
+              ? editProfile
+                ? "Saving..."
+                : "Adding..."
+              : editProfile
+                ? "Save Changes"
+                : "Add Account"}
           </button>
         </div>
       </div>

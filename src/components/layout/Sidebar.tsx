@@ -11,6 +11,7 @@ import {
   Target,
   AlertTriangle,
   Users,
+  Calendar,
 } from "lucide-react";
 import clsx from "clsx";
 import { useUser } from "@clerk/nextjs";
@@ -28,6 +29,11 @@ const navItems = [
     icon: Target,
   },
   { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
+  {
+    href: "/dashboard/flight_schedule",
+    label: "Flight Schedule",
+    icon: Calendar,
+  },
   { href: "/dashboard/departure", label: "Departure", icon: Users },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
@@ -74,8 +80,6 @@ export default function Sidebar() {
             <Logo />
             <hr className="w-full border-gray-200 mb-6" />
 
-      
-
             {/* Nav */}
             <nav className="px-3 space-y-0.5">
               {navItems.map(({ href, label, icon: Icon }) => {
@@ -88,7 +92,7 @@ export default function Sidebar() {
                     key={href}
                     href={href}
                     className={clsx(
-                      "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
+                      "flex items-baseline justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
                       active
                         ? "bg-primary/5 text-primary font-semibold"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",

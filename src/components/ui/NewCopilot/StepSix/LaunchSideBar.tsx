@@ -6,7 +6,7 @@ import {
   CalendarDays,
   ShieldCheck,
 } from "lucide-react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 
 interface LaunchSideBarProps {
@@ -20,8 +20,8 @@ export default function LaunchSideBar({
 }: LaunchSideBarProps) {
   const { copilotData } = useCopilotStore();
 
-  const selectedEmailProfile = remoteContext?.emailProfiles?.find(
-    (p) => p.id === copilotData.emailProfileId,
+  const selectedEmailProfile = remoteContext?.emailAccount?.find(
+    (p) => p.id === copilotData.emailAccountId,
   );
 
   const selectedTemplate = remoteContext?.templates?.find(
@@ -58,12 +58,12 @@ export default function LaunchSideBar({
           </div>
         </div>
 
-        {/* Email account */}
+        {/* Email Account */}
         <div className="flex items-start gap-6">
           <Mail size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
             <p className="text-[13px] font-bold text-gray-900 mb-1">
-              Email account
+              Email Account
             </p>
             <p className="text-[13px] text-gray-500">
               {selectedEmailProfile?.name || "karim@achieve.nl"}
@@ -71,12 +71,12 @@ export default function LaunchSideBar({
           </div>
         </div>
 
-        {/* Target audience */}
+        {/* Target Audience */}
         <div className="flex items-start gap-6">
           <Users size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
             <p className="text-[13px] font-bold text-gray-900 mb-1">
-              Target audience
+              Target Audience
             </p>
             <p className="text-[13px] text-gray-500">
               {copilotData.targetProfile?.industries?.length
@@ -86,12 +86,12 @@ export default function LaunchSideBar({
           </div>
         </div>
 
-        {/* Email template */}
+        {/* Email Template */}
         <div className="flex items-start gap-6">
           <FileText size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
             <p className="text-[13px] font-bold text-gray-900 mb-1">
-              Email template
+              Email Template
             </p>
             <p className="text-[13px] text-gray-500">
               {selectedTemplate?.name || "Book More Appointments"}
@@ -103,7 +103,9 @@ export default function LaunchSideBar({
         <div className="flex items-start gap-6">
           <CalendarDays size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-[13px] font-bold text-gray-900 mb-1">Flight Schedule</p>
+            <p className="text-[13px] font-bold text-gray-900 mb-1">
+              Flight Schedule
+            </p>
             <p className="text-[13px] text-gray-500">
               {copilotData.sendLimit || 30} emails per day,{" "}
               {formatActiveDays(copilotData.settings?.schedule?.activeDays)}

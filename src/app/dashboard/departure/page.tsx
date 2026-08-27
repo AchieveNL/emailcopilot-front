@@ -22,188 +22,31 @@ import { useRef } from "react";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
 
-// const leadsApiMock: Lead[] = [
-//   {
-//     id: 1,
-//     copilotName: "dacia",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "johnhhhhhhhhhhhhhhh@acme.com",
-//     website: "acme.com",
-//     phone: "+1-555-1234",
-//     sourceQuery: "lld",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 1,
-//   },
-//   {
-//     id: 2,
-//     copilotName: "Jane Smith",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     sourceQuery: "kdk",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 2,
-//   },
-//   {
-//     id: 1,
-//     copilotName: "John Doe",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "john@acme.com",
-//     website: "https://acme.com",
-//     phone: "+1-555-1234",
-//     sourceQuery: "lld",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 1,
-//   },
-//   {
-//     id: 2,
-//     copilotName: "Jane Smith",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     sourceQuery: "kdk",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 2,
-//   },
-//   {
-//     id: 1,
-//     copilotName: "John Doe",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "john@acme.com",
-//     website: "https://acme.com",
-//     phone: "+1-555-1234",
-//     sourceQuery: "lld",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 1,
-//   },
-//   {
-//     id: 2,
-//     copilotName: "Jane Smith",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     sourceQuery: "kdk",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 2,
-//   },
-//   {
-//     id: 1,
-//     copilotName: "John Doe",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "john@acme.com",
-//     website: "https://acme.com",
-//     phone: "+1-555-1234",
-//     sourceQuery: "lld",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 1,
-//   },
-//   {
-//     id: 2,
-//     copilotName: "Jane Smith",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     sourceQuery: "kdk",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 2,
-//   },
-//   {
-//     id: 1,
-//     copilotName: "John Doe",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "john@acme.com",
-//     website: "https://acme.com",
-//     phone: "+1-555-1234",
-//     sourceQuery: "lld",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 1,
-//   },
-//   {
-//     id: 2,
-//     copilotName: "Jane Smith",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     sourceQuery: "kdk",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 2,
-//   },
-//   {
-//     id: 1,
-//     copilotName: "John Doe",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Acme Corp",
-//     email: "john@acme.com",
-//     website: "https://acme.com",
-//     phone: "+1-555-1234",
-//     sourceQuery: "lld",
-//     address: "123 Main St, Anytown, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 1,
-//   },
-//   {
-//     id: 2,
-//     copilotName: "Jane Smith",
-//     createdAt: "2023-01-01T00:00:00Z",
-//     updatedAt: "2023-01-01T00:00:00Z",
-//     companyName: "Globex Inc",
-//     email: "jane@globex.com",
-//     website: "https://globex.com",
-//     phone: "+1-555-5678",
-//     sourceQuery: "kdk",
-//     address: "456 Oak Ave, Somewhere, USA",
-//     status: "sent",
-//     sentAt: "2023-01-01T00:00:00Z",
-//     templateId: 2,
-//   },
-// ];
+const handleStatusTextColor = (status: string) => {
+  switch (status) {
+    case "sent":
+      return " text-success";
+    case "failed":
+      return "text-error";
+    case "new":
+      return " text-primary";
+    default:
+      return " text-gray-900";
+  }
+};
+
+const handleStatusBgColor = (status: string) => {
+  switch (status) {
+    case "sent":
+      return "bg-success/5 ";
+    case "failed":
+      return "bg-error/5 ";
+    case "new":
+      return "bg-primary/5 ";
+    default:
+      return "bg-gray-100 ";
+  }
+};
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -228,7 +71,7 @@ function Tooltip({
         className=" min-w-30 max-w-40 pointer-events-none absolute border border-gray-100 bottom-full mb-2 left-1/2 -translate-x-1/2
                    opacity-0 group-hover:opacity-100 transition-opacity duration-150
                    px-3 py-1.5 rounded-md bg-white text-gray-600 text-[10px]
-                   text-center shadow-md whitespace-wrap  wrap-break-word
+                   text-center shadow-md whitespace-wrap  wrap-break-word capitalize
                    z-100"
       >
         {text}
@@ -309,8 +152,6 @@ export default function LeadsPage() {
       console.log("Fetched leads:", res.data);
       setLeads(res.data.data);
       setMeta(res.data.meta);
-      // setLeads(leadsApiMock);
-      // setMeta(MOCK_META);
     } catch {
       console.error("Failed to fetch leads");
     } finally {
@@ -341,7 +182,7 @@ export default function LeadsPage() {
   };
 
   return (
-    <div className="py-8 px-4 max-w-350 mx-auto w-full">
+    <div className="py-8 px-4 mx-auto w-full">
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <div className="">
@@ -357,7 +198,8 @@ export default function LeadsPage() {
 
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="btn-main btn-cta"
+            className="btn-main btn-cta "
+            style={{ padding: "9px 20px", fontSize: "0.85rem" }}
           >
             Select Copilot
           </button>
@@ -392,6 +234,9 @@ export default function LeadsPage() {
                       Company
                     </th>
                     <th className=" font-semibold text-gray-900 px-6 py-5">
+                      Address
+                    </th>
+                    <th className=" font-semibold text-gray-900 px-6 py-5">
                       Website
                     </th>
                     <th className="font-semibold text-gray-900 px-6 py-5">
@@ -402,9 +247,6 @@ export default function LeadsPage() {
                     </th>
                     <th className=" font-semibold  bg-white text-gray-900 px-6    py-5">
                       Target Audience
-                    </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
-                      Address
                     </th>
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Departured at
@@ -450,6 +292,27 @@ export default function LeadsPage() {
                               {lead.companyName}
                             </div>
                           </Tooltip>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5  ">
+                        <div className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center ">
+                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white">
+                            <MapPin size={12} />
+                          </div>
+                          {lead.address ? (
+                            <Tooltip text={lead.address}>
+                              <a
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lead.address)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-semibold line-clamp-1 text-gray-900"
+                              >
+                                {lead.address}
+                              </a>
+                            </Tooltip>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-5 ">
@@ -537,34 +400,19 @@ export default function LeadsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5  ">
-                        <div className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center ">
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white">
-                            <MapPin size={12} />
-                          </div>
-                          {lead.address ? (
-                            <Tooltip text={lead.address}>
-                              <a
-                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lead.address)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-semibold line-clamp-1 text-gray-900"
-                              >
-                                {lead.address}
-                              </a>
-                            </Tooltip>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </div>
-                      </td>
 
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
                             <Calendar size={12} />
                           </div>
-                          <Tooltip text={lead.sentAt || "Unknown Sent At"}>
+                          <Tooltip
+                            text={
+                              lead.sentAt
+                                ? formatDateTime(lead.sentAt)
+                                : "Unknown"
+                            }
+                          >
                             <div className="font-semibold line-clamp-1 text-gray-900">
                               {lead.sentAt
                                 ? formatDateTime(lead.sentAt)
@@ -585,9 +433,18 @@ export default function LeadsPage() {
                       </td>
                       <td className="px-6 py-5 sticky status w-20 align-middle right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
                         <div className="flex items-center gap-2 ">
-                          <Tooltip text={lead.status || "Sent"}>
-                            <div className="w-fit px-3 py-1 rounded-lg     bg-green-100 ">
-                              <div className="font-semibold line-clamp-1 capitalize text-green-900">
+                          <Tooltip
+                            text={
+                              lead.status.charAt(0).toUpperCase() +
+                                lead.status.slice(1) || "Sent"
+                            }
+                          >
+                            <div
+                              className={`w-fit px-3 py-1 rounded-lg ${handleStatusBgColor(lead.status)} `}
+                            >
+                              <div
+                                className={`font-semibold line-clamp-1 capitalize ${handleStatusTextColor(lead.status)}`}
+                              >
                                 {lead.status || "Sent"}
                               </div>
                             </div>

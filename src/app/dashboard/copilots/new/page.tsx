@@ -12,12 +12,12 @@ import Step2EmailProfile from "@/components/ui/NewCopilot/StepTwo/Step2EmailProf
 import Step3ScrapeProfile from "@/components/ui/NewCopilot/StepThree/Step3ScrapeProfile";
 import Step4Launch from "@/components/ui/NewCopilot/StepSix/Step4Launch";
 import TargetAudienceSummary from "@/components/ui/NewCopilot/StepThree/TargetAudienceSummary";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 import EmailTemplateStep from "@/components/ui/NewCopilot/StepFour/EmailTemplateStep";
 import {
   copilotsApi,
-  emailProfilesApi,
-  scrapeProfilesApi,
+  emailAccountsApi,
+  targetAudiencesApi,
   templatesApi,
 } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
@@ -26,14 +26,15 @@ import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTempla
 import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
+import ScheduleList from "@/components/ui/NewCopilot/StepFive/ScheduleList";
 import { toast } from "sonner";
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
 type RemoteOption = { id: number; name: string };
 
 export type NewCopilotContext = {
-  emailProfiles: RemoteOption[];
-  scrapeProfiles: RemoteOption[];
+  emailAccount: RemoteOption[];
+  targetAudiences: RemoteOption[];
   templates: RemoteOption[];
   loadingOptions: boolean;
 };
@@ -58,8 +59,8 @@ export default function NewCopilotPage() {
   const [loadingCopilot, setLoadingCopilot] = useState(false);
 
   // Remote options for step dropdowns
-  const [emailProfiles, setEmailProfiles] = useState<RemoteOption[]>([]);
-  const [scrapeProfiles, setScrapeProfiles] = useState<RemoteOption[]>([]);
+  const [emailAccount, setEmailAccount] = useState<RemoteOption[]>([]);
+  const [targetAudiences, setTargetAudiences] = useState<RemoteOption[]>([]);
   const [templates, setTemplates] = useState<RemoteOption[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
@@ -91,7 +92,11 @@ export default function NewCopilotPage() {
     },
     {
       id: 5,
-      component: () => <ScheduleStep />,
+      component: () => (
+        <ScheduleStep>
+          <ScheduleList />
+        </ScheduleStep>
+      ),
       sideBar: () => <ScheduleSideBar />,
     },
     {
@@ -118,18 +123,18 @@ export default function NewCopilotPage() {
       try {
         setLoadingOptions(true);
         const [ep, sp, tp] = await Promise.all([
-          emailProfilesApi.getAll(),
-          scrapeProfilesApi.getAll(),
+          emailAccountsApi.getAll(),
+          targetAudiencesApi.getAll(),
           templatesApi.getAll(),
         ]);
         // id is number (serial PK), name is varchar — matches schema
-        setEmailProfiles(
+        setEmailAccount(
           ep.data.map((e: { id: number; profileName: string }) => ({
             id: e.id,
             name: e.profileName,
           })),
         );
-        setScrapeProfiles(
+        setTargetAudiences(
           sp.data.map((s: { id: number; name: string }) => ({
             id: s.id,
             name: s.name,
@@ -180,8 +185,8 @@ export default function NewCopilotPage() {
               name: copilot.name,
               description: copilot.description,
               goal: copilot.goal,
-              emailProfileId: copilot.emailProfileId,
-              scrapeProfileId: copilot.scrapeProfileId,
+              emailAccountId: copilot.emailAccountId,
+              targetAudienceId: copilot.targetAudienceId,
               templateId: copilot.templateId,
               sendLimit: copilot.sendLimit || 10,
               settings: copilot.settings || {
@@ -195,6 +200,16 @@ export default function NewCopilotPage() {
                 industries: [],
                 countries: [],
                 cities: [],
+              },
+              flightScheduleId: copilot.flightScheduleId || null,
+              flightSchedule: copilot.flightSchedule || {
+                name: "Default",
+                sendLimit: null,
+                sendLimitActive: false,
+                activeDays: [1, 2, 3, 4, 5],
+                sendingHours: { start: "08:00", end: "17:00" },
+                sendingHoursActive: false,
+                timezone: defaultTimezone,
               },
             },
             id,
@@ -219,8 +234,8 @@ export default function NewCopilotPage() {
               name: `Copy of ${copilot.name}`,
               description: copilot.description,
               goal: copilot.goal,
-              emailProfileId: copilot.emailProfileId,
-              scrapeProfileId: copilot.scrapeProfileId,
+              emailAccountId: copilot.emailAccountId,
+              targetAudienceId: copilot.targetAudienceId,
               templateId: copilot.templateId,
               sendLimit: copilot.sendLimit || 10,
               settings: copilot.settings || {
@@ -234,6 +249,16 @@ export default function NewCopilotPage() {
                 industries: [],
                 countries: [],
                 cities: [],
+              },
+              flightScheduleId: copilot.flightScheduleId || null,
+              flightSchedule: copilot.flightSchedule || {
+                name: "Default",
+                sendLimit: null,
+                sendLimitActive: false,
+                activeDays: [1, 2, 3, 4, 5],
+                sendingHours: { start: "08:00", end: "17:00" },
+                sendingHoursActive: false,
+                timezone: defaultTimezone,
               },
             },
             undefined,
@@ -261,10 +286,11 @@ export default function NewCopilotPage() {
         name: copilotData.name,
         description: copilotData.description,
         goal: copilotData.goal,
-        emailProfileId: copilotData.emailProfileId,
-        scrapeProfileId: copilotData.scrapeProfileId,
+        emailAccountId: copilotData.emailAccountId,
+        targetAudienceId: copilotData.targetAudienceId,
         templateId: copilotData.templateId,
         sendLimit: copilotData.sendLimit,
+        flightScheduleId: copilotData.flightScheduleId,
 
         status: "draft" as const,
       };
@@ -295,20 +321,23 @@ export default function NewCopilotPage() {
         name: copilotData.name,
         description: copilotData.description,
         goal: copilotData.goal,
-        emailProfileId: copilotData.emailProfileId,
-        scrapeProfileId: copilotData.scrapeProfileId,
+        emailAccountId: copilotData.emailAccountId,
+        targetAudienceId: copilotData.targetAudienceId,
         templateId: copilotData.templateId,
         sendLimit: copilotData.sendLimit,
+        flightScheduleId: copilotData.flightScheduleId,
 
         userId: user?.id,
         status: "active" as const,
       };
 
       if (mode === "edit" && draftId) {
-        await copilotsApi.update(draftId, payload);
+        const { data } = await copilotsApi.update(draftId, payload);
+        console.log("Updated copilot data:", data);
         await copilotsApi.updateStatus(draftId, "active");
       } else {
-        await copilotsApi.create(payload);
+        const { data } = await copilotsApi.create(payload);
+        console.log("Created copilot data:", data);
       }
 
       resetStore();
@@ -321,8 +350,8 @@ export default function NewCopilotPage() {
   }, [copilotData, draftId, router, resetStore, mode]);
 
   const remoteContext: NewCopilotContext = {
-    emailProfiles,
-    scrapeProfiles,
+    emailAccount,
+    targetAudiences,
     templates,
     loadingOptions,
   };

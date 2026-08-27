@@ -43,6 +43,9 @@
   --color-primary-active: #3730a3;
   --color-primary-light: #f5f3ff;
   --color-primary-dark: #3730a3;
+  --color-warning: #e97a1c;
+  --color-error: #d9485f;
+  --color-success: #1d8a68;
 }
 
 * {

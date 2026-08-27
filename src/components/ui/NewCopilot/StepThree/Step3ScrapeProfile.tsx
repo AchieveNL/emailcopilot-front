@@ -11,8 +11,11 @@ import {
 } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
-import { useCopilotStore, ScrapeProfile } from "@/store/copilotStore";
-import { scrapeProfilesApi } from "@/lib/api";
+import {
+  useCopilotStore,
+  ScrapeProfile,
+} from "../../../../../store/copilotStore";
+import { targetAudiencesApi } from "@/lib/api";
 import { toast } from "sonner";
 // ── TagInput ─────────────────────────────────────────────────────────────────
 
@@ -229,13 +232,13 @@ export default function Step3ScrapeProfile() {
   const [profiles, setProfiles] = useState<ScrapeProfile[]>([]);
 
   useEffect(() => {
-    scrapeProfilesApi
+    targetAudiencesApi
       .getAll()
       .then((res) => {
         const fetched = res.data?.data || res.data || [];
         setProfiles(fetched);
         console.log("Fetched target audience:", fetched);
-        if (fetched.length > 0 && !copilotData.scrapeProfileId) {
+        if (fetched.length > 0 && !copilotData.targetAudienceId) {
           // Defaults handled below if needed
         }
       })
@@ -245,7 +248,7 @@ export default function Step3ScrapeProfile() {
       .finally(() => {
         setLoadingProfiles(false);
       });
-  }, [copilotData.scrapeProfileId]);
+  }, [copilotData.targetAudienceId]);
 
   // Derive available cities from selected countries
   const availableCities = useMemo(
@@ -271,29 +274,29 @@ export default function Step3ScrapeProfile() {
     updateTargetProfile({ countries: [], cities: [] });
   }, [updateTargetProfile]);
 
-  const canContinue = !!copilotData.scrapeProfileId || industries.length > 0;
+  const canContinue = !!copilotData.targetAudienceId || industries.length > 0;
 
   const handleONpress = async () => {
     // If a profile is selected, just proceed using that profile.
-    if (copilotData.scrapeProfileId) {
+    if (copilotData.targetAudienceId) {
       setStep(4);
       return;
     }
 
     try {
       setLoading(true);
-      const res = await scrapeProfilesApi.create({
+      const res = await targetAudiencesApi.create({
         name: industries[0],
         searchQuery: industries[0],
         city: cities[0],
         country: countries[0],
       });
-      // Optionally update copilotData.scrapeProfileId with newly created ID if returned
+      // Optionally update copilotData.targetAudienceId with newly created ID if returned
       if (res.data?.id) {
-        updateCopilotData({ scrapeProfileId: res.data.id });
+        updateCopilotData({ targetAudienceId: res.data.id });
       }
       setStep(4);
-      toast.success("Target audience created successfully");
+      toast.success("Target Audience created successfully");
     } catch (error) {
       console.error(error);
       toast.error("Failed to create target audience");
@@ -329,8 +332,8 @@ export default function Step3ScrapeProfile() {
             allowCustom
             selected={industries}
             onAdd={(v) => {
-              if (copilotData.scrapeProfileId) {
-                updateCopilotData({ scrapeProfileId: null });
+              if (copilotData.targetAudienceId) {
+                updateCopilotData({ targetAudienceId: null });
               }
               updateTargetProfile({ industries: [...industries, v] });
             }}
@@ -357,8 +360,8 @@ export default function Step3ScrapeProfile() {
             options={ALL_COUNTRY_NAMES}
             selected={countries}
             onAdd={(v) => {
-              if (copilotData.scrapeProfileId) {
-                updateCopilotData({ scrapeProfileId: null });
+              if (copilotData.targetAudienceId) {
+                updateCopilotData({ targetAudienceId: null });
               }
               updateTargetProfile({ countries: [...countries, v] });
             }}
@@ -381,8 +384,8 @@ export default function Step3ScrapeProfile() {
             options={availableCities}
             selected={cities}
             onAdd={(v) => {
-              if (copilotData.scrapeProfileId) {
-                updateCopilotData({ scrapeProfileId: null });
+              if (copilotData.targetAudienceId) {
+                updateCopilotData({ targetAudienceId: null });
               }
               updateTargetProfile({ cities: [...cities, v] });
             }}
@@ -429,15 +432,15 @@ export default function Step3ScrapeProfile() {
                 <div
                   key={profile.id}
                   className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
-                    copilotData.scrapeProfileId === profile.id
+                    copilotData.targetAudienceId === profile.id
                       ? "border-primary/20 bg-primary/5"
                       : "border-gray-200 hover:border-primary/20 hover:bg-primary/5"
                   }`}
                   onClick={() => {
-                    if (copilotData.scrapeProfileId === profile.id) {
-                      updateCopilotData({ scrapeProfileId: null });
+                    if (copilotData.targetAudienceId === profile.id) {
+                      updateCopilotData({ targetAudienceId: null });
                     } else {
-                      updateCopilotData({ scrapeProfileId: profile.id });
+                      updateCopilotData({ targetAudienceId: profile.id });
                       updateTargetProfile({
                         countries: profile.country ? [profile.country] : [],
                         cities: profile.city ? [profile.city] : [],
@@ -446,7 +449,7 @@ export default function Step3ScrapeProfile() {
                     }
                   }}
                 >
-                  {copilotData.scrapeProfileId === profile.id && (
+                  {copilotData.targetAudienceId === profile.id && (
                     <div className="absolute top-4 right-4 text-primary">
                       <CheckCircle2
                         size={20}

@@ -11,7 +11,7 @@ import {
   AlertCircle,
   XCircle,
 } from "lucide-react";
-import { scrapeProfilesApi } from "@/lib/api";
+import { targetAudiencesApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { StringDecoder } from "string_decoder";
@@ -46,7 +46,7 @@ export default function ScrapeProfilesPage() {
   async function fetchProfiles() {
     try {
       setLoading(true);
-      const res = await scrapeProfilesApi.getAll();
+      const res = await targetAudiencesApi.getAll();
       setProfiles(res.data);
     } catch {
       setProfiles([]);
@@ -58,7 +58,7 @@ export default function ScrapeProfilesPage() {
   async function handleCreate() {
     try {
       setSaving(true);
-      await scrapeProfilesApi.create({ ...form, userId: user?.id });
+      await targetAudiencesApi.create({ ...form, userId: user?.id });
       setShowModal(false);
       setForm({ name: "", searchQuery: "" });
       fetchProfiles();
@@ -72,7 +72,7 @@ export default function ScrapeProfilesPage() {
   async function handleRun(id: number) {
     try {
       setRunningId(id);
-      await scrapeProfilesApi.run(id);
+      await targetAudiencesApi.run(id);
       fetchProfiles();
     } catch {
       toast.error("Failed to run scrape.");
@@ -84,7 +84,7 @@ export default function ScrapeProfilesPage() {
   async function handleDelete(id: number) {
     if (!confirm("Delete this Target Audience?")) return;
     try {
-      await scrapeProfilesApi.delete(id);
+      await targetAudiencesApi.delete(id);
       fetchProfiles();
     } catch {
       toast.error("Failed to delete.");

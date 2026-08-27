@@ -16,6 +16,7 @@ import {
   Users,
   Target,
   CreditCard,
+  Calendar,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -29,6 +30,11 @@ const navItems = [
     icon: Target,
   },
   { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
+  {
+    href: "/dashboard/flight_schedule",
+    label: "Flight Schedule",
+    icon: Calendar,
+  },
   { href: "/dashboard/departure", label: "Departure", icon: Users },
   /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
   /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
@@ -76,8 +82,8 @@ export default function MobileMenu() {
       >
         <div>
           {/* Logo */}
-      <Logo />
-            <hr className="w-full border-gray-200 mb-6" />
+          <Logo />
+          <hr className="w-full border-gray-200 mb-6" />
 
           {/* Nav */}
           <nav className="px-3 space-y-0.5">

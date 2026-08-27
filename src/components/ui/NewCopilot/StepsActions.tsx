@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../store/copilotStore";
 
 function StepsActions({
   canContinue,
@@ -10,7 +10,6 @@ function StepsActions({
   isLoading?: boolean;
   onPress: () => void;
 }) {
- 
   return (
     <div className="pt-5 flex justify-end w-full border-t border-gray-200 mt-12 mb-4">
       <button

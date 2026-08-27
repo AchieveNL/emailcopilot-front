@@ -1,5 +1,5 @@
 export const handlePlanNameChange = (planName: string): string => {
-  switch (planName) {
+  switch (planName.toLocaleLowerCase()) {
     case "starter":
       return "Economy";
     case "growth":

@@ -30,27 +30,28 @@ export default api;
 // ─── Email Profiles ───────────────────────────────────────────────────────────
 // Schema: emailProfiles — provider: "gmail"|"outlook"|"smtp", status: "active"|"inactive"|"error"
 
-export const emailProfilesApi = {
-  getAll: () => api.get("/email-profiles"),
-  getById: (id: number) => api.get(`/email-profiles/${id}`),
-  create: (data: Record<string, unknown>) => api.post("/email-profiles", data),
+export const emailAccountsApi = {
+  getAll: () => api.get("/email-accounts"),
+  getById: (id: number) => api.get(`/email-accounts/${id}`),
+  create: (data: Record<string, unknown>) => api.post("/email-accounts", data),
   update: (id: number, data: Record<string, unknown>) =>
-    api.put(`/email-profiles/${id}`, data),
-  delete: (id: number) => api.delete(`/email-profiles/${id}`),
-  verify: (id: number) => api.post(`/email-profiles/${id}/verify`),
+    api.put(`/email-accounts/${id}`, data),
+  delete: (id: number) => api.delete(`/email-accounts/${id}`),
+  verify: (id: number) => api.post(`/email-accounts/${id}/verify`),
 };
 
 // ─── Scrape Profiles ──────────────────────────────────────────────────────────
-// Schema: scrapeProfiles — status: "idle"|"running"|"done"|"error"
+// Schema: targetAudiences — status: "idle"|"running"|"done"|"error"
 
-export const scrapeProfilesApi = {
-  getAll: () => api.get("/scrape-profiles"),
-  getById: (id: number) => api.get(`/scrape-profiles/${id}`),
-  create: (data: Record<string, unknown>) => api.post("/scrape-profiles", data),
+export const targetAudiencesApi = {
+  getAll: () => api.get("/target-audiences"),
+  getById: (id: number) => api.get(`/target-audiences/${id}`),
+  create: (data: Record<string, unknown>) =>
+    api.post("/target-audiences", data),
   update: (id: number, data: Record<string, unknown>) =>
-    api.put(`/scrape-profiles/${id}`, data),
-  delete: (id: number) => api.delete(`/scrape-profiles/${id}`),
-  run: (id: number) => api.post(`/scrape-profiles/${id}/run`),
+    api.put(`/target-audiences/${id}`, data),
+  delete: (id: number) => api.delete(`/target-audiences/${id}`),
+  run: (id: number) => api.post(`/target-audiences/${id}/run`),
 };
 
 // ─── Templates ────────────────────────────────────────────────────────────────
@@ -85,6 +86,17 @@ export const copilotsApi = {
   ) => api.patch(`/copilots/${id}/status`, { status }),
   run: (id: number) => api.post(`/copilots/${id}/run`),
   duplicate: (id: number) => api.post(`/copilots/${id}/duplicate`),
+};
+
+//____ flight-schedules ________________________________________________________
+export const flightSchedulesApi = {
+  getAll: () => api.get("/flight-schedules"),
+  getById: (id: number) => api.get(`/flight-schedules/${id}`),
+  create: (data: Record<string, unknown>) =>
+    api.post("/flight-schedules", data),
+  update: (id: number, data: Record<string, unknown>) =>
+    api.put(`/flight-schedules/${id}`, data),
+  delete: (id: number) => api.delete(`/flight-schedules/${id}`),
 };
 
 // ─── Settings ─────────────────────────────────────────────────────────────────

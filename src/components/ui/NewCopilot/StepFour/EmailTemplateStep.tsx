@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
-import { useCopilotStore } from "@/store/copilotStore";
+import { useCopilotStore } from "../../../../../store/copilotStore";
 
 const initialEmailBody = `
 <p>Hi {{firstName}},</p>
@@ -141,6 +141,7 @@ export default function EmailTemplateStep() {
       try {
         const res = await templatesApi.getAll();
         setTemplates(res.data.data || res.data || []);
+        console.log("Fetched templates:", res.data.data || res.data || []);
       } catch (error) {
         console.error("Failed to load templates:", error);
       } finally {
@@ -662,7 +663,6 @@ export default function EmailTemplateStep() {
                       setVariableInput(template.variables);
                     updateCopilotData({
                       templateId: template.id,
-                      name: template.name || "",
                     });
                   }}
                   className="group flex flex-col text-left bg-white p-4 rounded-xl border border-gray-200 hover:border-primary hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
