@@ -8,31 +8,33 @@ const DEFAULT_TIMEZONE = "Europe/Brussels";
 
 export default function ScheduleSideBar() {
   const { copilotData } = useCopilotStore();
-  const sendLimit = copilotData?.sendLimit || 30;
-  const timezone = copilotData?.settings?.timezone || DEFAULT_TIMEZONE;
-  const activeDays = copilotData?.settings?.schedule?.activeDays || [
+  const sendLimit = copilotData?.flightSchedule?.sendLimit || 30;
+  const timezone = copilotData?.flightSchedule?.timezone || DEFAULT_TIMEZONE;
+  const activeDays = copilotData?.flightSchedule?.activeDays || [
     "Mon",
     "Tue",
     "Wed",
     "Thu",
     "Fri",
   ];
-  const fromTime = copilotData?.settings?.schedule?.fromTime || "08:00";
-  const toTime = copilotData?.settings?.schedule?.toTime || "17:00";
+  const fromTime = copilotData?.flightSchedule?.sendingHours.start || "08:00";
+  const toTime = copilotData?.flightSchedule?.sendingHours.end || "17:00";
 
-  const sendLimitActive = copilotData?.settings?.sendLimitActive ?? false;
+  const sendLimitActive = copilotData?.flightSchedule?.sendLimitActive ?? false;
   const sendingHoursActive =
-    copilotData?.settings?.schedule?.sendingHoursActive ?? false;
+    copilotData?.flightSchedule?.sendingHoursActive ?? false;
 
   // Since timezone string can be long, let's extract just the relevant part
   const formattedTimezone = timezone.replace("Timezone: ", "");
-
+  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const isWeekday =
     activeDays.length === 5 &&
-    activeDays.every((d) => ["Mon", "Tue", "Wed", "Thu", "Fri"].includes(d));
+    activeDays.every((d) =>
+      ["Mon", "Tue", "Wed", "Thu", "Fri"].includes(daysOfWeek[d - 1]),
+    );
   const isWeekend =
     activeDays.length === 2 &&
-    activeDays.every((d) => ["Sat", "Sun"].includes(d));
+    activeDays.every((d) => ["Sat", "Sun"].includes(daysOfWeek[d - 1]));
   const formattedDays = isWeekday
     ? "Monday - Friday"
     : isWeekend
@@ -52,7 +54,7 @@ export default function ScheduleSideBar() {
         Schedule Summary
       </h3>
       <p className="text-xs text-slate-500 mb-8">
-        Here's how your copilot will send.
+        Here&apos;s how your copilot will send.
       </p>
 
       <div className="flex flex-col gap-6 mb-8">

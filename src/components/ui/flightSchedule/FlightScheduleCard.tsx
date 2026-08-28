@@ -79,7 +79,7 @@ function FlightScheduleCard({
   ];
 
   return (
-    <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-5">
+    <div className="w-full max-w-md   p-5">
       <h3 className="text-sm font-semibold text-gray-900">
         {name || "Flight Schedule"}
       </h3>

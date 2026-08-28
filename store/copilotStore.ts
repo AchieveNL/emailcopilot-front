@@ -22,19 +22,19 @@ export interface CopilotData {
     sendingHoursActive: boolean;
     timezone: string;
   };
-  sendLimit: number;
-  settings: {
-    schedule: {
-      runAt: string; // ISO string, e.g. "2024-06-01T09:00:00Z"
-      activeDays?: string[];
-      fromTime?: string;
-      toTime?: string;
-      sendingHoursActive?: boolean;
-    };
-    sendLimitActive?: boolean;
-    sendingSpeed: string;
-    timezone: string;
-  };
+
+  // settings: {
+  //   schedule: {
+  //     runAt: string; // ISO string, e.g. "2024-06-01T09:00:00Z"
+  //     activeDays?: string[];
+  //     fromTime?: string;
+  //     toTime?: string;
+  //     sendingHoursActive?: boolean;
+  //   };
+  //   sendLimitActive?: boolean;
+  //   sendingSpeed: string;
+  //   timezone: string;
+  // };
   targetProfile: {
     industries: string[];
     countries: string[];
@@ -79,7 +79,7 @@ interface CopilotStore {
 
   setStep: (step: Step) => void;
   updateCopilotData: (data: Partial<CopilotData>) => void;
-  updateSettings: (settings: Partial<CopilotData["settings"]>) => void;
+  // updateSettings: (settings: Partial<CopilotData["settings"]>) => void;
   updateFlightSchedule: (
     schedule: Partial<CopilotData["flightSchedule"]>,
   ) => void;
@@ -98,10 +98,10 @@ const defaultCopilotData: CopilotData = {
   emailAccountId: null,
   targetAudienceId: null,
   templateId: null,
-  sendLimit: 10,
+
   flightScheduleId: null,
   flightSchedule: {
-    name: "Default",
+    name: "",
     sendLimit: 10,
     sendLimitActive: false,
     activeDays: [1, 2, 3, 4, 5],
@@ -109,18 +109,18 @@ const defaultCopilotData: CopilotData = {
     sendingHoursActive: false,
     timezone: "Europe/Brussels",
   },
-  settings: {
-    schedule: {
-      runAt: "",
-      activeDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-      fromTime: "08:00",
-      toTime: "17:00",
-      sendingHoursActive: false,
-    },
-    sendLimitActive: false,
-    sendingSpeed: "Normal (Recommended)",
-    timezone: "Europe/Brussels",
-  },
+  // settings: {
+  //   schedule: {
+  //     runAt: "",
+  //     activeDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+  //     fromTime: "08:00",
+  //     toTime: "17:00",
+  //     sendingHoursActive: false,
+  //   },
+  //   sendLimitActive: false,
+  //   sendingSpeed: "Normal (Recommended)",
+  //   timezone: "Europe/Brussels",
+  // },
   targetProfile: {
     industries: [],
     countries: [],
@@ -147,13 +147,13 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       copilotData: { ...state.copilotData, ...data },
     })),
 
-  updateSettings: (settings) =>
-    set((state) => ({
-      copilotData: {
-        ...state.copilotData,
-        settings: { ...state.copilotData.settings, ...settings },
-      },
-    })),
+  // updateSettings: (settings) =>
+  //   set((state) => ({
+  //     copilotData: {
+  //       ...state.copilotData,
+  //       settings: { ...state.copilotData.settings, ...settings },
+  //     },
+  //   })),
 
   updateFlightSchedule: (schedule) =>
     set((state) => ({

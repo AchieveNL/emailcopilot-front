@@ -6,7 +6,6 @@ import { flightSchedulesApi } from "@/lib/api";
 import { toast } from "sonner";
 import type { Schedule } from "@/components/ui/flightSchedule/FlightScheduleCard";
 import { useCopilotStore } from "../../../../../store/copilotStore";
-import { CheckCircle2 } from "lucide-react";
 
 function ScheduleList() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -38,7 +37,10 @@ function ScheduleList() {
       // Deselect if already selected
       updateCopilotData({ flightScheduleId: null });
     } else {
-      updateCopilotData({ flightScheduleId: schedule.id });
+      updateCopilotData({
+        flightScheduleId: schedule.id,
+        flightSchedule: schedule,
+      });
       console.log("Selected schedule:", copilotData.flightScheduleId);
     }
   };
@@ -52,7 +54,7 @@ function ScheduleList() {
         </div>
         <div className="relative flex justify-center">
           <span className="bg-white px-3 text-xs font-semibold text-gray-800">
-            Select Existing Schedule
+            Your Flight Schedules
           </span>
         </div>
       </div>
@@ -74,21 +76,12 @@ function ScheduleList() {
                 <div
                   key={schedule.id}
                   onClick={() => handleSelect(schedule)}
-                  className={`relative cursor-pointer border hover:bg-primary/10  hover:border-primary/50  transition-all rounded-xl ${
+                  className={`relative cursor-pointer border hover:bg-primary/5  hover:border-primary/50  transition-all rounded-xl ${
                     isSelected
-                      ? " border-primary bg-primary/15 "
-                      : " border-transparent"
+                      ? " border-primary bg-primary/5"
+                      : " border-gray-200 bg-white"
                   }`}
                 >
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 z-10 text-primary bg-white rounded-full">
-                      <CheckCircle2
-                        size={24}
-                        fill="currentColor"
-                        className="text-white bg-primary rounded-full"
-                      />
-                    </div>
-                  )}
                   <div
                     className={
                       isSelected

@@ -88,6 +88,13 @@ export default function EmailTemplateStep() {
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+  const [originalTemplate, setOriginalTemplate] = useState<{
+    id: string;
+    body: string;
+    subject: string;
+    name: string;
+    variables: string[];
+  } | null>(null);
 
   const { copilotData, updateCopilotData, setStep } = useCopilotStore();
 
@@ -231,21 +238,50 @@ export default function EmailTemplateStep() {
   }, [editor, subjectInput]);
 
   const handleSave = async () => {
+    if (!editor) return;
     setLoading(true);
 
-    if (!copilotData.templateId) {
+    try {
+      const currentBody = editor.getHTML();
+
+      const isUnchanged =
+        !!originalTemplate &&
+        originalTemplate.body === currentBody &&
+        originalTemplate.subject === subjectInput &&
+        originalTemplate.name === templateName &&
+        JSON.stringify(originalTemplate.variables) ===
+          JSON.stringify(variableInput);
+
+      if (isUnchanged) {
+        setStep(5);
+
+        return;
+      }
+
       const response = await templatesApi.create({
         name: templateName || "initial template",
         subject: subjectInput,
-        body: editor.getHTML(),
+        body: currentBody,
         variables: variableInput,
       });
 
       updateCopilotData({ templateId: response.data.id, name: templateName });
+
+      // Update the snapshot so re-saving without further edits is recognized as "unchanged" too.
+      setOriginalTemplate({
+        id: response.data.id,
+        body: currentBody,
+        subject: subjectInput,
+        name: templateName,
+        variables: variableInput,
+      });
+
+      setStep(5);
+    } catch (error) {
+      console.error("Failed to save template:", error);
+    } finally {
+      setLoading(false);
     }
-    console.log(copilotData);
-    setLoading(false);
-    setStep(5);
   };
 
   return (
@@ -660,6 +696,13 @@ export default function EmailTemplateStep() {
                       setVariableInput(template.variables);
                     updateCopilotData({
                       templateId: template.id,
+                    });
+                    setOriginalTemplate({
+                      id: template.id,
+                      body: editor?.getHTML() ?? "",
+                      subject: template.subject || "",
+                      name: template.name || "",
+                      variables: template.variables || [],
                     });
                   }}
                   className="group flex flex-col text-left bg-white p-4 rounded-xl border border-gray-200 hover:border-primary hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
