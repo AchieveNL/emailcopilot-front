@@ -36,7 +36,7 @@ export default function Step4Launch({
   const selectedTemplate = remoteContext.templates?.find(
     (t) => t.id === copilotData.templateId,
   );
-
+  const Days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const formatActiveDays = (days: string[] = []) => {
     if (days.length === 0) return "None";
     if (days.length === 7) return "Monday - Sunday";
@@ -219,19 +219,23 @@ export default function Step4Launch({
                   Daily send limit
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {copilotData.sendLimit} emails per day
+                  {copilotData.flightSchedule?.sendLimit || 30} emails per day
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Active days
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {formatActiveDays(copilotData.settings?.schedule?.activeDays)}
+                  {formatActiveDays(
+                    copilotData.flightSchedule?.activeDays?.map(
+                      (day) => Days[day - 1],
+                    ),
+                  )}
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Timezone
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {copilotData.settings?.timezone
+                  {copilotData.flightSchedule?.timezone
                     ?.split(" ")
                     ?.slice(0, 2)
                     ?.join(" ")}
@@ -240,8 +244,8 @@ export default function Step4Launch({
                   Time
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {copilotData.settings?.schedule?.fromTime} -{" "}
-                  {copilotData.settings?.schedule?.toTime}
+                  {copilotData.flightSchedule?.sendingHours.start} -{" "}
+                  {copilotData.flightSchedule?.sendingHours.end || "24/7"}
                 </div>
               </div>
             </div>

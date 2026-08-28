@@ -188,14 +188,7 @@ export default function NewCopilotPage() {
               emailAccountId: copilot.emailAccountId,
               targetAudienceId: copilot.targetAudienceId,
               templateId: copilot.templateId,
-              sendLimit: copilot.sendLimit || 10,
-              settings: copilot.settings || {
-                schedule: {
-                  runAt: "",
-                },
-                sendingSpeed: "Normal (Recommended)",
-                timezone: defaultTimezone,
-              },
+
               targetProfile: copilot.targetProfile || {
                 industries: [],
                 countries: [],
@@ -237,14 +230,7 @@ export default function NewCopilotPage() {
               emailAccountId: copilot.emailAccountId,
               targetAudienceId: copilot.targetAudienceId,
               templateId: copilot.templateId,
-              sendLimit: copilot.sendLimit || 10,
-              settings: copilot.settings || {
-                schedule: {
-                  runAt: "",
-                },
-                sendingSpeed: "Normal (Recommended)",
-                timezone: defaultTimezone,
-              },
+
               targetProfile: copilot.targetProfile || {
                 industries: [],
                 countries: [],
@@ -289,7 +275,7 @@ export default function NewCopilotPage() {
         emailAccountId: copilotData.emailAccountId,
         targetAudienceId: copilotData.targetAudienceId,
         templateId: copilotData.templateId,
-        sendLimit: copilotData.sendLimit,
+
         flightScheduleId: copilotData.flightScheduleId,
 
         status: "draft" as const,
@@ -324,7 +310,7 @@ export default function NewCopilotPage() {
         emailAccountId: copilotData.emailAccountId,
         targetAudienceId: copilotData.targetAudienceId,
         templateId: copilotData.templateId,
-        sendLimit: copilotData.sendLimit,
+
         flightScheduleId: copilotData.flightScheduleId,
 
         userId: user?.id,

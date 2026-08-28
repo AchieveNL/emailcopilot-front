@@ -76,7 +76,7 @@ export default function ScheduleStep({
         sendingHoursActive: schedule.sendingHoursActive,
         timezone: schedule.timezone,
       };
-
+      console.log("Creating flight schedule with payload:", payload);
       const res = await flightSchedulesApi.create(payload);
 
       // Update the copilot store with the new schedule ID
@@ -90,7 +90,7 @@ export default function ScheduleStep({
   };
 
   return (
-    <div className="w-full mx-auto bg-transparent min-h-[600px] text-slate-800">
+    <div className="w-full mx-auto bg-transparent min-h-150 text-slate-800">
       {/* Header Area */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-1">
@@ -154,7 +154,7 @@ export default function ScheduleStep({
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <div className="px-4 py-2 min-w-[60px] text-center text-sm font-medium border-x border-slate-200">
+                    <div className="px-4 py-2 min-w-15 text-center text-sm font-medium border-x border-slate-200">
                       {schedule.sendLimit || 30}
                     </div>
                     <button

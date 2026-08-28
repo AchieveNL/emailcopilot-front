@@ -28,6 +28,8 @@ export default function LaunchSideBar({
     (t) => t.id === copilotData.templateId,
   );
 
+  const Days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
   const formatActiveDays = (days: string[] = []) => {
     if (days.length === 0) return "None";
     if (days.length === 7) return "Mon - Sun";
@@ -107,8 +109,12 @@ export default function LaunchSideBar({
               Flight Schedule
             </p>
             <p className="text-[13px] text-gray-500">
-              {copilotData.sendLimit || 30} emails per day,{" "}
-              {formatActiveDays(copilotData.settings?.schedule?.activeDays)}
+              {copilotData.flightSchedule.sendLimit || 30} emails per day,{" "}
+              {formatActiveDays(
+                copilotData.flightSchedule?.activeDays?.map(
+                  (day) => Days[day - 1],
+                ),
+              )}
             </p>
           </div>
         </div>
