@@ -85,10 +85,7 @@ export default function Step2EmailProfile({
     }
   };
 
-  const canContinue =
-    copilotData.emailAccountId !== null ||
-    selectedProfileName === "gmail" ||
-    selectedProfileName === "outlook";
+  const canContinue = copilotData.emailAccountId !== null;
 
   return (
     <>
@@ -113,6 +110,7 @@ export default function Step2EmailProfile({
             {/* Connect with Gmail - highlighted */}
             <button
               type="button"
+              disabled
               className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border ${
                 selectedProfileName === "gmail"
                   ? "border-primary bg-primary-light"
@@ -145,6 +143,7 @@ export default function Step2EmailProfile({
             {/* Connect with Outlook */}
             <button
               type="button"
+              disabled
               className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border ${
                 selectedProfileName === "outlook"
                   ? "border-primary bg-primary-light"
