@@ -63,7 +63,7 @@ function Tooltip({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative inline-block group z-10">
+    <div className="relative inline-block group z-50">
       {children}
 
       <div
@@ -423,10 +423,10 @@ export default function LeadsPage() {
                       </td>
                       <td className="px-6 py-5 relative">
                         <div
-                          className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
+                          className=" text-gray-400   gap-2  rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
                           onClick={() => handleShowPreview(lead)}
                         >
-                          <div className="text-xs capitalize bg-primary/5 text-primary mt-1 w-fit px-3 py-1 rounded-lg  leading-relaxed">
+                          <div className="text-xs capitalize hover:bg-primary/5 hover:text-primary text-gray-800 mt-1 w-fit px-3 py-1 rounded-lg  leading-relaxed">
                             show
                           </div>
                         </div>

@@ -45,6 +45,12 @@ export default function TemplatesPage() {
     fetchTemplates();
   }, []);
 
+  function stripHtml(html: string) {
+    return html
+      .replace(/<\/p>\s*<p>/gi, "\n\n") // paragraph breaks
+      .replace(/<[^>]+>/g, "") // remove remaining tags
+      .trim();
+  }
   async function fetchTemplates() {
     try {
       setLoading(true);
@@ -215,7 +221,7 @@ export default function TemplatesPage() {
                 </span>
               </div>
               <p className="text-xs text-gray-400 line-clamp-3 mb-3 leading-relaxed">
-                {t.body}
+                {stripHtml(t.body)}
               </p>
               {t.variables.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-3">
