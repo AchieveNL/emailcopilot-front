@@ -23,18 +23,7 @@ export interface CopilotData {
     timezone: string;
   };
 
-  // settings: {
-  //   schedule: {
-  //     runAt: string; // ISO string, e.g. "2024-06-01T09:00:00Z"
-  //     activeDays?: string[];
-  //     fromTime?: string;
-  //     toTime?: string;
-  //     sendingHoursActive?: boolean;
-  //   };
-  //   sendLimitActive?: boolean;
-  //   sendingSpeed: string;
-  //   timezone: string;
-  // };
+
   targetProfile: {
     industries: string[];
     countries: string[];
@@ -44,27 +33,29 @@ export interface CopilotData {
 
 // Matches schema: emailProfiles table
 export interface EmailProfile {
-  id: number; // serial PK — number, not string
+  id: number; 
   name: string;
   email: string;
-  provider: "gmail" | "outlook" | "smtp"; // matches emailProviderEnum
-  status: "active" | "inactive" | "error"; // matches emailProfileStatusEnum
+  provider: "gmail" | "outlook" | "smtp"; 
+  status: "active" | "inactive" | "error"; 
   dailyLimit: number;
   sentToday: number;
 }
 
 // Matches schema: targetAudiences table
-export interface ScrapeProfile {
-  id: number; // serial PK — number, not string
+export interface TargetAudience {
+  id: number; 
   name: string;
-  url: string; // was wrongly "category" + "location"
-  selector: string; // was missing
-  country: string; // was missing
-  city: string; // was missing
-  fields: string[]; // was missing (jsonb string[])
-  status: "idle" | "running" | "done" | "error"; // matches scrapeStatusEnum
-  resultsCount: number; // was wrongly "count"
+
+  country: string; 
+  city: string; 
+  searchQuery: string[]; 
+  status: "idle" | "running" | "done" | "error"; 
+  resultsCount: number; 
   lastRun: string | null;
+  updatedAt: string;
+  createdAt: string;
+  userId: number;
 }
 
 export type CopilotMode = "create" | "edit" | "duplicate";
@@ -225,46 +216,5 @@ export const mockEmailProfiles: EmailProfile[] = [
     status: "inactive",
     dailyLimit: 200,
     sentToday: 0,
-  },
-];
-
-export const mockScrapeProfiles: ScrapeProfile[] = [
-  {
-    id: 1,
-    name: "Dental CA - Google Maps",
-    url: "https://maps.google.com/?q=dentist+california",
-    selector: ".place-result",
-    fields: ["name", "phone", "address", "website"],
-    city: "California",
-    country: "USA",
-    status: "done",
-    resultsCount: 2840,
-    lastRun: "2024-05-01T10:00:00Z",
-  },
-  {
-    id: 2,
-    name: "Clinics - New York",
-    url: "https://maps.google.com/?q=medical+clinic+new+york",
-    selector: ".place-result",
-    fields: ["name", "phone", "address"],
-    city: "New York",
-    country: "USA",
-    status: "done",
-    resultsCount: 1520,
-
-    lastRun: "2024-04-28T08:30:00Z",
-  },
-  {
-    id: 3,
-    name: "Lawyers - Texas",
-    url: "https://maps.google.com/?q=law+firm+texas",
-    selector: ".place-result",
-    fields: ["name", "phone", "email", "website"],
-    city: "Austin",
-    country: "USA",
-    status: "idle",
-
-    resultsCount: 3100,
-    lastRun: null,
   },
 ];

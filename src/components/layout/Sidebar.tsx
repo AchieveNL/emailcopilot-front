@@ -83,17 +83,16 @@ export default function Sidebar() {
             {/* Nav */}
             <nav className="px-3 space-y-0.5">
               {navItems.map(({ href, label, icon: Icon }) => {
-                const active =
-                  href === "/dashboard"
-                    ? pathname === href
-                    : pathname.startsWith(href + "/");
+                const isActive =
+                  pathname === href ||
+                  (href !== "/dashboard" && pathname.startsWith(`${href}/`));
                 return (
                   <Link
                     key={href}
                     href={href}
                     className={clsx(
                       "flex items-baseline justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
-                      active
+                      isActive
                         ? "bg-primary/5 text-primary font-semibold"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                     )}
@@ -101,7 +100,7 @@ export default function Sidebar() {
                     <div className="flex items-center gap-3">
                       <Icon
                         size={16}
-                        className={active ? "text-primary" : "text-gray-400"}
+                        className={isActive ? "text-primary" : "text-gray-400"}
                       />
                       <span className="font-medium">{label}</span>
                     </div>

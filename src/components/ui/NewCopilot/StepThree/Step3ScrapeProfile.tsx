@@ -8,15 +8,17 @@ import {
   MapPin,
   Building2,
   CheckCircle2,
+  CircleAlert,
 } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
 import {
   useCopilotStore,
-  ScrapeProfile,
+  TargetAudience,
 } from "../../../../../store/copilotStore";
 import { targetAudiencesApi } from "@/lib/api";
 import { toast } from "sonner";
+import Switcher from "../../Switcher";
 // ── TagInput ─────────────────────────────────────────────────────────────────
 
 interface TagInputProps {
@@ -44,6 +46,7 @@ function TagInput({
 }: TagInputProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -229,7 +232,8 @@ export default function Step3ScrapeProfile() {
   const { industries, countries, cities } = copilotData.targetProfile;
   const [loading, setLoading] = useState(false);
   const [loadingProfiles, setLoadingProfiles] = useState(true);
-  const [profiles, setProfiles] = useState<ScrapeProfile[]>([]);
+  const [profiles, setProfiles] = useState<TargetAudience[]>([]);
+  const [enableCity, setEnableCity] = useState(false);
 
   useEffect(() => {
     targetAudiencesApi
@@ -374,36 +378,57 @@ export default function Step3ScrapeProfile() {
         {/* Cities */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6 items-start">
           <div>
-            <h3 className="text-sm font-bold text-gray-900">City</h3>
+            <div className=" w-full flex justify-between items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900">City</h3>
+              <Switcher
+                isOn={enableCity}
+                onClick={() => setEnableCity(!enableCity)}
+              />
+            </div>
             <p className="text-xs text-gray-500 mt-1">
               In which cities are your target companies located?
             </p>
           </div>
-          <TagInput
-            icon={<MapIcon size={15} />}
-            options={availableCities}
-            selected={cities}
-            onAdd={(v) => {
-              if (copilotData.targetAudienceId) {
-                updateCopilotData({ targetAudienceId: null });
+          {!enableCity ? (
+            <div className="w-full lg:col-span-2 relative flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+              <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  All cities included
+                </h3>
+                <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                  Your Copilot will search all cities within the selected
+                  country.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <TagInput
+              icon={<MapIcon size={15} />}
+              options={availableCities}
+              selected={cities}
+              onAdd={(v) => {
+                if (copilotData.targetAudienceId) {
+                  updateCopilotData({ targetAudienceId: null });
+                }
+                updateTargetProfile({ cities: [...cities, v] });
+              }}
+              onRemove={(v) =>
+                updateTargetProfile({ cities: cities.filter((c) => c !== v) })
               }
-              updateTargetProfile({ cities: [...cities, v] });
-            }}
-            onRemove={(v) =>
-              updateTargetProfile({ cities: cities.filter((c) => c !== v) })
-            }
-            onClearAll={() => updateTargetProfile({ cities: [] })}
-            placeholder={
-              countries.length === 0
-                ? "Select a country first…"
-                : "Search cities…"
-            }
-            emptyMessage={
-              countries.length === 0
-                ? "Please select a country first"
-                : "No cities found"
-            }
-          />
+              onClearAll={() => updateTargetProfile({ cities: [] })}
+              placeholder={
+                countries.length === 0
+                  ? "Select a country first…"
+                  : "Search cities…"
+              }
+              emptyMessage={
+                countries.length === 0
+                  ? "Please select a country first"
+                  : "No cities found"
+              }
+            />
+          )}
         </div>
       </div>
 
