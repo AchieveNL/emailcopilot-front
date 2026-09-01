@@ -64,7 +64,6 @@ export default function ScrapeProfilesPage() {
 
   async function handleDuplicate(audience: TargetAudience) {
     try {
-    
       await targetAudiencesApi.create({
         name: `${audience.name} (Copy)`,
         searchQuery: audience.searchQuery,
@@ -102,17 +101,16 @@ export default function ScrapeProfilesPage() {
 
   return (
     <div className="p-5 w-full mx-auto">
-        <DashboardHeader
-          title="Target Audience"
-          description="Configure web scraping sources for your leads."
-          actionLabel="Create New Target Audience"
-        
-  mobileActionLabel = "Add"
-          onAction={() => {
-            setEditingAudience(null);
-            setShowModal(true);
-          }}
-        />
+      <DashboardHeader
+        title="Target Audience"
+        description="Configure web scraping sources for your leads."
+        actionLabel="Create New Target Audience"
+        mobileActionLabel="Add"
+        onAction={() => {
+          setEditingAudience(null);
+          setShowModal(true);
+        }}
+      />
 
       {loading ? (
         <div className="flex items-center justify-center h-48 text-gray-400">
@@ -128,7 +126,7 @@ export default function ScrapeProfilesPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-70 p-4">
           <TargetAudienceForm
             initialData={editingAudience}
             onCancel={() => {
