@@ -21,6 +21,7 @@ import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 import { templatesApi } from "@/lib/api";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
+import DashboardHeader from "@/components/layout/DashboardHeader";
 
 const handleStatusTextColor = (status: string) => {
   switch (status) {
@@ -262,10 +263,12 @@ export default function LeadsPage() {
   return (
     <div className="py-8 px-4 mx-auto w-full">
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col sm:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div className="">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Departure</h1>
-            <p className="text-gray-500 text-sm">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
+              Departure
+            </h1>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1 line-clamp-2">
               Recipients who have been emailed by
               <span className="font-bold text-gray-950 ">
                 {" " + copilotName}
@@ -276,8 +279,8 @@ export default function LeadsPage() {
 
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="btn-main btn-cta "
-            style={{ padding: "9px 20px", fontSize: "0.85rem" }}
+            className="btn-main w-fit btn-cta text-xs md:text-sm  "
+            style={{ padding: "9px 20px" }}
           >
             Select Copilot
           </button>

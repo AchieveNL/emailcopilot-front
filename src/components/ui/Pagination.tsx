@@ -23,7 +23,7 @@ export function Pagination({
   return (
     <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-4  text-sm">
       {showLimitSelector && (
-        <div className="flex w-fit items-center gap-3">
+        <div className="hidden lg:flex w-fit items-center gap-3">
           <span className="text-gray-500">Show</span>
           <div className="relative">
             <select
@@ -101,7 +101,7 @@ export function Pagination({
         </button>
       </div>
       {showLimitSelector && (
-        <div className="flex w-fit justify-center text-gray-500 whitespace-nowrap">
+        <div className="hidden lg:flex w-fit justify-center text-gray-500 whitespace-nowrap">
           Page {meta.page} of {meta.totalPages} ( {meta.total} Total ) .
         </div>
       )}
