@@ -181,7 +181,7 @@ export function CopilotsPopup({ isOpen, onClose }: CopilotPopupProps) {
                 currentPage={page}
                 onPageChange={setPage}
                 onLimitChange={handleLimitChange}
-                isLarge={false}
+                showLimitSelector={false}
               />
             </div>
           )}

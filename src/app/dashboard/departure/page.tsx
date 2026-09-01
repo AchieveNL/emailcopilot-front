@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   MapPin,
   Mail,
@@ -18,7 +19,6 @@ import { Pagination } from "@/components/ui/Pagination";
 import EmailPreviewCard from "@/components/ui/EmialPreview";
 import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 import { templatesApi } from "@/lib/api";
-import { useRef } from "react";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
 
@@ -55,6 +55,45 @@ const MOCK_META: PaginatedMeta = {
   totalPages: 2,
 };
 
+const TOOLTIP_MARGIN = 8; // gap between trigger and tooltip, px
+const TOOLTIP_MAX_WIDTH = 160; // matches max-w-40 (40 * 4px)
+const VIEWPORT_PADDING = 8; // keep tooltip this far from screen edges
+
+type TooltipPlacement = "top" | "bottom";
+
+/**
+ * Computes where the tooltip bubble should render based on the trigger's
+ * current position in the viewport:
+ * - Flips to "bottom" placement when there isn't enough room above the
+ *   trigger (e.g. rows near the top of a scrolled/sticky-header table).
+ * - Clamps horizontal position so the bubble never spills off-screen.
+ */
+function computeTooltipPosition(
+  triggerEl: HTMLElement,
+  tooltipEl: HTMLElement | null,
+): { top: number; left: number; placement: TooltipPlacement } {
+  const rect = triggerEl.getBoundingClientRect();
+  const tooltipHeight = tooltipEl?.offsetHeight ?? 32;
+  const tooltipWidth = tooltipEl?.offsetWidth ?? TOOLTIP_MAX_WIDTH;
+
+  const spaceAbove = rect.top;
+  const placement: TooltipPlacement =
+    spaceAbove < tooltipHeight + TOOLTIP_MARGIN ? "bottom" : "top";
+
+  const top =
+    placement === "top"
+      ? rect.top - tooltipHeight - TOOLTIP_MARGIN
+      : rect.bottom + TOOLTIP_MARGIN;
+
+  let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+  left = Math.max(
+    VIEWPORT_PADDING,
+    Math.min(left, window.innerWidth - tooltipWidth - VIEWPORT_PADDING),
+  );
+
+  return { top, left, placement };
+}
+
 function Tooltip({
   text,
   children,
@@ -62,21 +101,60 @@ function Tooltip({
   text: string | null | undefined;
   children: React.ReactNode;
 }) {
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [coords, setCoords] = useState<{
+    top: number;
+    left: number;
+    placement: TooltipPlacement;
+  }>({ top: 0, left: 0, placement: "top" });
+
+  const updatePosition = () => {
+    if (!triggerRef.current) return;
+    setCoords(computeTooltipPosition(triggerRef.current, tooltipRef.current));
+  };
+
+  // Recompute once the tooltip is in the DOM and measurable (its real
+  // width/height aren't known until after it renders).
+  useLayoutEffect(() => {
+    if (visible) updatePosition();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+
+  if (!text) return <>{children}</>;
+
   return (
-    <div className="relative inline-block group z-50">
+    <div
+      ref={triggerRef}
+      className="relative inline-block"
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
       {children}
 
-      <div
-        role="tooltip"
-        className=" min-w-30 max-w-40 pointer-events-none absolute border border-gray-100 bottom-full mb-2 left-1/2 -translate-x-1/2
-                   opacity-0 group-hover:opacity-100 transition-opacity duration-150
-                   px-3 py-1.5 rounded-md bg-white text-gray-600 text-[10px]
-                   text-center shadow-md whitespace-wrap  wrap-break-word capitalize
-                   z-100"
-      >
-        {text}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45" />
-      </div>
+      {visible &&
+        createPortal(
+          <div
+            ref={tooltipRef}
+            role="tooltip"
+            style={{ position: "fixed", top: coords.top, left: coords.left }}
+            className="min-w-30 max-w-40 pointer-events-none border border-gray-100
+                       px-3 py-1.5 rounded-md bg-white text-gray-600 text-[10px]
+                       text-center shadow-md whitespace-normal wrap-break-word capitalize
+                       z-9999"
+          >
+            {text}
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45 ${
+                coords.placement === "top"
+                  ? "top-full -mt-1"
+                  : "bottom-full -mb-1"
+              }`}
+            />
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -226,7 +304,7 @@ export default function LeadsPage() {
             <div className="overflow-auto max-h-125">
               <table className="w-full text-sm min-w-225">
                 <thead>
-                  <tr className="border-b sticky top-0 z-60 border-gray-100 bg-white">
+                  <tr className="border-b sticky top-0 z-40 border-gray-100 bg-white">
                     <th className=" font-semibold text-gray-900 px-6 py-5">
                       Copilot
                     </th>
@@ -254,7 +332,7 @@ export default function LeadsPage() {
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-50  sticky top-0 right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-40  sticky top-0 right-0 bg-white border-l border-gray-100">
                       Status
                     </th>
                   </tr>
@@ -431,7 +509,7 @@ export default function LeadsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky status w-20 align-middle right-0 z-50 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
+                      <td className="px-6 py-5 sticky w-20 align-middle right-0 z-30 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
                         <div className="flex items-center gap-2 ">
                           <Tooltip
                             text={

@@ -28,3 +28,6 @@ export function formatDateTime(apiDateString: string) {
 
   return `${day}/${month}/${year}, ${hoursStr}:${minutes} ${ampm}`;
 }
+
+
+
