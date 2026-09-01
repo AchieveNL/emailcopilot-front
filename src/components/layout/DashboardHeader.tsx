@@ -37,7 +37,7 @@ export default function DashboardHeader({
 
       <button
         onClick={onAction}
-        className="flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
+        className="flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta z-41 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
       >
         <Plus size={18} />
 

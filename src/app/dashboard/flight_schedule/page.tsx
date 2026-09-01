@@ -11,6 +11,7 @@ import {
   SearchAndFilter,
   type SortOrder,
 } from "@/components/ui/SearchAndFilter";
+import DashboardHeader from "@/components/layout/DashboardHeader";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -114,22 +115,12 @@ export default function FlightSchedulePage() {
   return (
     <div className="p-5 w-full mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Flight Schedule</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Manage your flight schedules.
-          </p>
-        </div>
-        <button
-          onClick={openCreateModal}
-          className="btn-main btn-cta "
-          style={{ padding: "9px 20px", fontSize: "0.85rem" }}
-        >
-          <Plus size={15} />
-          New Schedule
-        </button>
-      </div>
+      <DashboardHeader
+        title="Flight Schedule"
+        description="Manage your flight schedules."
+        actionLabel="New Schedule"
+        onAction={openCreateModal}
+      />
 
       <SearchAndFilter
         searchQuery={searchQuery}

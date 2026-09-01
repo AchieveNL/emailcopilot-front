@@ -62,7 +62,7 @@ export const handleCardProp = (status: string) => {
       };
     case "active":
       return {
-        badgeLabel: "active",
+        badgeLabel: "scheduled",
         badgeClass: "bg-primary/5 text-primary",
         progressBarColor: "bg-primary",
         subtitle: "Campaign is currently active",

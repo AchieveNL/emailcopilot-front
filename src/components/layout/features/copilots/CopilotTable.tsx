@@ -140,9 +140,9 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
           case "completed":
             return { state: "done" as const, label: "Completed" };
           case "active":
-            return { state: "done" as const, label: "Active" };
+            return { state: "done" as const, label: "Scheduled" };
           case "running":
-            return { state: "done" as const, label: "Running" };
+            return { state: "done" as const, label: "In Flight" };
           case "pending":
             return { state: "pending" as const, label: "Pending" };
           case "paused":
@@ -162,7 +162,7 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
 function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-1 text-[12px] font-medium whitespace-nowrap ${handleCardProp(status).badgeClass}`}
+      className={`inline-flex items-center rounded-md px-2 py-1 text-[12px] font-medium capitalize whitespace-nowrap ${handleCardProp(status).badgeClass}`}
     >
       {status}
     </span>
@@ -301,7 +301,7 @@ function CopilotTable({
               <th className="whitespace-nowrap px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                 Send
               </th>
-              <th className="whitespace-nowrap px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+              <th className="whitespace-nowrap sticky right-0 z-40 bg-white px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                 Status
               </th>
               <th className="w-10 px-4 py-3" />
@@ -335,13 +335,14 @@ function CopilotTable({
                       )}
                     </div>
                   </td>
-                  <td className="px-6  py-4 align-middle">
+                  <td className="px-6  py-4 align-middle  ">
                     <WorkflowStepper steps={steps} copilotId={copilot.id} />
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-[14px] align-middle text-gray-700">
-                    {copilot.emailsSent}/{copilot?.targetAudience?.resultsCount ?? 0}
+                    {copilot.emailsSent}/
+                    {copilot?.targetAudience?.resultsCount ?? 0}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 align-middle">
+                  <td className="whitespace-nowrap sticky right-0 bg-white z-40 px-6 py-4 align-middle">
                     <StatusBadge status={copilot.status} />
                   </td>
                   <td className="px-4 py-4 text-right align-middle">
