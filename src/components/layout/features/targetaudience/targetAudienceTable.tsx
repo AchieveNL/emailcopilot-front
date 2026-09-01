@@ -80,7 +80,7 @@ function TargetAudienceTable({
   }
 
   return (
-    <div className="w-full  rounded-lg overflow-hidden flex flex-col gap-4">
+    <div className="w-full   rounded-lg overflow-hidden flex flex-col gap-4">
       <div className="overflow-x-auto h-fit pb-4 border border-gray-100 bg-white rounded-lg">
         <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between px-6 py-4 border-b border-gray-100">
           <h1 className="text-gray-900 font-bold">
@@ -88,8 +88,8 @@ function TargetAudienceTable({
           </h1>
           <TargetAudienceSearchBar onSearch={setQuery} />
         </div>
-        <div className="overflow-auto max-h-100">
-          <table className="w-full border-collapse  ">
+        <div className="overflow-auto">
+          <table className="w-full border-collapse min-h-150  ">
             <thead>
               <tr className="border-b border-gray-100 sticky top-0 z-60 bg-white">
                 {COLUMNS.map((col) => (
@@ -173,7 +173,7 @@ function TargetAudienceTable({
         </div>
       </div>
 
-      {totalPages > 0 && (
+      {totalPages > 1 && (
         <Pagination
           meta={{ total, page: currentPage, limit, totalPages }}
           currentPage={currentPage}
