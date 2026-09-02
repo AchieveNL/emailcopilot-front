@@ -21,12 +21,12 @@ export interface StatusOption {
 
 export const DEFAULT_STATUS_OPTIONS: StatusOption[] = [
   { value: "all", label: "All status", dotClassName: "bg-blue-500" },
-  { value: "active", label: "Scheduled", dotClassName: "bg-emerald-500" },
-  { value: "draft", label: "Draft", dotClassName: "bg-gray-400" },
-  { value: "running", label: "In Flight", dotClassName: "bg-blue-500" },
-  { value: "paused", label: "Paused", dotClassName: "bg-amber-400" },
-  { value: "archived", label: "Archived", dotClassName: "bg-gray-300" },
-  { value: "completed", label: "Completed", dotClassName: "bg-gray-500" },
+  { value: "active", label: "Scheduled", dotClassName: "bg-primary" },
+  { value: "draft", label: "Draft", dotClassName: "bg-gray-200" },
+  { value: "running", label: "In Flight", dotClassName: "bg-sky-200" },
+  { value: "paused", label: "Paused", dotClassName: "bg-error" },
+  { value: "archived", label: "Archived", dotClassName: "bg-gray-400" },
+  { value: "completed", label: "Completed", dotClassName: "bg-success" },
 ];
 
 /* ------------------------------------------------------------------ */
