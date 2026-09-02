@@ -76,7 +76,7 @@ function ScheduleList() {
                 <div
                   key={schedule.id}
                   onClick={() => handleSelect(schedule)}
-                  className={`relative cursor-pointer border hover:bg-primary/5  hover:border-primary/50  transition-all rounded-xl ${
+                  className={`relative cursor-pointer border hover:bg-primary/5  hover:border-primary/50  transition-all rounded-lg ${
                     isSelected
                       ? " border-primary bg-primary/5"
                       : " border-gray-200 bg-white"

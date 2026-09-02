@@ -431,7 +431,7 @@ export default function TargetAudienceForm({
             ? "Saving..."
             : initialData
               ? "Save Changes"
-              : "Create Profile"}
+              : "Create Target Audience"}
         </button>
       </div>
     </div>

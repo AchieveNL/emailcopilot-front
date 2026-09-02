@@ -150,7 +150,7 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
           case "archived":
             return { state: "blocked" as const, label: "Archived" };
           case "draft":
-            return { state: "pending" as const, label: "draft" };
+            return { state: "pending" as const, label: "Draft" };
           default:
             return { state: "pending" as const, label: "Pending" };
         }
@@ -159,12 +159,21 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
   ];
 }
 
+const displayedStatus: Record<string, string> = {
+  active: "Scheduled",
+  running: "In Flight",
+  completed: "Completed",
+  paused: "Paused",
+  draft: "Draft",
+  archived: "Archived",
+};
+
 function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={`inline-flex items-center rounded-md px-2 py-1 text-[12px] font-medium capitalize whitespace-nowrap ${handleCardProp(status).badgeClass}`}
     >
-      {status}
+      {displayedStatus[status] || status}
     </span>
   );
 }
@@ -270,7 +279,7 @@ export interface CopilotTableProps {
 function CopilotTable({
   copilots = [],
   computeSteps = defaultComputeSteps,
-  // computeStatus = defaultComputeStatus,
+
   onActionsClick,
   onRefresh,
   className = "",
@@ -299,7 +308,7 @@ function CopilotTable({
                 Workflow Status
               </th>
               <th className="whitespace-nowrap px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                Send
+                Sent
               </th>
               <th className="whitespace-nowrap sticky right-0 z-40 bg-white px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                 Status
