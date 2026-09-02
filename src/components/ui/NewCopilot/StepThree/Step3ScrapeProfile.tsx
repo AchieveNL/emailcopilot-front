@@ -54,10 +54,9 @@ function TagInput({
     const q = query.toLowerCase();
     return options
       .filter((o) => !selected.includes(o) && o.toLowerCase().includes(q))
-      .slice(0, 50); // cap results for performance
+      .slice(0, 50);
   }, [options, selected, query]);
 
-  // Close on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (
@@ -81,6 +80,16 @@ function TagInput({
     [onAdd],
   );
 
+  // NEW: commits whatever is currently typed as a tag, used on blur
+  // (mobile-friendly — no Enter press required) and reused by keyboard handlers.
+  const commitCustomValue = useCallback(() => {
+    const trimmed = query.trim();
+    if (trimmed !== "" && !selected.includes(trimmed)) {
+      onAdd(trimmed);
+    }
+    setQuery("");
+  }, [query, selected, onAdd]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") setOpen(false);
     if (e.key === "Backspace" && query === "" && selected.length > 0) {
@@ -91,10 +100,7 @@ function TagInput({
         e.preventDefault();
       }
       if (allowCustom) {
-        if (!selected.includes(query.trim())) {
-          onAdd(query.trim());
-        }
-        setQuery("");
+        commitCustomValue();
         setOpen(false);
       } else if (filtered.length > 0) {
         const match =
@@ -111,7 +117,7 @@ function TagInput({
   };
 
   return (
-    <div ref={containerRef} className="lg:col-span-2 relative">
+    <div ref={containerRef} className="w-full relative">
       <div
         className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 min-h-10.5 flex-wrap cursor-text"
         onClick={() => inputRef.current?.focus()}
@@ -127,6 +133,7 @@ function TagInput({
             <button
               type="button"
               className="hover:opacity-70 transition-opacity"
+              onMouseDown={(e) => e.preventDefault()} // prevent blur-commit stealing focus mid-remove
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove(tag);
@@ -149,12 +156,19 @@ function TagInput({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
+          onBlur={() => {
+            if (allowCustom) {
+              commitCustomValue();
+            }
+            setOpen(false);
+          }}
         />
 
         {selected.length > 0 && (
           <button
             type="button"
             className="ml-auto text-gray-300 hover:text-gray-400 transition-colors shrink-0"
+            onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => {
               e.stopPropagation();
               onClearAll();
@@ -331,24 +345,26 @@ export default function Step3ScrapeProfile() {
               Choose the industry of your target companies.
             </p>
           </div>
-          <TagInput
-            icon={<Building2 size={15} />}
-            allowCustom
-            selected={industries}
-            onAdd={(v) => {
-              if (copilotData.targetAudienceId) {
-                updateCopilotData({ targetAudienceId: null });
+          <div className="lg:col-span-2">
+            <TagInput
+              icon={<Building2 size={15} />}
+              allowCustom
+              selected={industries}
+              onAdd={(v) => {
+                if (copilotData.targetAudienceId) {
+                  updateCopilotData({ targetAudienceId: null });
+                }
+                updateTargetProfile({ industries: [...industries, v] });
+              }}
+              onRemove={(v) =>
+                updateTargetProfile({
+                  industries: industries.filter((i) => i !== v),
+                })
               }
-              updateTargetProfile({ industries: [...industries, v] });
-            }}
-            onRemove={(v) =>
-              updateTargetProfile({
-                industries: industries.filter((i) => i !== v),
-              })
-            }
-            onClearAll={() => updateTargetProfile({ industries: [] })}
-            placeholder="Type and press Enter to add industries…"
-          />
+              onClearAll={() => updateTargetProfile({ industries: [] })}
+              placeholder="Type and press Enter to add industries…"
+            />
+          </div>
         </div>
 
         {/* Country */}
@@ -359,20 +375,22 @@ export default function Step3ScrapeProfile() {
               In which countries are your target companies located?
             </p>
           </div>
-          <TagInput
-            icon={<Globe size={15} />}
-            options={ALL_COUNTRY_NAMES}
-            selected={countries}
-            onAdd={(v) => {
-              if (copilotData.targetAudienceId) {
-                updateCopilotData({ targetAudienceId: null });
-              }
-              updateTargetProfile({ countries: [...countries, v] });
-            }}
-            onRemove={handleRemoveCountry}
-            onClearAll={handleClearCountries}
-            placeholder="Search countries…"
-          />
+          <div className="lg:col-span-2">
+            <TagInput
+              icon={<Globe size={15} />}
+              options={ALL_COUNTRY_NAMES}
+              selected={countries}
+              onAdd={(v) => {
+                if (copilotData.targetAudienceId) {
+                  updateCopilotData({ targetAudienceId: null });
+                }
+                updateTargetProfile({ countries: [...countries, v] });
+              }}
+              onRemove={handleRemoveCountry}
+              onClearAll={handleClearCountries}
+              placeholder="Search countries…"
+            />
+          </div>
         </div>
 
         {/* Cities */}
@@ -380,54 +398,62 @@ export default function Step3ScrapeProfile() {
           <div>
             <div className=" w-full flex justify-between items-center gap-2">
               <h3 className="text-sm font-bold text-gray-900">City</h3>
-              <Switcher
-                isOn={enableCity}
-                onClick={() => setEnableCity(!enableCity)}
-              />
             </div>
             <p className="text-xs text-gray-500 mt-1">
               In which cities are your target companies located?
             </p>
           </div>
           {!enableCity ? (
-            <div className="w-full lg:col-span-2 relative flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
-              <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 mb-1">
-                  All cities included
-                </h3>
-                <p className="text-xs text-slate-700 font-medium leading-relaxed">
-                  Your Copilot will search all cities within the selected
-                  country.
-                </p>
+            <div className="w-full lg:col-span-2 flex justify-between items-start gap-2">
+              <div className=" relative flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+                <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1">
+                    All cities included
+                  </h3>
+                  <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                    Your Copilot will search all cities within the selected
+                    country.
+                  </p>
+                </div>
               </div>
+              <Switcher
+                isOn={enableCity}
+                onClick={() => setEnableCity(!enableCity)}
+              />
             </div>
           ) : (
-            <TagInput
-              icon={<MapIcon size={15} />}
-              options={availableCities}
-              selected={cities}
-              onAdd={(v) => {
-                if (copilotData.targetAudienceId) {
-                  updateCopilotData({ targetAudienceId: null });
+            <div className="w-full lg:col-span-2 flex justify-between items-start gap-2">
+              <TagInput
+                icon={<MapIcon size={15} />}
+                options={availableCities}
+                selected={cities}
+                onAdd={(v) => {
+                  if (copilotData.targetAudienceId) {
+                    updateCopilotData({ targetAudienceId: null });
+                  }
+                  updateTargetProfile({ cities: [...cities, v] });
+                }}
+                onRemove={(v) =>
+                  updateTargetProfile({ cities: cities.filter((c) => c !== v) })
                 }
-                updateTargetProfile({ cities: [...cities, v] });
-              }}
-              onRemove={(v) =>
-                updateTargetProfile({ cities: cities.filter((c) => c !== v) })
-              }
-              onClearAll={() => updateTargetProfile({ cities: [] })}
-              placeholder={
-                countries.length === 0
-                  ? "Select a country first…"
-                  : "Search cities…"
-              }
-              emptyMessage={
-                countries.length === 0
-                  ? "Please select a country first"
-                  : "No cities found"
-              }
-            />
+                onClearAll={() => updateTargetProfile({ cities: [] })}
+                placeholder={
+                  countries.length === 0
+                    ? "Select a country first…"
+                    : "Search cities…"
+                }
+                emptyMessage={
+                  countries.length === 0
+                    ? "Please select a country first"
+                    : "No cities found"
+                }
+              />
+              <Switcher
+                isOn={enableCity}
+                onClick={() => setEnableCity(!enableCity)}
+              />
+            </div>
           )}
         </div>
       </div>

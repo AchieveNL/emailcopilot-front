@@ -339,8 +339,7 @@ function CopilotTable({
                     <WorkflowStepper steps={steps} copilotId={copilot.id} />
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-[14px] align-middle text-gray-700">
-                    {copilot.emailsSent}/
-                    {copilot?.targetAudience?.resultsCount ?? 0}
+                    {copilot.emailsSent}
                   </td>
                   <td className="whitespace-nowrap sticky right-0 bg-white z-40 px-6 py-4 align-middle">
                     <StatusBadge status={copilot.status} />
@@ -363,7 +362,7 @@ function CopilotTable({
                       )}
                     </button>
                     {menuCopilotId === copilot.id && (
-                      <div className="absolute right-10 top-8 z-20">
+                      <div className="absolute right-10 top-8 z-43">
                         <CopilotMenu
                           copilot={copilot}
                           onRefresh={onRefresh || (() => {})}

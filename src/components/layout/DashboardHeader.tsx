@@ -42,7 +42,7 @@ export default function DashboardHeader({
         <Plus size={18} />
 
         {/* Large */}
-        <span className="hidden lg:inline">{actionLabel}</span>
+        <span className="text-[10px] lg:text-sm">{actionLabel}</span>
       </button>
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-
+import { Trash2, Pen } from "lucide-react";
 // ─── Types matching backend schema ────────────────────────────────────────────
 
 export interface Schedule {
@@ -100,16 +100,18 @@ function FlightScheduleCard({
             onClick={() => {
               onEdit?.();
             }}
-            className="w-fit rounded-lg  bg-success/5 py-1 px-3 text-sm font-medium text-success hover:bg-success/10 transition-colors"
+            className="w-fit rounded-lg flex gap-2 items-center  bg-success/5 py-1 px-3 text-sm font-medium text-success hover:bg-success/10 transition-colors"
           >
+            <Pen size={14} color="#1d8a68" />
             Edit
           </button>
           <button
             onClick={() => {
               onDelete?.();
             }}
-            className="w-fit rounded-lg  bg-error/5 py-1 px-3 text-sm font-medium text-error hover:bg-error/10 transition-colors"
+            className="w-fit rounded-lg flex gap-2 items-center bg-error/5 py-1 px-3 text-sm font-medium text-error hover:bg-error/10 transition-colors"
           >
+            <Trash2 size={14} color="#d9485f" />
             Delete
           </button>
         </div>

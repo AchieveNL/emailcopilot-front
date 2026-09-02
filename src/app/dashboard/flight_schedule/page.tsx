@@ -118,7 +118,7 @@ export default function FlightSchedulePage() {
       <DashboardHeader
         title="Flight Schedule"
         description="Manage your flight schedules."
-        actionLabel="New Schedule"
+        actionLabel="New Flight Schedule"
         onAction={openCreateModal}
       />
 

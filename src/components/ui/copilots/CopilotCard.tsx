@@ -52,7 +52,7 @@ export const handleCardProp = (status: string) => {
       };
     case "completed":
       return {
-        badgeLabel: "completed",
+        badgeLabel: "Completed",
         badgeClass: "bg-success/5 text-success",
         progressBarColor: "bg-success",
         subtitle: "Campaign has finished running",
@@ -62,7 +62,7 @@ export const handleCardProp = (status: string) => {
       };
     case "active":
       return {
-        badgeLabel: "scheduled",
+        badgeLabel: "Scheduled",
         badgeClass: "bg-primary/5 text-primary",
         progressBarColor: "bg-primary",
         subtitle: "Campaign is currently active",
@@ -72,7 +72,7 @@ export const handleCardProp = (status: string) => {
       };
     case "paused":
       return {
-        badgeLabel: "paused",
+        badgeLabel: "Paused",
         badgeClass: "bg-error/5 text-error",
         progressBarColor: "bg-error",
         subtitle: "Campaign is currently paused",
@@ -82,7 +82,7 @@ export const handleCardProp = (status: string) => {
       };
     case "archived":
       return {
-        badgeLabel: "archived",
+        badgeLabel: "Archived",
         badgeClass: "bg-gray-100 text-gray-400",
         progressBarColor: "bg-gray-200",
         subtitle: "Campaign is archived",
@@ -224,9 +224,9 @@ function CopilotCard({
             className={`h-full rounded-full transition-all ${handleCardProp(copilot.status).progressBarColor} `}
             style={{
               width:
-                copilot.targetAudience?.resultsCount === 0
+                copilot.emailsSent === 0
                   ? "0%"
-                  : `${(copilot.emailsSent * 100) / (copilot.targetAudience?.resultsCount ?? 1)}%`,
+                  : `${(copilot.emailsSent * 100) / (copilot.emailsSent ?? 1)}%`,
             }}
           />
         </div>
