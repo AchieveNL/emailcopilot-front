@@ -120,7 +120,7 @@ export default function LaunchSideBar({
         </div>
 
         {/* Status */}
-        <div className="flex items-start gap-6">
+        <div className="flex items-start gap-6 mb-5">
           <ShieldCheck size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
             <p className="text-[13px] font-bold text-gray-900 mb-1">Status</p>

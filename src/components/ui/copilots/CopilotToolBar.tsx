@@ -21,9 +21,9 @@ export interface StatusOption {
 
 export const DEFAULT_STATUS_OPTIONS: StatusOption[] = [
   { value: "all", label: "All status", dotClassName: "bg-blue-500" },
-  { value: "active", label: "Active", dotClassName: "bg-emerald-500" },
+  { value: "active", label: "Scheduled", dotClassName: "bg-emerald-500" },
   { value: "draft", label: "Draft", dotClassName: "bg-gray-400" },
-  { value: "running", label: "Running", dotClassName: "bg-blue-500" },
+  { value: "running", label: "In Flight", dotClassName: "bg-blue-500" },
   { value: "paused", label: "Paused", dotClassName: "bg-amber-400" },
   { value: "archived", label: "Archived", dotClassName: "bg-gray-300" },
   { value: "completed", label: "Completed", dotClassName: "bg-gray-500" },
@@ -113,7 +113,7 @@ function StatusDropdown({
         />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-1.5 w-44 rounded-lg border border-gray-100 bg-white py-1.5 shadow-lg">
+        <div className="absolute left-0 top-full z-42 mt-1.5 w-44 rounded-lg border border-gray-100 bg-white py-1.5 shadow-lg">
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -178,7 +178,7 @@ function TagsDropdown({
         />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-1.5 w-48 rounded-lg border border-gray-100 bg-white py-1.5 shadow-lg">
+        <div className="absolute left-0 top-full z-42 mt-1.5 w-48 rounded-lg border border-gray-100 bg-white py-1.5 shadow-lg">
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (

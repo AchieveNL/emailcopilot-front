@@ -30,7 +30,7 @@ interface TagInputProps {
 function TagInput({
   icon,
   options = [],
-  selected = [],
+  selected,
   onAdd,
   onRemove,
   onClearAll,
@@ -40,6 +40,7 @@ function TagInput({
 }: TagInputProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -47,10 +48,9 @@ function TagInput({
     const q = query.toLowerCase();
     return options
       .filter((o) => !selected.includes(o) && o.toLowerCase().includes(q))
-      .slice(0, 50); // cap results for performance
+      .slice(0, 50);
   }, [options, selected, query]);
 
-  // Close on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (
@@ -74,6 +74,16 @@ function TagInput({
     [onAdd],
   );
 
+  // NEW: commits whatever is currently typed as a tag, used on blur
+  // (mobile-friendly — no Enter press required) and reused by keyboard handlers.
+  const commitCustomValue = useCallback(() => {
+    const trimmed = query.trim();
+    if (trimmed !== "" && !selected.includes(trimmed)) {
+      onAdd(trimmed);
+    }
+    setQuery("");
+  }, [query, selected, onAdd]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") setOpen(false);
     if (e.key === "Backspace" && query === "" && selected.length > 0) {
@@ -84,10 +94,7 @@ function TagInput({
         e.preventDefault();
       }
       if (allowCustom) {
-        if (!selected.includes(query.trim())) {
-          onAdd(query.trim());
-        }
-        setQuery("");
+        commitCustomValue();
         setOpen(false);
       } else if (filtered.length > 0) {
         const match =
@@ -104,7 +111,7 @@ function TagInput({
   };
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div ref={containerRef} className="w-full relative">
       <div
         className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 min-h-10.5 flex-wrap cursor-text"
         onClick={() => inputRef.current?.focus()}
@@ -120,6 +127,7 @@ function TagInput({
             <button
               type="button"
               className="hover:opacity-70 transition-opacity"
+              onMouseDown={(e) => e.preventDefault()} // prevent blur-commit stealing focus mid-remove
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove(tag);
@@ -142,12 +150,19 @@ function TagInput({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
+          onBlur={() => {
+            if (allowCustom) {
+              commitCustomValue();
+            }
+            setOpen(false);
+          }}
         />
 
         {selected.length > 0 && (
           <button
             type="button"
             className="ml-auto text-gray-300 hover:text-gray-400 transition-colors shrink-0"
+            onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => {
               e.stopPropagation();
               onClearAll();
