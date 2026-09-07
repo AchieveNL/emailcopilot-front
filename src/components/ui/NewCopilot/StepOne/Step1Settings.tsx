@@ -1,26 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { useCopilotStore } from "../../../../../store/copilotStore";
-
+import { useCopilotStore } from "@/store/copilotStore";
+import { useRouter } from "next/navigation";
 import StepsActions from "../StepsActions";
+import { copilotsApi } from "@/lib/api";
 
 export default function Step1Settings() {
-  const { copilotData, updateCopilotData, setStep } = useCopilotStore();
+  const { copilotData, updateCopilotData, setStep, mode } = useCopilotStore();
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = () => {
+  const router = useRouter();
+  const handleSubmit = async () => {
     setIsLoading(true);
 
-    updateCopilotData({
-      name: copilotData.name,
-      description: copilotData.description,
-    });
-    console.log("Updated copilot data:", copilotData);
+    try {
+      updateCopilotData({
+        name: copilotData.name,
+        description: copilotData.description,
+        goal: copilotData.goal,
+      });
 
-    setStep(2);
+      if (mode === "edit") {
+        setStep(2);
+        return;
+      }
 
-    setIsLoading(false);
+      const response = await copilotsApi.create({
+        name: copilotData.name,
+        description: copilotData.description,
+        goal: copilotData.goal,
+      });
+      setStep(2);
+      router.push(`/dashboard/copilots/new?edit=${response.data.id}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

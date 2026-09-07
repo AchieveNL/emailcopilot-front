@@ -1,5 +1,5 @@
 "use client";
-import { PLANS } from "../../../store/hompageData";
+import { PLANS } from "../../store/hompageData";
 import { CheckCircleIcon } from "lucide-react";
 import Link from "next/link";
 import ScrollFloat from "./ScrollFloat";

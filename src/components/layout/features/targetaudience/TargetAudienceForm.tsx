@@ -229,7 +229,7 @@ function getCitiesForCountries(countryNames: string[]): string[] {
   return Array.from(citySet).sort((a, b) => a.localeCompare(b));
 }
 
-import type { TargetAudience } from "@/../store/copilotStore";
+import type { TargetAudience } from "@/store/copilotStore";
 
 // ── Main Component ───────────────────────────────────────────────────────────
 

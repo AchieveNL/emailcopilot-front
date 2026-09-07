@@ -1,61 +1,132 @@
 "use client";
-import { useBilling } from "@/lib/useBilling";
+
 import { useUser } from "@clerk/nextjs";
-import { BarChart3, Send, Users } from "lucide-react";
-import Link from "next/link";
+import { BarChart3, Bot, Send, Users } from "lucide-react";
 
+import DashboardHeader from "@/components/layout/DashboardHeader";
+import { useRouter } from "next/navigation";
+import Chart, {
+  DateRange,
+  buildLeadChartItems,
+} from "@/components/ui/overview/Chart";
+import StatCard from "@/components/ui/overview/StatCard";
 
-export default function DashboardPage() {
-  const { limits } = useBilling();
-  const { user } = useUser()
+import { getPeriodStats, getDateRange, periodToDays } from "@/lib/helpers";
+import QuickStart from "@/components/ui/overview/QuickStart";
+import { useState, useEffect, useMemo } from "react";
+import DepartureCard from "@/components/ui/overview/DepartureCard";
+import CopilotsCard from "@/components/ui/overview/CopilotsCard";
+import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
+import { useLeadStore } from "@/store/leadStore";
+import { useCopilotStore } from "@/store/copilotStore";
+
+export default function OverviewPage() {
+  const { leads, getAllLeads } = useLeadStore();
+  const { copilots, getAllCopilots } = useCopilotStore();
+
+  const { user } = useUser();
+  const router = useRouter();
+
+  const [period, setPeriod] = useState<DateRange>("Last 7 days");
+
+  useEffect(() => {
+    getAllLeads();
+    getAllCopilots();
+  }, []);
+
+  const leadChartItems = useMemo(() => buildLeadChartItems(leads, 60), [leads]);
+
+  const sentStats = useMemo(
+    () =>
+      getPeriodStats(
+        leadChartItems.map((item) => ({ date: item.date, value: item.emailsSent })),
+        period,
+      ),
+    [leadChartItems, period],
+  );
+
+  const replyStats = useMemo(
+    () =>
+      getPeriodStats(
+        leadChartItems.map((item) => ({ date: item.date, value: item.replies })),
+        period,
+      ),
+    [leadChartItems, period],
+  );
+
+  const replyRate =
+    sentStats.total > 0
+      ? (replyStats.total / sentStats.total) * 100
+      : 0;
+
+  const comparisonLabel = useMemo(
+    () => "vs " + getDateRange(periodToDays(period)),
+    [period],
+  );
 
   const stats = [
-    { label: "Emails Sent", value: limits?.usage?.emailsSent, icon: Send },
-    { label: "Active Copilots", value: limits?.usage?.copilotsCount, icon: BarChart3 },
-    { label: "Email Profiles", value: limits?.usage?.emailAccountsCount, change: `${limits?.usage?.emailAccountsCount}/${limits?.limits?.emailProfiles}`, icon: Users },
+    {
+      label: "Emails Sent",
+      value: sentStats.total,
+      change: sentStats.percentageChange,
+      comparisonLabel,
+      icon: Send,
+    },
+    {
+      label: "Replies",
+      value: replyStats.total,
+      change: replyStats.percentageChange,
+      comparisonLabel,
+      icon: BarChart3,
+    },
+    {
+      label: "Reply Rate",
+      value: `${replyRate.toFixed(1)}%`,
+      change: 0,
+      comparisonLabel,
+      icon: Users,
+    },
+    {
+      label: "Copilots",
+      value: copilots?.length ?? 0,
+      change: 0,
+      comparisonLabel,
+      icon: Bot,
+    },
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Welcome back, {user?.firstName || "there"}. Here&apos;s your overview.</p>
-      </div>
+    <div className="p-5 w-full mx-auto">
+      <DashboardHeader
+        title={`Welcome back, ${user?.firstName || user?.fullName || "there"}!👋`}
+        description={`Here's what's happening with your outreach today`}
+        actionLabel="Create New Copilot"
+        onAction={() => router.push("/dashboard/copilots/new")}
+      />
 
-      <div className="grid grid-cols-4 gap-5 mb-8">
-        {stats.map((s) => (
-          <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                {s.label}
-              </span>
-              <s.icon size={15} className="text-gray-400" />
-            </div>
-            {s.change ? (
-              <>
-                <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-                <div className="text-xs text-success font-medium mt-1">{s.change} this month</div>
-              </>
-            ) : (
-              <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-            )}
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        {stats.map((s, i) => (
+          <StatCard
+            key={i}
+            icon={s.icon}
+            label={s.label}
+            value={s.value as string | number}
+            change={s.change}
+            comparisonLabel={s.comparisonLabel}
+          />
         ))}
       </div>
-
-      <div className="bg-white border border-gray-200 rounded-xl p-8 text-center shadow-sm">
-        <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-          <Send size={20} className="text-gray-500" />
-        </div>
-        <h2 className="font-bold text-gray-900 mb-2">No active copilots</h2>
-        <p className="text-sm text-gray-500 mb-4">Create a copilot to start automating your outreach.</p>
-        <Link
-          href="/dashboard/copilots/new"
-          className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-        >
-          Create New Copilot
-        </Link>
+      <Chart
+        leads={leads}
+        range={period}
+        onRangeChange={(newRange) => setPeriod(newRange)}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+        <CopilotsCard />
+        <DepartureCard />
+        <QuickStart />
       </div>
+      <CopilotFooter />
     </div>
   );
 }

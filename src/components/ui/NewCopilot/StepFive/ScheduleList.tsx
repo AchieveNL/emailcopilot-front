@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { flightSchedulesApi } from "@/lib/api";
 import { toast } from "sonner";
 import type { Schedule } from "@/components/ui/flightSchedule/FlightScheduleCard";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "../../../../store/copilotStore";
 
 function ScheduleList() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);

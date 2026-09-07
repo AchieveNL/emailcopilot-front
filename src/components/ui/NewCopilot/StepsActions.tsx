@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { useCopilotStore } from "../../../../store/copilotStore";
+import { useCopilotStore } from "../../../store/copilotStore";
 
 function StepsActions({
   canContinue,

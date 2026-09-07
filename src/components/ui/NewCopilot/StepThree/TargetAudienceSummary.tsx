@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { Building2, Globe, Map, Users } from "lucide-react";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "../../../../store/copilotStore";
 
 function TargetAudienceSummary() {
   const { copilotData } = useCopilotStore();

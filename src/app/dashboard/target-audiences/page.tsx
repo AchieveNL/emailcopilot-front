@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import TargetAudienceTable from "@/components/layout/features/targetaudience/targetAudienceTable";
 import TargetAudienceForm from "@/components/layout/features/targetaudience/TargetAudienceForm";
-import type { TargetAudience } from "@/../store/copilotStore";
+import type { TargetAudience } from "@/store/copilotStore";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 
 export default function ScrapeProfilesPage() {

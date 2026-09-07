@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 import Image from "next/image";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 import OtherProviderPopUp from "@/components/ui/NewCopilot/StepTwo/OtherProviderPopUp";
 import StepsActions from "../StepsActions";

@@ -1,5 +1,5 @@
 import { EllipsisVertical, X } from "lucide-react";
-import type { TargetAudience } from "@/../store/copilotStore";
+import type { TargetAudience } from "@/store/copilotStore";
 import TargetAudienceMenu from "@/components/ui/targetAudience/TargetAudienceMenu";
 import TargetAudienceSearchBar from "@/components/ui/targetAudience/TargetAudienceSearchBar";
 import { Pagination } from "@/components/ui/Pagination";
