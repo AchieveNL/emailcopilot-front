@@ -12,10 +12,7 @@ import {
 } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
-import {
-  useCopilotStore,
-  TargetAudience,
-} from "../../../../../store/copilotStore";
+import { useCopilotStore, TargetAudience } from "@/store/copilotStore";
 import { targetAudiencesApi } from "@/lib/api";
 import { toast } from "sonner";
 import Switcher from "../../Switcher";
@@ -248,6 +245,21 @@ export default function Step3ScrapeProfile() {
   const [loadingProfiles, setLoadingProfiles] = useState(true);
   const [profiles, setProfiles] = useState<TargetAudience[]>([]);
   const [enableCity, setEnableCity] = useState(false);
+
+  // show alert when user tries to leave the page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   useEffect(() => {
     targetAudiencesApi

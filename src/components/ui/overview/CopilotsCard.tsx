@@ -1,0 +1,50 @@
+import Link from "next/link";
+import CopilotStatus from "../CopilotStatus";
+
+import { useCopilotStore } from "@/store/copilotStore";
+import NoData from "./NoData";
+
+export default function CopilotsCard() {
+  const { copilots } = useCopilotStore();
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-5  w-full ">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-bold text-gray-900">Copilots</h2>
+        {copilots.length > 0 && (
+          <Link
+            href="/dashboard/copilots"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+          >
+            View all
+          </Link>
+        )}
+      </div>
+
+      {copilots.length === 0 ? (
+        <NoData title="No copilots found" />
+      ) : (
+        <table className="w-full">
+          <tbody>
+            {copilots.slice(0, 3).map((copilot) => (
+              <tr key={copilot.id}>
+                <td className="py-3 text-sm font-semibold text-gray-900">
+                  {copilot.name}
+                </td>
+                <td className="py-3 text-sm font-semibold text-blue-600 text-right pr-4 w-[1%] whitespace-nowrap">
+                  {copilot.emailsSent}
+                </td>
+                <td className="py-3 text-right w-[1%] whitespace-nowrap">
+                  <CopilotStatus
+                    status={copilot?.status || "draft"}
+                    isSmall={true}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}

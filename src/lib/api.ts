@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+
 import { getToken } from "@clerk/nextjs";
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
@@ -39,6 +40,13 @@ export const emailAccountsApi = {
   delete: (id: number) => api.delete(`/email-accounts/${id}`),
   verify: (id: number) => api.post(`/email-accounts/${id}/verify`),
 };
+
+//email sents
+// export const emailSentsApi = {
+//   getAll: (params?: { leadId?: number; page?: number; limit?: number }) =>
+//     api.get("/sent-emails", { params }),
+
+// };
 
 // ─── Scrape Profiles ──────────────────────────────────────────────────────────
 // Schema: targetAudiences — status: "idle"|"running"|"done"|"error"

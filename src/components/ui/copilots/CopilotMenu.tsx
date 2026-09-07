@@ -17,15 +17,14 @@ export default function CopilotMenu({
   onRefresh: () => void;
   onClose?: () => void;
 }) {
-  const router = useRouter();
   const [runningScrape, setRunningScrape] = useState(false);
   const showLaunchButton =
-    copilot.status !== "active" &&
     copilot.status !== "running" &&
+    copilot.status !== "paused" &&
+    copilot.status !== "archived" &&
     copilot.status !== "active" &&
-    copilot.status !== "paused";
-  const showPauseButton =
-    copilot.status === "active" || copilot.status === "running";
+    copilot.status !== "completed";
+  const showPauseButton = copilot.status === "running";
   const showResumeButton = copilot.status === "paused";
 
   async function toggleStatus(next: "active" | "paused") {

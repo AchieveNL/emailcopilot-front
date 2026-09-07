@@ -10,6 +10,7 @@ import {
   MoreVertical,
   X,
 } from "lucide-react";
+import CopilotStatus from "../CopilotStatus";
 import {
   Copilot,
   OverallStatus,
@@ -203,11 +204,7 @@ function CopilotCard({
         </button>
       </div>
 
-      <span
-        className={`inline-flex w-fit items-center rounded-md px-3 py-2 text-[12px] font-medium ${handleCardProp(copilot.status).badgeClass}`}
-      >
-        {handleCardProp(copilot.status).badgeLabel}
-      </span>
+      <CopilotStatus status={copilot.status} />
 
       <p className="text-[13px] leading-snug text-gray-500">
         {handleCardProp(copilot.status).subtitle}

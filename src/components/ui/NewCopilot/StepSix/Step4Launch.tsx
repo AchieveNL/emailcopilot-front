@@ -11,8 +11,9 @@ import {
   ArrowLeft,
   Rocket,
 } from "lucide-react";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "@/store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
+import { useEffect } from "react";
 
 interface Step4LaunchProps {
   remoteContext: NewCopilotContext;
@@ -44,7 +45,20 @@ export default function Step4Launch({
       return "Monday - Friday";
     return days.join(", ");
   };
+  // show alert when user tries to leave the page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
 
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   return (
     <div className="w-full">
       <h2 className="text-xl font-bold text-gray-900 mb-1">

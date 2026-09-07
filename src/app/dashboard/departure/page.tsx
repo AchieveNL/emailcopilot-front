@@ -341,9 +341,9 @@ export default function LeadsPage() {
                   </tr>
                 </thead>
                 <tbody className="max-h-75 overflow-y-auto">
-                  {leads.map((lead) => (
+                  {leads.map((lead, index) => (
                     <tr
-                      key={lead.id}
+                      key={lead.id + index}
                       className=" border-b text-xs border-gray-50 hover:bg-gray-50/50 transition-colors"
                     >
                       <td className="px-6 py-5">
@@ -489,14 +489,14 @@ export default function LeadsPage() {
                           </div>
                           <Tooltip
                             text={
-                              lead.sentAt
-                                ? formatDateTime(lead.sentAt)
+                              lead.createdAt
+                                ? formatDateTime(lead.createdAt)
                                 : "Unknown"
                             }
                           >
                             <div className="font-semibold line-clamp-1 text-gray-900">
-                              {lead.sentAt
-                                ? formatDateTime(lead.sentAt)
+                              {lead.createdAt
+                                ? formatDateTime(lead.createdAt)
                                 : "Unknown"}
                             </div>
                           </Tooltip>

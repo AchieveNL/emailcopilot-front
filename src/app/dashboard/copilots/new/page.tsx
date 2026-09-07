@@ -12,7 +12,7 @@ import Step2EmailProfile from "@/components/ui/NewCopilot/StepTwo/Step2EmailProf
 import Step3ScrapeProfile from "@/components/ui/NewCopilot/StepThree/Step3ScrapeProfile";
 import Step4Launch from "@/components/ui/NewCopilot/StepSix/Step4Launch";
 import TargetAudienceSummary from "@/components/ui/NewCopilot/StepThree/TargetAudienceSummary";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "@/store/copilotStore";
 import EmailTemplateStep from "@/components/ui/NewCopilot/StepFour/EmailTemplateStep";
 import {
   copilotsApi,
@@ -155,20 +155,6 @@ export default function NewCopilotPage() {
     loadOptions();
   }, []);
 
-  // show alert when user tries to leave the page with unsaved changes
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-
-      event.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
   useEffect(() => {
     const editId = searchParams.get("edit");
     const duplicateId = searchParams.get("duplicate");

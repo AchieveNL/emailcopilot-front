@@ -6,7 +6,7 @@ import {
   CalendarDays,
   ShieldCheck,
 } from "lucide-react";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "../../../../store/copilotStore";
 import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 
 interface LaunchSideBarProps {

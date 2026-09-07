@@ -3,6 +3,8 @@ import { X, Mail, Loader2, Search } from "lucide-react";
 import type { PaginatedMeta } from "@/lib/types";
 import { Pagination } from "./Pagination";
 import { copilotsApi } from "@/lib/api";
+import CopilotStatus from "./CopilotStatus";
+import type { CopilotStatusType } from "@/store/copilotStore";
 
 interface CopilotPopupProps {
   isOpen: boolean;
@@ -13,7 +15,7 @@ interface CopilotDataPopup {
   id: number;
   name: string;
   description?: string;
-  status: string;
+  status: CopilotStatusType;
   emailsSent: number;
   emailsOpened: number;
   emailsReplied: number;
@@ -32,21 +34,6 @@ interface CopilotDataPopup {
     searchQuery: string;
   };
 }
-
-const statusStyles = (status?: string) => {
-  if (
-    status === "active" ||
-    status === "running" ||
-    status === "delivered" ||
-    status === "sent"
-  ) {
-    return "bg-emerald-50 text-emerald-700 border-emerald-200";
-  }
-  if (status === "error" || status === "bounced" || status === "failed") {
-    return "bg-rose-50 text-rose-700 border-rose-200";
-  }
-  return "bg-amber-50 text-amber-700 border-amber-200";
-};
 
 export function CopilotsPopup({ isOpen, onClose }: CopilotPopupProps) {
   const [page, setPage] = useState(1);
@@ -133,13 +120,11 @@ export function CopilotsPopup({ isOpen, onClose }: CopilotPopupProps) {
                     <h3 className="font-semibold text-gray-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
                       {copilot?.name || "Unnamed Copilot"}
                     </h3>
-                    <span
-                      className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase border ${statusStyles(
-                        copilot?.status,
-                      )}`}
-                    >
-                      {copilot?.status || "Draft"}
-                    </span>
+
+                    <CopilotStatus
+                      status={copilot.status ? copilot.status : "draft"}
+                      isSmall
+                    />
                   </div>
 
                   {/* Description */}

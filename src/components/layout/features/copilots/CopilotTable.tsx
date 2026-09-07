@@ -8,8 +8,10 @@ import {
 } from "lucide-react";
 import CopilotMenu from "@/components/ui/copilots/CopilotMenu";
 import { useRouter } from "next/navigation";
-import { useCopilotStore, type Step } from "../../../../../store/copilotStore";
+import { useCopilotStore, type Step } from "../../../../store/copilotStore";
 import { handleCardProp } from "@/components/ui/copilots/CopilotCard";
+import CopilotStatus from "@/components/ui/CopilotStatus";
+import type { CopilotStatusType } from "@/store/copilotStore";
 
 /* ------------------------------------------------------------------ */
 /* Types — trimmed to the fields this component actually reads.       */
@@ -45,20 +47,13 @@ export interface FlightScheduleRef {
   [key: string]: unknown;
 }
 
-export type CopilotStatus =
-  | "active"
-  | "paused"
-  | "pending"
-  | "incomplete"
-  | "completed"
-  | "draft"
-  | string;
+
 
 export interface Copilot {
   id: number;
   name: string;
   description: string;
-  status: CopilotStatus;
+  status: CopilotStatusType;
   createdAt: string;
   updatedAt: string;
   userId: number;
@@ -143,8 +138,7 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
             return { state: "done" as const, label: "Scheduled" };
           case "running":
             return { state: "done" as const, label: "In Flight" };
-          case "pending":
-            return { state: "pending" as const, label: "Pending" };
+       
           case "paused":
             return { state: "blocked" as const, label: "Paused" };
           case "archived":
@@ -351,7 +345,8 @@ function CopilotTable({
                     {copilot.emailsSent}
                   </td>
                   <td className="whitespace-nowrap sticky right-0 bg-white z-40 px-6 py-4 align-middle">
-                    <StatusBadge status={copilot.status} />
+                    {/* <StatusBadge status={copilot.status} /> */}
+                    <CopilotStatus status={copilot.status} />
                   </td>
                   <td className="px-4 py-4 text-right align-middle">
                     <button

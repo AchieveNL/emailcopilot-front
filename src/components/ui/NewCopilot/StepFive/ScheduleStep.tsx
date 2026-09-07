@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StepsActions from "../StepsActions";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "@/store/copilotStore";
 import { Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
 import ct from "countries-and-timezones";
 import { flightSchedulesApi } from "@/lib/api";
@@ -42,6 +42,20 @@ export default function ScheduleStep({
   const selectedId = copilotData.flightScheduleId;
 
   const [loading, setLoading] = useState(false);
+  // show alert when user tries to leave the page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   const toggleDay = (day: number) => {
     let newDays;

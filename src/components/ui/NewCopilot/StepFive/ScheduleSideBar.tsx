@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Mail, Calendar, Clock, ShieldCheck, Globe } from "lucide-react";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "../../../../store/copilotStore";
 
 const DEFAULT_TIMEZONE = "Europe/Brussels";
 
@@ -10,13 +10,7 @@ export default function ScheduleSideBar() {
   const { copilotData } = useCopilotStore();
   const sendLimit = copilotData?.flightSchedule?.sendLimit || 30;
   const timezone = copilotData?.flightSchedule?.timezone || DEFAULT_TIMEZONE;
-  const activeDays = copilotData?.flightSchedule?.activeDays || [
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-  ];
+  const activeDays = copilotData?.flightSchedule?.activeDays || [1, 2, 3, 4, 5];
   const fromTime = copilotData?.flightSchedule?.sendingHours.start || "08:00";
   const toTime = copilotData?.flightSchedule?.sendingHours.end || "17:00";
 

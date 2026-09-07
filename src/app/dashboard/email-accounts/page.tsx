@@ -51,6 +51,7 @@ export default function EmailProfilesPage() {
     try {
       setLoading(true);
       const res = await emailAccountsApi.getAll();
+      console.log("Fetched profiles:", res.data);
       setProfiles(res.data);
     } catch {
       setProfiles([]);

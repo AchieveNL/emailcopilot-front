@@ -1,16 +1,27 @@
 "use client";
 
 import { create } from "zustand";
+import { copilotsApi } from "@/lib/api";
 
 export type Step = 1 | 2 | 3 | 4 | 5 | 6;
+export type CopilotStatusType =
+  | "active"
+  | "running"
+  | "paused"
+  | "completed"
+  | "draft"
+  | "archived";
 
 // Matches schema: copilots table + settings jsonb
 export interface CopilotData {
+  id?: number;
   name: string;
   description: string;
   goal: string;
+  status?: CopilotStatusType;
   emailAccountId: number | null;
   targetAudienceId: number | null;
+  emailsSent?: number;
   templateId: number | null;
   flightScheduleId: number | null;
   flightSchedule: {
@@ -23,7 +34,6 @@ export interface CopilotData {
     timezone: string;
   };
 
-
   targetProfile: {
     industries: string[];
     countries: string[];
@@ -33,25 +43,25 @@ export interface CopilotData {
 
 // Matches schema: emailProfiles table
 export interface EmailProfile {
-  id: number; 
+  id: number;
   name: string;
   email: string;
-  provider: "gmail" | "outlook" | "smtp"; 
-  status: "active" | "inactive" | "error"; 
+  provider: "gmail" | "outlook" | "smtp";
+  status: "active" | "inactive" | "error";
   dailyLimit: number;
   sentToday: number;
 }
 
 // Matches schema: targetAudiences table
 export interface TargetAudience {
-  id: number; 
+  id: number;
   name: string;
 
-  country: string; 
-  city: string; 
-  searchQuery: string[]; 
-  status: "idle" | "running" | "done" | "error"; 
-  resultsCount: number; 
+  country: string;
+  city: string;
+  searchQuery: string[];
+  status: "idle" | "running" | "done" | "error";
+  resultsCount: number;
   lastRun: string | null;
   updatedAt: string;
   createdAt: string;
@@ -63,6 +73,8 @@ export type CopilotMode = "create" | "edit" | "duplicate";
 interface CopilotStore {
   currentStep: Step;
   copilotData: CopilotData;
+  copilots: CopilotData[];
+  isLoading: boolean;
   launched: boolean;
   mode: CopilotMode;
   editingId: number | null;
@@ -80,6 +92,7 @@ interface CopilotStore {
   setEditingId: (id: number | null) => void;
   loadCopilot: (data: CopilotData, id?: number, mode?: CopilotMode) => void;
   resetStore: () => void;
+  getAllCopilots: () => Promise<void>;
 }
 
 const defaultCopilotData: CopilotData = {
@@ -100,18 +113,7 @@ const defaultCopilotData: CopilotData = {
     sendingHoursActive: false,
     timezone: "Europe/Brussels",
   },
-  // settings: {
-  //   schedule: {
-  //     runAt: "",
-  //     activeDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-  //     fromTime: "08:00",
-  //     toTime: "17:00",
-  //     sendingHoursActive: false,
-  //   },
-  //   sendLimitActive: false,
-  //   sendingSpeed: "Normal (Recommended)",
-  //   timezone: "Europe/Brussels",
-  // },
+
   targetProfile: {
     industries: [],
     countries: [],
@@ -122,6 +124,8 @@ const defaultCopilotData: CopilotData = {
 export const useCopilotStore = create<CopilotStore>((set) => ({
   currentStep: 1,
   copilotData: defaultCopilotData,
+  copilots: [],
+  isLoading: false,
   launched: false,
   mode: "create",
   editingId: null,
@@ -137,14 +141,6 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
     set((state) => ({
       copilotData: { ...state.copilotData, ...data },
     })),
-
-  // updateSettings: (settings) =>
-  //   set((state) => ({
-  //     copilotData: {
-  //       ...state.copilotData,
-  //       settings: { ...state.copilotData.settings, ...settings },
-  //     },
-  //   })),
 
   updateFlightSchedule: (schedule) =>
     set((state) => ({
@@ -185,36 +181,13 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       editingId: null,
       highestStep: 1,
     }),
+  getAllCopilots: async () => {
+    try {
+      const response = await copilotsApi.getAll();
+      set({ copilots: response.data, isLoading: false });
+    } catch (error) {
+      console.error("Error fetching copilots:", error);
+      set({ isLoading: false });
+    }
+  },
 }));
-
-// ─── Mock data (aligned with schema types) ───────────────────────────────────
-
-export const mockEmailProfiles: EmailProfile[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@company.com",
-    provider: "gmail",
-    status: "active",
-    dailyLimit: 100,
-    sentToday: 12,
-  },
-  {
-    id: 2,
-    name: "Sarah Smith",
-    email: "sarah@company.com",
-    provider: "outlook",
-    status: "active",
-    dailyLimit: 150,
-    sentToday: 0,
-  },
-  {
-    id: 3,
-    name: "Marketing Team",
-    email: "marketing@company.com",
-    provider: "gmail",
-    status: "inactive",
-    dailyLimit: 200,
-    sentToday: 0,
-  },
-];

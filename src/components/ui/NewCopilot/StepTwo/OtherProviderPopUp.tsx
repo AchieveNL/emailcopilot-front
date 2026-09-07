@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { emailAccountsApi } from "@/lib/api";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "../../../../store/copilotStore";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
-import { useCopilotStore } from "../../../../../store/copilotStore";
+import { useCopilotStore } from "@/store/copilotStore";
 
 const initialEmailBody = `
 <p>Hi,</p>
@@ -101,7 +101,20 @@ export default function EmailTemplateStep() {
   const [templateName, setTemplateName] = useState(
     copilotData?.name || "Intro - Book More Appointments",
   );
+  // show alert when user tries to leave the page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
 
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
   const variablesList = [
     {
       id: 1,

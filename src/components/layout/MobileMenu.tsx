@@ -21,7 +21,7 @@ import {
 import clsx from "clsx";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/copilots", label: "Copilots", icon: Send },
   { href: "/dashboard/email-accounts", label: "Email Accounts", icon: Mail },
   {
