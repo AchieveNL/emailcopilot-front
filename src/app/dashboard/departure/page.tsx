@@ -23,6 +23,7 @@ import { templatesApi } from "@/lib/api";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
 import DashboardHeader from "@/components/layout/DashboardHeader";
+import { useSearchParams } from "next/navigation";
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -143,7 +144,7 @@ export default function LeadsPage() {
   const [limit, setLimit] = useState(50);
   const [copilotName, setCopilotName] = useState<string | null>("All Copilots");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const searchParams = useSearchParams();
   const [activeLeadId, setActiveLeadId] = useState<number | null>(null);
   const [templateData, setTemplateData] = useState<{
     subject?: string;
@@ -213,8 +214,17 @@ export default function LeadsPage() {
   }
 
   useEffect(() => {
-    fetchLeads();
-  }, []);
+    const copilotId = searchParams.get("copilotId");
+    const copilotName = searchParams.get("name");
+    console.log("Search params:", { copilotId, copilotName });
+
+    if (copilotId && copilotName) {
+      setCopilotName(copilotName);
+      fetchLeads(Number(copilotId));
+    } else {
+      fetchLeads(); // fallback only when no params
+    }
+  }, [searchParams]);
 
   // normalize URL to ensure it has a protocol (http or https)
   const normalizeUrl = (url: string) => {

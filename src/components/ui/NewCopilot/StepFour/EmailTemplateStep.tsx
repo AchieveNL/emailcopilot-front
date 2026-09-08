@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Extension } from "@tiptap/core";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -59,16 +58,6 @@ const toEditorContent = (value: string) => {
     })
     .join("");
 };
-
-const EnterLineBreak = Extension.create({
-  name: "enterLineBreak",
-
-  addKeyboardShortcuts() {
-    return {
-      Enter: () => this.editor.commands.setHardBreak(),
-    };
-  },
-});
 
 export default function EmailTemplateStep() {
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");
@@ -171,7 +160,6 @@ export default function EmailTemplateStep() {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      EnterLineBreak,
       Link.configure({
         openOnClick: false,
       }),
@@ -256,6 +244,7 @@ export default function EmailTemplateStep() {
 
     try {
       const currentBody = editor.getHTML();
+      console.log("Current body:", currentBody);
 
       const isUnchanged =
         !!originalTemplate &&
@@ -309,29 +298,6 @@ export default function EmailTemplateStep() {
             Write the email your copilot will send to your target audience.
           </p>
         </div>
-        {/* <div className="flex items-center gap-3">
-          <div className="text-right">
-            <div className="text-sm font-semibold text-slate-800">
-              Smart sending
-            </div>
-            <div className="text-xs text-slate-500">
-              Automatically stop if a reply is received
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setSmartSending(!smartSending)}
-            className={`w-11 h-6 rounded-full transition-colors relative flex items-center ${
-              smartSending ? "bg-blue-600" : "bg-slate-300"
-            }`}
-          >
-            <div
-              className={`w-5 h-5 bg-white rounded-full absolute shadow-sm transition-transform ${
-                smartSending ? "translate-x-5" : "translate-x-1"
-              }`}
-            ></div>
-          </button>
-        </div> */}
       </div>
 
       {/* Template Name Input */}
@@ -703,7 +669,8 @@ export default function EmailTemplateStep() {
                     setTemplateName(template.name || "");
                     setSubjectInput(template.subject || "");
                     editor?.commands.setContent(
-                      toEditorContent(template.body || ""),
+                      // toEditorContent(template.body || ""),
+                      template.body || "",
                     );
                     if (template.variables)
                       setVariableInput(template.variables);
@@ -750,7 +717,7 @@ export default function EmailTemplateStep() {
                   {/* Body preview */}
                   <p
                     className="text-xs text-gray-400 line-clamp-2 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: template.body }}
+                    // dangerouslySetInnerHTML={{ __html: template.body }}
                   />
 
                   {/* Use template CTA */}
