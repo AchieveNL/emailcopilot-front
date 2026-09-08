@@ -44,6 +44,17 @@ export default function TemplatesPage() {
   useEffect(() => {
     fetchTemplates();
   }, []);
+  useEffect(() => {
+    const checkNewParam = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isNew = params.get("new") === "true";
+
+      if (isNew) {
+        setShowModal(true);
+      }
+    };
+    checkNewParam();
+  }, []);
 
   function stripHtml(html: string) {
     return html

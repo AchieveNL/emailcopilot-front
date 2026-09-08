@@ -6,7 +6,7 @@ import { leadsApi } from "@/lib/api";
 
 interface LeadStore {
   leads: Lead[];
-  limits: number;
+  limit: number;
   page: number;
   isLoading: boolean;
   setLeads: (leads: Lead[]) => void;
@@ -20,14 +20,14 @@ interface LeadStore {
 
 export const useLeadStore = create<LeadStore>((set) => ({
   leads: [],
-  limits: 10,
+  limit: 10,
   page: 1,
   isLoading: false,
   setLeads: (leads) => set({ leads }),
   getAllLeads: async (params?: {
     status?: string;
     page?: number;
-    limit?: number;
+    // limit?: number;
     copilotId?: number;
   }) => {
     set({ isLoading: true });
@@ -35,7 +35,7 @@ export const useLeadStore = create<LeadStore>((set) => ({
       const response = await leadsApi.getAll(params);
       set({
         leads: response.data.data,
-        limits: response.data.meta.limits,
+        // limit: response.data.meta.limit,
         page: response.data.meta.page ?? 1,
         isLoading: false,
       });
