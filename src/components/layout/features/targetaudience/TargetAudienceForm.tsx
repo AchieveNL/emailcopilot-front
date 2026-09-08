@@ -7,11 +7,12 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { Globe, X, Map as MapIcon, Building2 } from "lucide-react";
+import { Globe, X, Map as MapIcon, Building2, CircleAlert } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import { targetAudiencesApi } from "@/lib/api";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
+import Switcher from "@/components/ui/Switcher";
 
 // ── TagInput ─────────────────────────────────────────────────────────────────
 
@@ -259,6 +260,7 @@ export default function TargetAudienceForm({
   const [industries, setIndustries] = useState<string[]>(
     parseArray(initialData?.searchQuery),
   );
+  const [enableCity, setEnableCity] = useState<boolean>(false);
   const [countries, setCountries] = useState<string[]>(
     parseArray(initialData?.country),
   );
@@ -389,28 +391,54 @@ export default function TargetAudienceForm({
         </div>
 
         <div>
-          <label className="text-lg font-bold mb-1">City</label>
-          <p className="text-sm text-gray-500 mb-2">
-            In which cities are you target companies located?
-          </p>
-          <TagInput
-            icon={<MapIcon size={15} />}
-            options={availableCities}
-            selected={cities}
-            onAdd={(v) => setCities([...cities, v])}
-            onRemove={(v) => setCities(cities.filter((c) => c !== v))}
-            onClearAll={() => setCities([])}
-            placeholder={
-              countries.length === 0
-                ? "Select a country first..."
-                : "Search cities..."
-            }
-            emptyMessage={
-              countries.length === 0
-                ? "Please select a country first"
-                : "No cities found"
-            }
-          />
+          <div className="flex items-center justify-between ">
+            <label className="text-lg font-bold mb-1">City</label>
+            <Switcher
+              isOn={enableCity}
+              onClick={() => setEnableCity(!enableCity)}
+            />
+          </div>
+
+          {!enableCity ? (
+            <div className="w-full lg:col-span-2 flex justify-between items-start gap-2">
+              <div className=" relative flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+                <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1">
+                    All cities included
+                  </h3>
+                  <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                    Your Copilot will search all cities within the selected
+                    country.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-gray-500 mb-2">
+                In which cities are you target companies located?
+              </p>
+              <TagInput
+                icon={<MapIcon size={15} />}
+                options={availableCities}
+                selected={cities}
+                onAdd={(v) => setCities([...cities, v])}
+                onRemove={(v) => setCities(cities.filter((c) => c !== v))}
+                onClearAll={() => setCities([])}
+                placeholder={
+                  countries.length === 0
+                    ? "Select a country first..."
+                    : "Search cities..."
+                }
+                emptyMessage={
+                  countries.length === 0
+                    ? "Please select a country first"
+                    : "No cities found"
+                }
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -431,7 +459,7 @@ export default function TargetAudienceForm({
             ? "Saving..."
             : initialData
               ? "Save Changes"
-              : "Create Target Audience"}
+              : "Create New Target Audience"}
         </button>
       </div>
     </div>

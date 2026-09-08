@@ -14,7 +14,7 @@ export default function CopilotsCard() {
         {copilots.length > 0 && (
           <Link
             href="/dashboard/copilots"
-            className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             View all
           </Link>
@@ -31,7 +31,7 @@ export default function CopilotsCard() {
                 <td className="py-3 text-sm font-semibold text-gray-900">
                   {copilot.name}
                 </td>
-                <td className="py-3 text-sm font-semibold text-blue-600 text-right pr-4 w-[1%] whitespace-nowrap">
+                <td className="py-3 text-sm font-semibold text-primary hover:text-primary/80 text-right pr-4 w-[1%] whitespace-nowrap">
                   {copilot.emailsSent}
                 </td>
                 <td className="py-3 text-right w-[1%] whitespace-nowrap">

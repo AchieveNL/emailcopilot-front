@@ -47,6 +47,7 @@ export function buildLeadChartItems(leads: Lead[], daysBack: number = 60) {
   const countsByDate: Record<string, { emailsSent: number; replies: number }> =
     {};
 
+  console.log("Building lead chart items for leads:", leads);
   leads.forEach((lead) => {
     const rawDate = lead.sentAt || lead.createdAt;
 

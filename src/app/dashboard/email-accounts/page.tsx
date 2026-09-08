@@ -46,6 +46,17 @@ export default function EmailProfilesPage() {
   useEffect(() => {
     fetchProfiles();
   }, []);
+  useEffect(() => {
+    const checkNewParam = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isNew = params.get("new") === "true";
+
+      if (isNew) {
+        setShowModal(true);
+      }
+    };
+    checkNewParam();
+  }, []);
 
   async function fetchProfiles() {
     try {

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
+import LeadStatus from "@/components/ui/departure/LeadStatus";
 import { Pagination } from "@/components/ui/Pagination";
 import EmailPreviewCard from "@/components/ui/EmialPreview";
 import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
@@ -22,32 +23,6 @@ import { templatesApi } from "@/lib/api";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
 import DashboardHeader from "@/components/layout/DashboardHeader";
-
-const handleStatusTextColor = (status: string) => {
-  switch (status) {
-    case "sent":
-      return " text-success";
-    case "failed":
-      return "text-error";
-    case "new":
-      return " text-primary";
-    default:
-      return " text-gray-900";
-  }
-};
-
-const handleStatusBgColor = (status: string) => {
-  switch (status) {
-    case "sent":
-      return "bg-success/5 ";
-    case "failed":
-      return "bg-error/5 ";
-    case "new":
-      return "bg-primary/5 ";
-    default:
-      return "bg-gray-100 ";
-  }
-};
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -223,7 +198,6 @@ export default function LeadsPage() {
     try {
       setLoading(true);
       const res = await leadsApi.getAll({
-        status: "sent",
         page,
         limit,
         copilotId,
@@ -489,14 +463,14 @@ export default function LeadsPage() {
                           </div>
                           <Tooltip
                             text={
-                              lead.createdAt
-                                ? formatDateTime(lead.createdAt)
+                              lead.sentAt
+                                ? formatDateTime(lead.sentAt)
                                 : "Unknown"
                             }
                           >
                             <div className="font-semibold line-clamp-1 text-gray-900">
-                              {lead.createdAt
-                                ? formatDateTime(lead.createdAt)
+                              {lead.sentAt
+                                ? formatDateTime(lead.sentAt)
                                 : "Unknown"}
                             </div>
                           </Tooltip>
@@ -520,15 +494,7 @@ export default function LeadsPage() {
                                 lead.status.slice(1) || "Sent"
                             }
                           >
-                            <div
-                              className={`w-fit px-3 py-1 rounded-lg ${handleStatusBgColor(lead.status)} `}
-                            >
-                              <div
-                                className={`font-semibold line-clamp-1 capitalize ${handleStatusTextColor(lead.status)}`}
-                              >
-                                {lead.status || "Sent"}
-                              </div>
-                            </div>
+                            <LeadStatus status={lead.status || "sent"} />
                           </Tooltip>
                         </div>
                       </td>

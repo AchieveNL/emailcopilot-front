@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useLeadStore } from "@/store/leadStore";
 import { formatDateTime } from "@/lib/helpers";
 import NoData from "./NoData";
+import LeadStatus from "../departure/LeadStatus";
 
 export default function DepartureCard() {
   const { leads } = useLeadStore();
@@ -13,7 +14,7 @@ export default function DepartureCard() {
         {leads.length > 0 && (
           <Link
             href="/dashboard/departure"
-            className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             View all
           </Link>
@@ -33,9 +34,7 @@ export default function DepartureCard() {
                   {formatDateTime(item.createdAt)}
                 </td>
                 <td className="py-3 text-right w-[1%] whitespace-nowrap">
-                  <span className="text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-2.5 py-1 inline-block">
-                    {item.status}
-                  </span>
+                  <LeadStatus status={item.status || "sent"} isSmall />
                 </td>
               </tr>
             ))}

@@ -30,7 +30,7 @@ const navItems = [
   },
   { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
   {
-    href: "/dashboard/flight_schedule",
+    href: "/dashboard/flight-schedule",
     label: "Flight Schedule",
     icon: Calendar,
   },

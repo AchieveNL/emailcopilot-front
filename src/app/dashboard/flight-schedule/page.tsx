@@ -44,6 +44,18 @@ export default function FlightSchedulePage() {
     fetchSchedules();
   }, [fetchSchedules]);
 
+  useEffect(() => {
+    const checkNewParam = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isNew = params.get("new") === "true";
+
+      if (isNew) {
+        setIsModalOpen(true);
+      }
+    };
+    checkNewParam();
+  }, []);
+
   // ── Create / Update ────────────────────────────────────────────────────────
 
   const handleSave = async (data: Omit<Schedule, "id">) => {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  Send,
+  Bot,
   Mail,
   Target,
   FileText,
@@ -18,21 +18,25 @@ interface QuickStartItem {
 }
 
 const quickStartItems: QuickStartItem[] = [
-  { label: "Create a copilot", href: "/dashboard/copilots/new", icon: Send },
-  { label: "Add email account", href: "/dashboard/email-accounts", icon: Mail },
+  { label: "Create a copilot", href: "/dashboard/copilots/new", icon: Bot },
+  {
+    label: "Add email account",
+    href: "/dashboard/email-accounts?new=true",
+    icon: Mail,
+  },
   {
     label: "Create a target audience",
-    href: "/dashboard/target-audiences",
+    href: "/dashboard/target-audiences?new=true",
     icon: Target,
   },
   {
     label: "Create an email template",
-    href: "/dashboard/templates",
+    href: "/dashboard/templates?new=true",
     icon: FileText,
   },
   {
     label: "Create a flight schedule",
-    href: "/dashboard/flight-schedule",
+    href: "/dashboard/flight-schedule?new=true",
     icon: CalendarDays,
   },
 ];

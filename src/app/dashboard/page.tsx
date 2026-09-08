@@ -32,6 +32,7 @@ export default function OverviewPage() {
   useEffect(() => {
     getAllLeads();
     getAllCopilots();
+    console.log("Leads fetched from the overview page :", leads);
   }, []);
 
   const leadChartItems = useMemo(() => buildLeadChartItems(leads, 60), [leads]);
@@ -39,7 +40,10 @@ export default function OverviewPage() {
   const sentStats = useMemo(
     () =>
       getPeriodStats(
-        leadChartItems.map((item) => ({ date: item.date, value: item.emailsSent })),
+        leadChartItems.map((item) => ({
+          date: item.date,
+          value: item.emailsSent,
+        })),
         period,
       ),
     [leadChartItems, period],
@@ -48,16 +52,17 @@ export default function OverviewPage() {
   const replyStats = useMemo(
     () =>
       getPeriodStats(
-        leadChartItems.map((item) => ({ date: item.date, value: item.replies })),
+        leadChartItems.map((item) => ({
+          date: item.date,
+          value: item.replies,
+        })),
         period,
       ),
     [leadChartItems, period],
   );
 
   const replyRate =
-    sentStats.total > 0
-      ? (replyStats.total / sentStats.total) * 100
-      : 0;
+    sentStats.total > 0 ? (replyStats.total / sentStats.total) * 100 : 0;
 
   const comparisonLabel = useMemo(
     () => "vs " + getDateRange(periodToDays(period)),

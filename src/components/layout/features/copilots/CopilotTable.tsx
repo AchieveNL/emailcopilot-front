@@ -47,8 +47,6 @@ export interface FlightScheduleRef {
   [key: string]: unknown;
 }
 
-
-
 export interface Copilot {
   id: number;
   name: string;
@@ -138,7 +136,7 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
             return { state: "done" as const, label: "Scheduled" };
           case "running":
             return { state: "done" as const, label: "In Flight" };
-       
+
           case "paused":
             return { state: "blocked" as const, label: "Paused" };
           case "archived":
@@ -242,7 +240,7 @@ function WorkflowStepper({
         <React.Fragment key={step.key}>
           {index > 0 && (
             <div
-              className=" h-px w-4 shrink-0 bg-gray-200 "
+              className=" h-px w-4  shrink-0 bg-gray-200 "
               aria-hidden="true"
             />
           )}
