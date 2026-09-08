@@ -3,9 +3,11 @@ import CopilotStatus from "../CopilotStatus";
 
 import { useCopilotStore } from "@/store/copilotStore";
 import NoData from "./NoData";
+import { useRouter } from "next/navigation";
 
 export default function CopilotsCard() {
   const { copilots } = useCopilotStore();
+  const router = useRouter();
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5  w-full ">
@@ -27,8 +29,16 @@ export default function CopilotsCard() {
         <table className="w-full">
           <tbody>
             {copilots.slice(0, 3).map((copilot) => (
-              <tr key={copilot.id}>
-                <td className="py-3 text-sm font-semibold text-gray-900">
+              <tr
+                key={copilot.id}
+                onClick={() =>
+                  router.push(
+                    `/dashboard/departure?copilotId=${copilot.id}&name=${copilot.name}`,
+                  )
+                }
+                className="cursor-pointer group"
+              >
+                <td className="py-3 text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors">
                   {copilot.name}
                 </td>
                 <td className="py-3 text-sm font-semibold text-primary hover:text-primary/80 text-right pr-4 w-[1%] whitespace-nowrap">
