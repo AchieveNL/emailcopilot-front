@@ -81,15 +81,15 @@ function TargetAudienceTable({
 
   return (
     <div className="w-full   rounded-lg overflow-hidden flex flex-col gap-4">
-      <div className="overflow-x-auto h-fit pb-4 border border-gray-100 bg-white rounded-lg">
+      <div className="overflow-x-auto  pb-4 border border-gray-100 bg-white rounded-lg flex flex-col">
         <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between px-6 py-4 border-b border-gray-100">
           <h1 className="text-gray-900 font-bold">
             Your Target Audiences ({targetAudiences.length})
           </h1>
           <TargetAudienceSearchBar onSearch={setQuery} />
         </div>
-        <div className="overflow-auto">
-          <table className="w-full border-collapse min-h-150  ">
+        <div className="overflow-auto flex-1 max-h-150">
+          <table className="w-full border-collapse   ">
             <thead>
               <tr className="border-b border-gray-100 sticky top-0 z-60 bg-white">
                 {COLUMNS.map((col) => (

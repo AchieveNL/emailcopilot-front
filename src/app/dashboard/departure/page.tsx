@@ -245,7 +245,7 @@ export default function LeadsPage() {
   };
 
   return (
-    <div className="py-8 px-4 mx-auto w-full">
+    <div className="p-5 w-full max-w-6xl mx-auto">
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div className="">

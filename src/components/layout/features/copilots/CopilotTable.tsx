@@ -119,11 +119,7 @@ export function defaultComputeSteps(copilot: Copilot): WorkflowStep[] {
       key: "flight-schedule",
       title: "Flight Schedule",
       state: copilot.flightScheduleId ? "done" : "blocked",
-      label: copilot.flightScheduleId
-        ? copilot.lastRunAt
-          ? "Selected"
-          : "Scheduled"
-        : "Not selected",
+      label: copilot.flightScheduleId ? "Selected" : "Not selected",
     },
     {
       key: "take-off",
@@ -289,7 +285,7 @@ function CopilotTable({
 
   return (
     <div className={`w-full overflow-hidden rounded-lg bg-white ${className}`}>
-      <div className="overflow-x-auto min-h-105">
+      <div className="overflow-x-auto flex-1 max-h-150">
         <table className="w-full min-w-225 border-collapse ">
           <thead>
             <tr className="border-b border-gray-100">

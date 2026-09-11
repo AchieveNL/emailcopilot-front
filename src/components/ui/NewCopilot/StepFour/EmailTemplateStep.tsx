@@ -618,7 +618,7 @@ export default function EmailTemplateStep() {
       </div>
       {/* Templates Popup */}
 
-      <div className="bg-white rounded-2xl  w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh] ">
+      <div className="bg-white rounded-2xl  w-full  overflow-hidden flex flex-col max-h-[85vh] ">
         {/* Body */}
         <div className="p-6 overflow-y-auto flex-1 ">
           {/* Loading */}

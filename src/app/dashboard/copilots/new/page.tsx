@@ -158,6 +158,7 @@ export default function NewCopilotPage() {
   useEffect(() => {
     const editId = searchParams.get("edit");
     const duplicateId = searchParams.get("duplicate");
+    const EmailAccountId = searchParams.get("accountId");
 
     if (editId) {
       const id = parseInt(editId, 10);
@@ -168,10 +169,13 @@ export default function NewCopilotPage() {
           const copilot = res.data;
           loadCopilot(
             {
+              id: copilot.id,
               name: copilot.name,
               description: copilot.description,
               goal: copilot.goal,
-              emailAccountId: copilot.emailAccountId,
+              emailAccountId: EmailAccountId
+                ? parseInt(EmailAccountId, 10)
+                : copilot.emailAccountId,
               targetAudienceId: copilot.targetAudienceId,
               templateId: copilot.templateId,
 
@@ -340,7 +344,7 @@ export default function NewCopilotPage() {
   }
 
   return (
-    <div className="p-5 w-full mx-auto">
+    <div className="p-5 w-full max-w-6xl mx-auto">
       {/* Header */}
       <header className="flex items-start justify-between mb-4">
         <div>
@@ -401,7 +405,7 @@ export default function NewCopilotPage() {
       <Stepper />
 
       {/* Content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-4  gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-4 relative   gap-6 mt-6">
         {/* Main form */}
         <div className="col-span-1 lg:col-span-4 xl:col-span-3 ">
           <div className="bg-white border border-gray-200 rounded-xl p-6 ">
@@ -412,7 +416,7 @@ export default function NewCopilotPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="hidden lg:flex lg:col-span-2 xl:col-span-1 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
+        <div className="hidden lg:flex lg:col-span-2 xl:col-span-1 sticky top-8 space-y-5 h-fit bg-white border border-gray-200 rounded-xl p-4 ">
           {STEPS[currentStep - 1].sideBar()}
         </div>
       </div>

@@ -90,7 +90,7 @@ interface StatusDropdownProps {
   options?: StatusOption[];
 }
 
-function StatusDropdown({
+export function StatusDropdown({
   value,
   onChange,
   options = DEFAULT_STATUS_OPTIONS,

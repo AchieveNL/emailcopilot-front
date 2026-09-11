@@ -39,6 +39,10 @@ export const emailAccountsApi = {
     api.put(`/email-accounts/${id}`, data),
   delete: (id: number) => api.delete(`/email-accounts/${id}`),
   verify: (id: number) => api.post(`/email-accounts/${id}/verify`),
+  oauthConnect: (provider: string, returnTo?: string) =>
+    api.get(`/email-accounts/oauth/${provider}/start`, {
+      params: { returnTo },
+    }),
 };
 
 //email sents

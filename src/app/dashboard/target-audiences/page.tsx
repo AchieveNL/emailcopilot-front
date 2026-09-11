@@ -111,7 +111,7 @@ export default function ScrapeProfilesPage() {
   }, [profiles]);
 
   return (
-    <div className="p-5 w-full mx-auto">
+    <div className="p-5 w-full max-w-6xl mx-auto">
       <DashboardHeader
         title="Target Audience"
         description="Configure web scraping sources for your leads."
