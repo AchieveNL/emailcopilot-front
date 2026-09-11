@@ -125,7 +125,7 @@ export default function FlightSchedulePage() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-5 w-full mx-auto">
+    <div className="p-5 w-full max-w-6xl mx-auto">
       {/* Header */}
       <DashboardHeader
         title="Flight Schedule"

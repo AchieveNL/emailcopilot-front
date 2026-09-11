@@ -1,359 +1,115 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Plus,
-  Mail,
-  Trash2,
-  CheckCircle2,
-  XCircle,
-  RefreshCw,
-  AlertCircle,
-} from "lucide-react";
-import { emailAccountsApi } from "@/lib/api";
-import { useUser } from "@clerk/nextjs";
-import { toast } from "sonner";
+import { Plus, Mail, ChevronLeft } from "lucide-react";
 
-type EmailProfile = {
-  id: number;
-  profileName: string;
-  email: string;
-  provider: string;
-  status: "active" | "inactive" | "error";
-  sentToday: number;
-  createdAt: string;
-};
+import { useUser } from "@clerk/nextjs";
+
+import DashboardHeader from "@/components/layout/DashboardHeader";
+import EmailAccountsTable from "@/components/layout/features/emailAccount/EmailAccountTable";
+
+import ProvidersOption from "@/components/layout/features/emailAccount/ProvidersOption";
+import { useEmailAccountStore } from "@/store/emailAccountStore";
+import OtherProviderPopUp from "@/components/ui/NewCopilot/StepTwo/OtherProviderPopUp";
 
 export default function EmailProfilesPage() {
-  const [profiles, setProfiles] = useState<EmailProfile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({
-    profileName: "",
-    email: "",
-    sendName: "",
-    provider: "smtp",
-    smtpHost: "",
-    smtpPort: 587,
-    smtpPass: "",
-    dailyLimit: 100,
-  });
-  const [saving, setSaving] = useState(false);
-  const [verifyingId, setVerifyingId] = useState<number | null>(null);
+  const {
+    fetchAccounts,
+    isLoading,
+    accounts,
+    showModal,
+    setShowModal,
+    currentAccount,
+    setEditingAccount,
+  } = useEmailAccountStore();
+  const [showProvders, setShowProviders] = useState(false);
 
   const { user } = useUser();
 
   useEffect(() => {
-    fetchProfiles();
-  }, []);
+    fetchAccounts();
+  }, [fetchAccounts]);
+
   useEffect(() => {
     const checkNewParam = () => {
       const params = new URLSearchParams(window.location.search);
       const isNew = params.get("new") === "true";
 
       if (isNew) {
-        setShowModal(true);
+        setEditingAccount(null);
+        setShowProviders(true);
       }
     };
     checkNewParam();
-  }, []);
-
-  async function fetchProfiles() {
-    try {
-      setLoading(true);
-      const res = await emailAccountsApi.getAll();
-      console.log("Fetched profiles:", res.data);
-      setProfiles(res.data);
-    } catch {
-      setProfiles([]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleCreate() {
-    try {
-      setSaving(true);
-      await emailAccountsApi.create({ ...form, userId: user?.id });
-      setShowModal(false);
-      setForm({
-        profileName: "",
-        email: "",
-        sendName: "",
-        provider: "smtp",
-        smtpHost: "",
-        smtpPort: 587,
-        smtpPass: "",
-        dailyLimit: 100,
-      });
-      fetchProfiles();
-    } catch {
-      toast.error("Failed to create profile.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(id: number) {
-    if (!confirm("Delete this email profile?")) return;
-    try {
-      await emailAccountsApi.delete(id);
-      fetchProfiles();
-    } catch {
-      toast.error("Failed to delete profile.");
-    }
-  }
-
-  async function handleVerify(id: number) {
-    try {
-      setVerifyingId(id);
-      await emailAccountsApi.verify(id);
-      fetchProfiles();
-    } catch {
-      toast.error("Verification failed.");
-    } finally {
-      setVerifyingId(null);
-    }
-  }
-
-  const statusConfig = {
-    active: {
-      icon: CheckCircle2,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-      label: "Active",
-    },
-    inactive: {
-      icon: AlertCircle,
-      color: "text-gray-400",
-      bg: "bg-gray-50",
-      label: "Inactive",
-    },
-    error: {
-      icon: XCircle,
-      color: "text-red-500",
-      bg: "bg-red-50",
-      label: "Error",
-    },
-  };
+  }, [setEditingAccount, setShowModal]);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Email Profiles</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Manage the email accounts used for outreach.
-          </p>
-        </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-        >
-          <Plus size={15} /> Add Email Profile
-        </button>
-      </div>
+    <div className="p-5 w-full max-w-6xl mx-auto">
+      <DashboardHeader
+        title={`Email Accounts `}
+        description={`   Manage the email accounts used for outreach.`}
+        actionLabel="Add Email Account"
+        onAction={() => setShowProviders(true)}
+        showAction={!showProvders}
+      />
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex items-center justify-center h-48 text-gray-400">
           Loading...
         </div>
-      ) : profiles.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+      ) : showProvders ? (
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <ProvidersOption
+            setShowOtherProviderPopUp={() => {
+              setEditingAccount(null);
+              setShowModal(true);
+            }}
+            setSelectedProfileName={() => {}}
+            selectedProfileName=""
+          />
+          <button
+            onClick={() => setShowProviders(false)}
+            className="inline-flex items-center gap-2 mt-4 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-primary hover:text-white transition-colors"
+          >
+            <ChevronLeft size={15} />
+            Go Back
+          </button>
+        </div>
+      ) : accounts.length === 0 ? (
+        <div className="bg-white border border-gray-200 rounded-lg flex flex-col h-100 items-center justify-center p-12 text-center ">
           <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
             <Mail size={20} className="text-gray-500" />
           </div>
           <h2 className="font-bold text-gray-900 mb-2">
-            No email profiles yet
+            No email Accounts yet
           </h2>
           <p className="text-sm text-gray-500 mb-5">
             Add an email account to start sending outreach.
           </p>
           <button
-            onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+            onClick={() => setShowProviders(true)}
+            className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            <Plus size={15} /> Add Email Profile
+            <Plus size={15} /> Add Email Account
           </button>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {profiles.map((profile) => {
-            const cfg = statusConfig[profile.status];
-            const StatusIcon = cfg.icon;
-            return (
-              <div
-                key={profile.id}
-                className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-5"
-              >
-                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                  <Mail size={18} className="text-gray-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-semibold text-gray-900 text-sm">
-                      {profile.profileName}
-                    </span>
-                    <span
-                      className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.color} font-medium`}
-                    >
-                      <StatusIcon size={11} /> {cfg.label}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    {profile.email} · {profile.provider}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => handleVerify(profile.id)}
-                    disabled={verifyingId === profile.id}
-                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-600 disabled:opacity-50"
-                  >
-                    <RefreshCw
-                      size={12}
-                      className={
-                        verifyingId === profile.id ? "animate-spin" : ""
-                      }
-                    />
-                    Verify
-                  </button>
-                  <button
-                    onClick={() => handleDelete(profile.id)}
-                    className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors text-gray-400"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <EmailAccountsTable accounts={accounts} />
       )}
 
       {/* Modal */}
+
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-5">
-              Add Email Profile
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Profile Name
-                </label>
-                <input
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                  placeholder="e.g. Outreach Account"
-                  value={form.profileName}
-                  onChange={(e) =>
-                    setForm({ ...form, profileName: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                  placeholder="you@company.com"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Provider
-                </label>
-                <select
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-                  value={form.provider}
-                  onChange={(e) =>
-                    setForm({ ...form, provider: e.target.value })
-                  }
-                >
-                  <option value="smtp">Custom SMTP</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    SMTP Host
-                  </label>
-                  <input
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                    placeholder="smtp.example.com"
-                    value={form.smtpHost}
-                    onChange={(e) =>
-                      setForm({ ...form, smtpHost: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Port
-                  </label>
-                  <input
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                    placeholder="587"
-                    value={form.smtpPort}
-                    onChange={(e) =>
-                      setForm({ ...form, smtpPort: parseInt(e.target.value) })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  App Password / Token
-                </label>
-                <input
-                  type="password"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                  placeholder="••••••••"
-                  value={form.smtpPass}
-                  onChange={(e) =>
-                    setForm({ ...form, smtpPass: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Your name / Sender Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                  placeholder="John Doe"
-                  value={form.sendName}
-                  onChange={(e) =>
-                    setForm({ ...form, sendName: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex-1 border border-gray-200 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreate}
-                disabled={saving}
-                className="flex-1 bg-gray-900 text-white rounded-lg py-2.5 text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50"
-              >
-                {saving ? "Adding..." : "Add Profile"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <OtherProviderPopUp
+          onClose={(saved) => {
+            setShowModal(false);
+            setEditingAccount(null);
+            if (saved) {
+              fetchAccounts();
+            }
+          }}
+          editProfile={currentAccount || undefined}
+        />
       )}
     </div>
   );

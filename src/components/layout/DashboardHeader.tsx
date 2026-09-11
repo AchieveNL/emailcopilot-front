@@ -10,6 +10,7 @@ interface DashboardHeaderProps {
   mobileActionLabel?: string;
   actionHref?: string;
   onAction?: () => void;
+  showAction?: boolean;
 }
 
 export default function DashboardHeader({
@@ -17,6 +18,7 @@ export default function DashboardHeader({
   description,
   actionLabel,
   mobileActionLabel = "Add",
+  showAction = true,
 
   onAction,
 }: DashboardHeaderProps) {
@@ -35,15 +37,17 @@ export default function DashboardHeader({
         )}
       </div>
 
-      <button
-        onClick={onAction}
-        className="flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta z-41 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
-      >
-        <Plus size={18} />
+      {showAction && (
+        <button
+          onClick={onAction}
+          className="flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta z-41 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
+        >
+          <Plus size={18} />
 
-        {/* Large */}
-        <span className="text-[10px] lg:text-sm">{actionLabel}</span>
-      </button>
+          {/* Large */}
+          <span className="text-[10px] lg:text-sm">{actionLabel}</span>
+        </button>
+      )}
     </div>
   );
 }

@@ -67,3 +67,27 @@ export type PaginatedResponse<T> = {
   data: T[];
   meta: PaginatedMeta;
 };
+
+// Email Account Types
+export type EmailProvider = "gmail" | "outlook" | "smtp" | string;
+export type AccountStatus = "active" | "inactive" | "error" | string;
+
+export type EmailAccount = {
+  id: number;
+  email: string;
+  profileName: string;
+  sendName: string;
+  provider: EmailProvider;
+  status: string;
+  smtpStatus: string;
+  imapStatus: string;
+  smtpHost: string;
+  smtpPort: number;
+  sentToday: number;
+  hasSmtpPass: boolean;
+  hasImapPass: boolean;
+  hasOauth: boolean;
+  
+  createdAt: string;
+  updatedAt: string;
+};

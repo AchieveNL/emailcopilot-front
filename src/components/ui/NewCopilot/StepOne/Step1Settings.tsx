@@ -31,6 +31,7 @@ export default function Step1Settings() {
         goal: copilotData.goal,
       });
       setStep(2);
+      
       router.push(`/dashboard/copilots/new?edit=${response.data.id}`);
     } finally {
       setIsLoading(false);

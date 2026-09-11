@@ -90,7 +90,7 @@ export default function CopilotsPage() {
   }, [status, search]);
 
   return (
-    <div className="p-5 w-full mx-auto">
+    <div className="p-5 w-full max-w-6xl mx-auto">
       {/* Header */}
       <DashboardHeader
         title="Copilots"
@@ -98,20 +98,7 @@ export default function CopilotsPage() {
         actionLabel="Create New Copilot"
         onAction={() => router.push("/dashboard/copilots/new")}
       />
-      {/* <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Copilots</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Manage your automated outreach campaigns.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/copilots/new"
-          className="flex items-center gap-2 btn-cta text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-        >
-          <Plus size={15} /> Create New Copilot
-        </Link>
-      </div> */}
+
 
       {/* Toolbar */}
       <div className="w-full p-2 border border-gray-200 mb-3 bg-white rounded-lg">
