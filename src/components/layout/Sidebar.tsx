@@ -9,13 +9,13 @@ import {
   FileText,
   CreditCard,
   Target,
-  AlertTriangle,
+  // AlertTriangle, // TODO: uncomment when backend is ready
   Users,
   Calendar,
 } from "lucide-react";
 import clsx from "clsx";
 import { useUser } from "@clerk/nextjs";
-import { useBilling } from "@/lib/useBilling";
+// import { useBilling } from "@/lib/useBilling"; // TODO: uncomment when backend is ready
 import UserCard from "../ui/UserCard";
 import Logo from "../homepage/Logo";
 
@@ -46,16 +46,17 @@ export default function Sidebar() {
   const { user } = useUser();
   console.log("User in Sidebar:", user); // Debugging line to check user object
   console.log("pathname in Sidebar:", pathname); // Debugging line to check pathname value
-  const { limits } = useBilling();
-  console.log("Limits in Sidebar:", limits); // Debugging line to check limits value
+  // const { limits } = useBilling(); // TODO: uncomment when backend is ready
+  // console.log("Limits in Sidebar:", limits); // TODO: uncomment when backend is ready
+
+  // TODO: uncomment the full block below when backend is ready, and remove the simplified sidebar
+  /*
   return (
     <>
       {!limits ? (
         <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
           <div>
-            {/* Logo */}
             <Logo />
-
             <div className="flex flex-col items-center justify-center h-48 text-gray-400">
               <AlertTriangle size={48} className="mb-4" />
               <p className="text-center">
@@ -73,46 +74,50 @@ export default function Sidebar() {
           <UserCard user={user} isActive={false} />
         </aside>
       ) : (
-        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
-          <div>
-            {/* Logo */}
+  */
 
-            <Logo />
-            <hr className="w-full border-gray-200 mb-6" />
+  return (
+    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between h-full flex-shrink-0">
+      <div>
+        {/* Logo */}
+        <Logo />
+        <hr className="w-full border-gray-200 mb-6" />
 
-            {/* Nav */}
-            <nav className="px-3 space-y-0.5">
-              {navItems.map(({ href, label, icon: Icon }) => {
-                const isActive =
-                  pathname === href ||
-                  (href !== "/dashboard" && pathname.startsWith(`${href}/`));
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={clsx(
-                      "flex items-baseline justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
-                      isActive
-                        ? "bg-primary/5 text-primary font-semibold"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon
-                        size={16}
-                        className={isActive ? "text-primary" : "text-gray-400"}
-                      />
-                      <span className="font-medium">{label}</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+        {/* Nav */}
+        <nav className="px-3 space-y-0.5">
+          {navItems.map(({ href, label, icon: Icon }) => {
+            const isActive =
+              pathname === href ||
+              (href !== "/dashboard" && pathname.startsWith(`${href}/`));
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={clsx(
+                  "flex items-baseline justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
+                  isActive
+                    ? "bg-primary/5 text-primary font-semibold"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon
+                    size={16}
+                    className={isActive ? "text-primary" : "text-gray-400"}
+                  />
+                  <span className="font-medium">{label}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
-          <UserCard user={user} isActive={true} />
-        </aside>
-      )}
-    </>
+      <UserCard user={user} isActive={true} />
+    </aside>
   );
+
+  // TODO: uncomment closing tags below when backend is ready
+  // </>
+  // );
 }
