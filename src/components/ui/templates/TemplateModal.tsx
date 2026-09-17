@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Mail, X } from "lucide-react";
+import { Plus, Mail, X, Trash2 } from "lucide-react";
 
 type Template = {
   id: number;
@@ -62,6 +62,17 @@ export default function TemplateModal({
     setSteps([...steps, newStep]);
   }
 
+  function deleteStep(id: number) {
+    setSteps((prev) => prev.filter((s) => s.id !== id));
+    setSelectedStep((prev) => {
+      if (prev === id) {
+        const remaining = steps.filter((s) => s.id !== id);
+        return remaining.length > 0 ? remaining[0].id : -1;
+      }
+      return prev;
+    });
+  }
+
   function appendVariable(name: string) {
     const tag = `{{${name}}}`;
     onFormChange({ ...form, body: form.body + tag });
@@ -112,6 +123,19 @@ export default function TemplateModal({
             />
           </div>
 
+          {/* Email body */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Email body
+            </label>
+            <textarea
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm resize-none min-h-[12rem] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder={"Hi {{first_name}},\n\nI noticed that {{company}} ...\n\nBest regards,\n{{sender_name}}"}
+              value={form.body}
+              onChange={(e) => onFormChange({ ...form, body: e.target.value })}
+            />
+          </div>
+
           {/* Steps / Variables Tabs - segmented control */}
           <div className="mb-5">
             <div className="inline-flex items-center gap-1 p-1 bg-slate-50/80 border border-slate-200 rounded-xl">
@@ -143,10 +167,10 @@ export default function TemplateModal({
             <div className="mb-5">
               <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
                 {steps.map((step) => (
-                  <button
+                  <div
                     key={step.id}
                     onClick={() => setSelectedStep(step.id)}
-                    className={`w-full flex items-center gap-4 px-4 py-3.5 text-left transition-colors ${
+                    className={`group w-full flex items-center gap-4 px-4 py-3.5 text-left transition-colors cursor-pointer ${
                       selectedStep === step.id
                         ? "bg-blue-50 border-l-4 border-l-blue-600"
                         : "hover:bg-gray-50"
@@ -160,11 +184,18 @@ export default function TemplateModal({
                         className={selectedStep === step.id ? "text-blue-600" : "text-gray-400"}
                       />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-gray-900">{step.title}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{step.description}</p>
                     </div>
-                  </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); deleteStep(step.id); }}
+                      className="ml-auto transition-colors w-7 h-7 flex items-center justify-center rounded-md text-gray-300 hover:bg-red-100 hover:text-red-600"
+                      title="Delete step"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 ))}
               </div>
 
@@ -273,18 +304,7 @@ export default function TemplateModal({
             </div>
           )}
 
-          {/* Subject line (Body) */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Subject line
-            </label>
-            <textarea
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm resize-none min-h-[12rem] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              placeholder={"Hi {{first_name}},\n\nI noticed that {{company}} ...\n\nBest regards,\n{{sender_name}}"}
-              value={form.body}
-              onChange={(e) => onFormChange({ ...form, body: e.target.value })}
-            />
-          </div>
+
 
           {/* Divider */}
           <div className="flex items-center gap-4 py-5 mb-1">

@@ -40,9 +40,11 @@ export default function DashboardHeader({
       {showAction && (
         <button
           onClick={onAction}
-          className="flex shrink-0 items-center gap-2 bg-gradient-to-r from-[#4338CA] to-[#0284C7] text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity"
+          className="flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta z-41 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
         >
           <Plus size={18} />
+
+          {/* Large */}
           <span className="text-[10px] lg:text-sm">{actionLabel}</span>
         </button>
       )}
