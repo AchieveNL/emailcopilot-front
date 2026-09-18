@@ -1,17 +1,5 @@
 import TemplateActions from "./TemplateActions";
-
-type Template = {
-  id: number;
-  name: string;
-  subject: string;
-  body: string;
-  steps: number;
-  lastUpdated: string;
-  usedIn: number;
-  replyRate: number;
-  trend: "up" | "down";
-  status: "in_flight" | "draft";
-};
+import type { Template } from "@/lib/types/templates";
 
 interface TemplateRowProps {
   template: Template;
@@ -26,7 +14,12 @@ export default function TemplateRow({
   onDelete,
   onDuplicate,
 }: TemplateRowProps) {
-  const isUp = template.trend === "up";
+  const isUp = (template.trend ?? "up") === "up";
+  const replyRate = template.replyRate ?? 0;
+  const usedIn = template.usedIn ?? 0;
+  const steps = Array.isArray(template.steps) ? template.steps.length : (typeof template.steps === "number" ? template.steps : 0);
+  const lastUpdated = template.lastUpdated ?? (template.createdAt ? new Date(template.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—");
+  const status = template.status ?? "draft";
 
   return (
     <>
@@ -44,30 +37,30 @@ export default function TemplateRow({
         </span>
 
         <span className="text-sm text-[#0F172A]">
-          {template.steps}
+          {steps}
         </span>
 
         <span className="text-sm text-[#59637C]">
-          {template.lastUpdated}
+          {lastUpdated}
         </span>
 
         <span className="text-sm text-[#59637C]">
-          {template.usedIn} {template.usedIn <= 1 ? "copilot" : "copilots"}
+          {usedIn} {usedIn <= 1 ? "copilot" : "copilots"}
         </span>
 
         <span
           className="inline-flex items-center gap-1 text-sm"
           style={{
             color:
-              template.replyRate === 0
+              replyRate === 0
                 ? "#59637C"
                 : isUp
                   ? "#1d8a68"
                   : "#d9485f",
           }}
         >
-          {template.replyRate}%
-          {template.replyRate > 0 && (
+          {replyRate}%
+          {replyRate > 0 && (
             <span className="text-xs">{isUp ? "↑" : "↓"}</span>
           )}
         </span>
@@ -76,7 +69,7 @@ export default function TemplateRow({
           <span
             className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
             style={
-              template.status === "in_flight"
+              status === "in_flight"
                 ? {
                     backgroundColor: "#F0F9FF",
                     color: "#0284C7",
@@ -89,7 +82,7 @@ export default function TemplateRow({
                   }
             }
           >
-            {template.status === "in_flight" ? "In flight" : "Draft"}
+            {status === "in_flight" ? "In flight" : "Draft"}
           </span>
         </span>
 
@@ -115,7 +108,7 @@ export default function TemplateRow({
               <span
                 className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0"
                 style={
-                  template.status === "in_flight"
+                  status === "in_flight"
                     ? {
                         backgroundColor: "#F0F9FF",
                         color: "#0284C7",
@@ -128,12 +121,12 @@ export default function TemplateRow({
                       }
                 }
               >
-                {template.status === "in_flight" ? "In flight" : "Draft"}
+                {status === "in_flight" ? "In flight" : "Draft"}
               </span>
             </div>
             <div className="flex items-center gap-3 text-xs text-[#59637C]">
-              <span>{template.steps} steps</span>
-              <span>{template.lastUpdated}</span>
+              <span>{steps} steps</span>
+              <span>{lastUpdated}</span>
             </div>
           </div>
           <TemplateActions

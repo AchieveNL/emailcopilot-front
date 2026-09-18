@@ -1,5 +1,6 @@
 import { FileText, Plus, Search } from "lucide-react";
 import TemplateRow from "./TemplateRow";
+import type { Template } from "@/lib/types/templates";
 
 export const CATEGORIES = [
   "All",
@@ -22,19 +23,6 @@ const TABLE_HEADERS = [
 
 const COLUMNS = "1.5fr 0.5fr 1fr 1fr 0.8fr 0.7fr 0.5fr";
 
-type Template = {
-  id: number;
-  name: string;
-  subject: string;
-  body: string;
-  steps: number;
-  lastUpdated: string;
-  usedIn: number;
-  replyRate: number;
-  trend: "up" | "down";
-  status: "in_flight" | "draft";
-};
-
 interface TemplateTableProps {
   templates: Template[];
   filteredCount: number;
@@ -44,6 +32,7 @@ interface TemplateTableProps {
   onDelete: (id: number) => void;
   onDuplicate: (id: number) => void;
   onCreateNew: () => void;
+  loading?: boolean;
 }
 
 export default function TemplateTable({
@@ -55,6 +44,7 @@ export default function TemplateTable({
   onDelete,
   onDuplicate,
   onCreateNew,
+  loading = false,
 }: TemplateTableProps) {
   return (
     <div className="bg-white border border-[#E2E8F0] rounded-lg">
@@ -93,8 +83,12 @@ export default function TemplateTable({
         ))}
       </div>
 
-      {/* Rows / Empty */}
-      {filteredCount === 0 ? (
+      {/* Rows / Empty / Loading */}
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-sm text-[#59637C]">
+          Loading templates…
+        </div>
+      ) : filteredCount === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 sm:py-20 px-4">
           <div
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg flex items-center justify-center mb-4"

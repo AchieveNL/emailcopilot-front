@@ -1,35 +1,18 @@
 import { useState } from "react";
 import { Plus, Mail, X, Trash2 } from "lucide-react";
-
-type Template = {
-  id: number;
-  name: string;
-  steps: number;
-  lastUpdated: string;
-  usedIn: number;
-  replyRate: number;
-  trend: "up" | "down";
-  status: "in_flight" | "draft";
-};
-
-type Step = {
-  id: number;
-  type: "initial" | "followup";
-  title: string;
-  description: string;
-  delayDays: number;
-};
+import type { Template, TemplateStep, TemplateForm } from "@/lib/types/templates";
 
 interface TemplateModalProps {
   editingTemplate: Template | null;
-  form: { name: string; subject: string; body: string; category: string };
+  initialSteps?: TemplateStep[];
+  form: TemplateForm;
   saving: boolean;
-  onFormChange: (form: { name: string; subject: string; body: string; category: string }) => void;
-  onSave: () => void;
+  onFormChange: (form: TemplateForm) => void;
+  onSave: (steps: TemplateStep[]) => void;
   onClose: () => void;
 }
 
-const INITIAL_STEPS: Step[] = [
+const INITIAL_STEPS: TemplateStep[] = [
   { id: 1, type: "initial", title: "Step 1 - Initial Email", description: "A personalized cold email", delayDays: 0 },
   { id: 2, type: "followup", title: "Step 2 - Follow-up 1", description: "Send 2 days after no reply", delayDays: 2 },
   { id: 3, type: "followup", title: "Step 3 - Follow-up 2", description: "Send 4 days after no reply", delayDays: 4 },
@@ -38,6 +21,7 @@ const INITIAL_STEPS: Step[] = [
 
 export default function TemplateModal({
   editingTemplate,
+  initialSteps,
   form,
   saving,
   onFormChange,
@@ -47,12 +31,14 @@ export default function TemplateModal({
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");
   const [selectedStep, setSelectedStep] = useState(1);
   const [selectedVariable, setSelectedVariable] = useState("CompanyName");
-  const [steps, setSteps] = useState<Step[]>(INITIAL_STEPS);
+  const [steps, setSteps] = useState<TemplateStep[]>(initialSteps ?? INITIAL_STEPS);
+  // Tracks which input was last focused so variable insertion goes to the right field
+  const [lastFocusedField, setLastFocusedField] = useState<"name" | "subject" | "body">("body");
 
   function addFollowupStep() {
     const lastStep = steps[steps.length - 1];
     const newDelay = lastStep.delayDays + 2;
-    const newStep: Step = {
+    const newStep: TemplateStep = {
       id: Date.now(),
       type: "followup",
       title: `Step ${steps.length + 1} - Follow-up ${steps.length - 1}`,
@@ -73,10 +59,10 @@ export default function TemplateModal({
     });
   }
 
-  function appendVariable(name: string) {
-    const tag = `{{${name}}}`;
-    onFormChange({ ...form, body: form.body + tag });
-    setSelectedVariable(name);
+  function appendVariable(varName: string) {
+    const tag = `{{${varName}}}`;
+    onFormChange({ ...form, [lastFocusedField]: form[lastFocusedField] + tag });
+    setSelectedVariable(varName);
   }
 
   return (
@@ -103,9 +89,11 @@ export default function TemplateModal({
               Email template name
             </label>
             <input
+              id="template-field-name"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               placeholder="Name your template"
               value={form.name}
+              onFocus={() => setLastFocusedField("name")}
               onChange={(e) => onFormChange({ ...form, name: e.target.value })}
             />
           </div>
@@ -116,9 +104,11 @@ export default function TemplateModal({
               Subject line
             </label>
             <input
+              id="template-field-subject"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               placeholder="Type your subject line"
               value={form.subject}
+              onFocus={() => setLastFocusedField("subject")}
               onChange={(e) => onFormChange({ ...form, subject: e.target.value })}
             />
           </div>
@@ -129,9 +119,11 @@ export default function TemplateModal({
               Email body
             </label>
             <textarea
+              id="template-field-body"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm resize-none min-h-[12rem] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               placeholder={"Hi {{first_name}},\n\nI noticed that {{company}} ...\n\nBest regards,\n{{sender_name}}"}
               value={form.body}
+              onFocus={() => setLastFocusedField("body")}
               onChange={(e) => onFormChange({ ...form, body: e.target.value })}
             />
           </div>
@@ -368,7 +360,7 @@ export default function TemplateModal({
               Cancel
             </button>
             <button
-              onClick={onSave}
+              onClick={() => onSave(steps)}
               disabled={saving}
               className="flex-1 bg-blue-600 text-white rounded-lg py-3 text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
