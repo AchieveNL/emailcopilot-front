@@ -24,7 +24,7 @@ export type Template = {
   usageCount?: number;
   createdAt?: string;
   steps?: TemplateStep[];
-  lastUpdated?: string;
+  updatedAt?: string;
   usedIn?: number;
   replyRate?: number;
   trend?: "up" | "down";

@@ -11,12 +11,18 @@ export const handlePlanNameChange = (planName: string): string => {
   }
 };
 
-export function formatDateTime(apiDateString: string) {
+export function formatDateTime(apiDateString: string, includeTime = true) {
+  if (!apiDateString) return "";
   const date = new Date(apiDateString);
+  if (isNaN(date.getTime())) return "";
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
+
+  if (!includeTime) {
+    return `${day}/${month}/${year}`;
+  }
 
   let hours = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, "0");

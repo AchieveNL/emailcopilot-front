@@ -1,3 +1,4 @@
+import { formatDateTime } from "@/lib/helpers";
 import TemplateActions from "./TemplateActions";
 import type { Template } from "@/lib/types/templates";
 
@@ -17,8 +18,15 @@ export default function TemplateRow({
   const isUp = (template.trend ?? "up") === "up";
   const replyRate = template.replyRate ?? 0;
   const usedIn = template.usedIn ?? 0;
-  const steps = Array.isArray(template.steps) ? template.steps.length : (typeof template.steps === "number" ? template.steps : 0);
-  const lastUpdated = template.lastUpdated ?? (template.createdAt ? new Date(template.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—");
+  const steps = Array.isArray(template.steps)
+    ? template.steps.length
+    : typeof template.steps === "number"
+      ? template.steps
+      : 0;
+  const lastUpdated =
+    formatDateTime(template.updatedAt || "", false) ||
+    formatDateTime(template.createdAt || "", false) ||
+    "—";
   const status = template.status ?? "draft";
 
   return (
@@ -30,19 +38,13 @@ export default function TemplateRow({
           gridTemplateColumns: "1.5fr 0.5fr 1fr 1fr 0.8fr 0.7fr 0.5fr",
         }}
       >
-        <span
-          className="font-semibold truncate pr-4 text-sm text-[#0F172A]"
-        >
+        <span className="font-semibold truncate pr-4 text-sm text-[#0F172A]">
           {template.name}
         </span>
 
-        <span className="text-sm text-[#0F172A]">
-          {steps}
-        </span>
+        <span className="text-sm text-[#0F172A]">{steps}</span>
 
-        <span className="text-sm text-[#59637C]">
-          {lastUpdated}
-        </span>
+        <span className="text-sm text-[#59637C]">{lastUpdated}</span>
 
         <span className="text-sm text-[#59637C]">
           {usedIn} {usedIn <= 1 ? "copilot" : "copilots"}
@@ -51,18 +53,11 @@ export default function TemplateRow({
         <span
           className="inline-flex items-center gap-1 text-sm"
           style={{
-            color:
-              replyRate === 0
-                ? "#59637C"
-                : isUp
-                  ? "#1d8a68"
-                  : "#d9485f",
+            color: replyRate === 0 ? "#59637C" : isUp ? "#1d8a68" : "#d9485f",
           }}
         >
           {replyRate}%
-          {replyRate > 0 && (
-            <span className="text-xs">{isUp ? "↑" : "↓"}</span>
-          )}
+          {replyRate > 0 && <span className="text-xs">{isUp ? "↑" : "↓"}</span>}
         </span>
 
         <span>
@@ -100,9 +95,7 @@ export default function TemplateRow({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span
-                className="font-semibold truncate text-sm text-[#0F172A]"
-              >
+              <span className="font-semibold truncate text-sm text-[#0F172A]">
                 {template.name}
               </span>
               <span
