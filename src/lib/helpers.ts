@@ -1,3 +1,5 @@
+import { ChartSpline, Rocket, Send, type LucideIcon } from "lucide-react";
+
 export const handlePlanNameChange = (planName: string): string => {
   switch (planName.toLocaleLowerCase()) {
     case "starter":
@@ -126,4 +128,78 @@ export function getDateRange(days = 7): string {
     });
 
   return `${formatDate(startDate)} - ${formatDate(today)}`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Billing                                                             */
+/* ------------------------------------------------------------------ */
+
+/** Discount applied to annual billing, in percent. */
+export const ANNUAL_DISCOUNT_PERCENT = 20;
+
+// Omar note: Annual pricing is derived on the client (monthly × 12 × 0.8 = "Save 20%") purely so
+// the Billing UI matches the approved design. The backend contract is still monthly-only —
+// POST /billing/subscribe accepts a planId and nothing else — so picking "Annual" and checking
+// out will still create a MONTHLY Mollie subscription at the monthly price. Before this goes
+// live, the backend must expose annual plan/price IDs (or accept an `interval` on
+// /billing/subscribe) and this helper must be replaced by the real price coming from
+// GET /billing/plans.
+export function annualPriceFromMonthly(monthly: number): number {
+  return Math.floor(monthly * 12 * ((100 - ANNUAL_DISCOUNT_PERCENT) / 100));
+}
+
+/** Short marketing line shown under each plan name on the billing page. */
+export function planTagline(planId: string): string {
+  switch (planId.toLocaleLowerCase()) {
+    case "starter":
+      return "Perfect for individuals.";
+    case "growth":
+      return "Perfect for growing businesses.";
+    case "scale":
+      return "For power users and teams";
+    default:
+      return "";
+  }
+}
+
+/**
+ * Icon used to represent a plan, mirroring the marketing pricing section.
+ * A lookup table rather than a factory function so consumers read the component
+ * off a constant instead of creating one during render.
+ */
+export const PLAN_ICONS: Record<string, LucideIcon> = {
+  starter: Send,
+  growth: ChartSpline,
+  scale: Rocket,
+};
+
+/** "May 24, 2026" — the date format used across the billing screens. */
+export function formatBillingDate(apiDateString?: string | null): string {
+  if (!apiDateString) return "—";
+  const date = new Date(apiDateString);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+/**
+ * The API has no human-readable invoice number, so derive a stable one from the
+ * date the invoice was settled (falling back to its creation date): "Inv-2026-04-24".
+ */
+export function formatInvoiceNumber(invoice: {
+  paidAt?: string | null;
+  createdAt: string;
+}): string {
+  const date = new Date(invoice.paidAt || invoice.createdAt);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `Inv-${year}-${month}-${day}`;
 }
