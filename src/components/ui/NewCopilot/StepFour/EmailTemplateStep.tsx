@@ -669,8 +669,7 @@ export default function EmailTemplateStep() {
                     setTemplateName(template.name || "");
                     setSubjectInput(template.subject || "");
                     editor?.commands.setContent(
-                      // toEditorContent(template.body || ""),
-                      template.body || "",
+                      toEditorContent(template.body || ""),
                     );
                     if (template.variables)
                       setVariableInput(template.variables);
