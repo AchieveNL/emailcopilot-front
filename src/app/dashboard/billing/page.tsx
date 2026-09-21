@@ -114,7 +114,9 @@ export default function BillingPage() {
 
       {hasSubscription && !showPlans ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="min-w-0 space-y-6 lg:col-span-2">
+          {/* Flat grid so each right-hand card shares a row (top edge and
+              height) with the card to its left. */}
+          <div className="min-w-0 lg:col-span-2 *:h-full">
             <CurrentPlanCard
               plan={currentPlan}
               subscription={subscription}
@@ -124,16 +126,19 @@ export default function BillingPage() {
               onUpdatePaymentMethod={handleUpdatePaymentMethod}
               isUpdatingPaymentMethod={isUpdatingPaymentMethod}
             />
-            <InvoicesCard invoices={invoices} formatAmount={amountDue} />
           </div>
-
-          <div className="min-w-0 space-y-6">
+          <div className="min-w-0 *:h-full">
             <BillingSummaryCard
               plan={currentPlan}
               subscription={subscription}
               onUpdatePaymentMethod={handleUpdatePaymentMethod}
               isUpdatingPaymentMethod={isUpdatingPaymentMethod}
             />
+          </div>
+          <div className="min-w-0 lg:col-span-2 *:h-full">
+            <InvoicesCard invoices={invoices} formatAmount={amountDue} />
+          </div>
+          <div className="min-w-0 *:h-full">
             <NeedHelpCard />
           </div>
         </div>

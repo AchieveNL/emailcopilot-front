@@ -22,7 +22,7 @@ export default function FaqAccordionItem({
     <div
       className={`rounded-xl border transition-colors ${
         isOpen
-          ? "border-primary/40 bg-primary/5"
+          ? "border-light bg-primary/5"
           : "border-gray-200 bg-white hover:bg-gray-50"
       }`}
     >
@@ -31,7 +31,7 @@ export default function FaqAccordionItem({
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className="flex w-full items-center gap-4 px-5 py-4 text-left"
+        className="flex w-full items-start gap-4 px-5 py-4 text-left"
       >
         <span
           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
@@ -43,13 +43,13 @@ export default function FaqAccordionItem({
           {index}
         </span>
 
-        <span className="flex-1 text-sm font-bold text-gray-900 sm:text-base">
+        <span className="flex-1 pt-0.5 text-sm font-bold text-gray-900 sm:text-base">
           {faq.question}
         </span>
 
         <ChevronDown
           size={20}
-          className={`shrink-0 transition-transform ${
+          className={`mt-1 shrink-0 transition-transform ${
             isOpen ? "rotate-180 text-primary" : "text-gray-400"
           }`}
         />

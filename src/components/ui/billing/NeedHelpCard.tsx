@@ -13,9 +13,9 @@ export default function NeedHelpCard() {
 
       <Link
         href="/dashboard/billing/faq"
-        className="mt-5 flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
+        className="mt-5 flex w-full items-start gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
       >
-        <FileQuestion size={20} className="shrink-0 text-gray-400" />
+        <FileQuestion size={20} className="mt-0.5 shrink-0 text-gray-400" />
         <span className="flex-1">
           <span className="block text-sm font-bold text-gray-900">
             Billing FAQ
@@ -24,13 +24,16 @@ export default function NeedHelpCard() {
             Find answers to common billing questions.
           </span>
         </span>
-        <ChevronRight size={18} className="shrink-0 text-gray-400" />
+        <ChevronRight
+          size={18}
+          className="shrink-0 self-center text-gray-400"
+        />
       </Link>
 
       <hr className="my-5 border-gray-100" />
 
       <div className="flex items-start gap-3 p-2">
-        <Mail size={20} className="shrink-0 text-gray-400" />
+        <Mail size={20} className="mt-0.5 shrink-0 text-gray-400" />
         <div>
           <p className="text-sm font-bold text-gray-900">Contact support</p>
           <a
