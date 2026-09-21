@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft } from "lucide-react";
+// Omar note: TEMP - `Lock` is only used by the locked "Annual" option, remove it with the lock.
+import { ChevronLeft, Lock } from "lucide-react";
 import type { Plan, PlanId } from "@/lib/useBilling";
-import { ANNUAL_DISCOUNT_PERCENT } from "@/lib/helpers";
+// Omar note: TEMP - re-import ANNUAL_DISCOUNT_PERCENT from "@/lib/helpers" when the
+// "Save 20%" badge comes back on the Annual option.
 import SegmentedControl from "../SegmentedControl";
 import PlanCard from "./PlanCard";
 import PlanTrustStrip from "./PlanTrustStrip";
@@ -61,9 +63,17 @@ export default function PlanSelector({
             {
               value: "annual",
               label: "Annual",
+              // Omar note: TEMP - annual plans don't exist on the backend yet, so this
+              // option is locked with a "Coming soon" chip. When annual checkout works,
+              // remove `disabled` and the Lock import, and put back the original badge:
+              // <span className="rounded-md bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
+              //   Save {ANNUAL_DISCOUNT_PERCENT}%
+              // </span>
+              disabled: true,
               badge: (
-                <span className="rounded-md bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-                  Save {ANNUAL_DISCOUNT_PERCENT}%
+                <span className="flex items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">
+                  <Lock size={11} />
+                  Coming soon
                 </span>
               ),
             },
