@@ -90,7 +90,7 @@ export default function CurrentPlanCard({
           <button
             type="button"
             onClick={onChangePlan}
-            className="mt-6 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover sm:w-auto sm:self-start sm:px-6"
+            className="btn-cta mt-6 w-full rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold text-white sm:w-auto sm:self-start sm:px-6"
           >
             Change plan
           </button>

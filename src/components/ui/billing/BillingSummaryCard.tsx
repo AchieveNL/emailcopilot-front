@@ -53,7 +53,7 @@ export default function BillingSummaryCard({
         type="button"
         onClick={onUpdatePaymentMethod}
         disabled={isUpdatingPaymentMethod}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
+        className="btn-cta mt-6 flex w-full items-center justify-center gap-2 rounded-lg border border-transparent py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
         {isUpdatingPaymentMethod && (
           <Loader2 size={14} className="animate-spin" />
