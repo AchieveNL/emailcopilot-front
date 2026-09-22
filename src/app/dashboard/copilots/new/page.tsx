@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { MoreVertical, ChevronRight, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -39,7 +39,7 @@ export type NewCopilotContext = {
   loadingOptions: boolean;
 };
 
-export default function NewCopilotPage() {
+function NewCopilotPageContent() {
   const defaultTimezone = "Europe/Brussels";
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -344,7 +344,7 @@ export default function NewCopilotPage() {
   }
 
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       {/* Header */}
       <header className="flex items-start justify-between mb-4">
         <div>
@@ -421,5 +421,22 @@ export default function NewCopilotPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewCopilotPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-8 px-4 w-full mx-auto flex items-center justify-center min-h-100">
+          <div className="flex items-center gap-3 text-gray-500">
+            <Loader2 size={20} className="animate-spin" />
+            <span>Loading...</span>
+          </div>
+        </div>
+      }
+    >
+      <NewCopilotPageContent />
+    </Suspense>
   );
 }

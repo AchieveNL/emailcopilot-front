@@ -111,7 +111,7 @@ export default function ScrapeProfilesPage() {
   }, [profiles]);
 
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <DashboardHeader
         title="Target Audience"
         description="Configure web scraping sources for your leads."
@@ -133,6 +133,10 @@ export default function ScrapeProfilesPage() {
           onEdit={handleEdit}
           onDelete={(audience) => handleDelete(audience.id)}
           onDuplicate={handleDuplicate}
+          onCreateNew={() => {
+            setEditingAudience(null);
+            setShowModal(true);
+          }}
         />
       )}
 

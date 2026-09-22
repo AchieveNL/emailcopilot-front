@@ -6,6 +6,7 @@ import TemplateTable from "@/components/ui/templates/TemplateTable";
 import TemplateModal from "@/components/ui/templates/TemplateModal";
 import Pagination from "@/components/ui/templates/Pagination";
 import { templatesApi } from "@/lib/api";
+import { useRowsPerPage } from "@/lib/hooks";
 import { toast } from "sonner";
 import type {
   Template,
@@ -13,9 +14,11 @@ import type {
   TemplateForm,
 } from "@/lib/types/templates";
 
-const PER_PAGE = 10;
+const BASE_PER_PAGE = 20;
 
 export default function TemplatesPage() {
+  // Taller viewports (>1080p) show more rows per page instead of whitespace
+  const perPage = useRowsPerPage(BASE_PER_PAGE);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -54,11 +57,11 @@ export default function TemplatesPage() {
     t.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginated = filtered.slice(
-    (safeCurrentPage - 1) * PER_PAGE,
-    safeCurrentPage * PER_PAGE,
+    (safeCurrentPage - 1) * perPage,
+    safeCurrentPage * perPage,
   );
 
   async function handleSave(steps: TemplateStep[]) {
@@ -130,7 +133,7 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="p-4 sm:p-5 w-full max-w-6xl mx-auto flex flex-col min-h-[calc(100vh-2.5rem)]">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5 flex flex-col">
       <DashboardHeader
         title="Email templates"
         description="Create and manage reusable email templates for your campaigns."
@@ -152,7 +155,7 @@ export default function TemplatesPage() {
         />
 
         {filtered.length > 0 && (
-          <div className="mt-auto pt-3">
+          <div className="mt-4">
             <Pagination
               currentPage={safeCurrentPage}
               totalPages={totalPages}

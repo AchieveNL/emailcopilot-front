@@ -20,6 +20,7 @@ import {
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
 import { useCopilotStore } from "@/store/copilotStore";
+import { toEditorContent } from "@/lib/helpers";
 
 const initialEmailBody = `
 <p>Hi,</p>
@@ -33,31 +34,6 @@ const initialEmailBody = `
 <p>Best regards,<br />
 {{senderName}}</p>
 `;
-
-const escapeHtml = (value: string) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-
-const toEditorContent = (value: string) => {
-  const trimmedValue = value.trim();
-
-  if (trimmedValue.startsWith("<")) {
-    return value;
-  }
-
-  return value
-    .trim()
-    .split(/\n\s*\n/)
-    .map((paragraph) => {
-      const lines = paragraph.split(/\n/).map(escapeHtml);
-      return `<p>${lines.join("<br />")}</p>`;
-    })
-    .join("");
-};
 
 export default function EmailTemplateStep() {
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");

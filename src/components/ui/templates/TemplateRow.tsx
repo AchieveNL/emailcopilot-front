@@ -1,5 +1,6 @@
-import { formatDateTime } from "@/lib/helpers";
+import { formatDate } from "@/lib/helpers";
 import TemplateActions from "./TemplateActions";
+import CopilotStatus from "@/components/ui/CopilotStatus";
 import type { Template } from "@/lib/types/templates";
 
 interface TemplateRowProps {
@@ -23,10 +24,7 @@ export default function TemplateRow({
     : typeof template.steps === "number"
       ? template.steps
       : 0;
-  const lastUpdated =
-    formatDateTime(template.updatedAt || "", false) ||
-    formatDateTime(template.createdAt || "", false) ||
-    "—";
+  const lastUpdated = formatDate(template.updatedAt || template.createdAt || "");
   const status = template.status ?? "draft";
 
   return (
@@ -61,24 +59,20 @@ export default function TemplateRow({
         </span>
 
         <span>
-          <span
-            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
-            style={
-              status === "in_flight"
-                ? {
-                    backgroundColor: "#F0F9FF",
-                    color: "#0284C7",
-                    border: "1px solid #BAE6FD",
-                  }
-                : {
-                    backgroundColor: "#F8FAFC",
-                    color: "#64748B",
-                    border: "1px solid #E2E8F0",
-                  }
-            }
-          >
-            {status === "in_flight" ? "In flight" : "Draft"}
-          </span>
+          {status === "draft" ? (
+            <CopilotStatus status="draft" />
+          ) : (
+            <span
+              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+              style={{
+                backgroundColor: "#F0F9FF",
+                color: "#0284C7",
+                border: "1px solid #BAE6FD",
+              }}
+            >
+              In flight
+            </span>
+          )}
         </span>
 
         <div className="flex items-center">
@@ -98,24 +92,20 @@ export default function TemplateRow({
               <span className="font-semibold truncate text-sm text-[#0F172A]">
                 {template.name}
               </span>
-              <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0"
-                style={
-                  status === "in_flight"
-                    ? {
-                        backgroundColor: "#F0F9FF",
-                        color: "#0284C7",
-                        border: "1px solid #BAE6FD",
-                      }
-                    : {
-                        backgroundColor: "#F8FAFC",
-                        color: "#64748B",
-                        border: "1px solid #E2E8F0",
-                      }
-                }
-              >
-                {status === "in_flight" ? "In flight" : "Draft"}
-              </span>
+              {status === "draft" ? (
+                <CopilotStatus status="draft" isSmall />
+              ) : (
+                <span
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0"
+                  style={{
+                    backgroundColor: "#F0F9FF",
+                    color: "#0284C7",
+                    border: "1px solid #BAE6FD",
+                  }}
+                >
+                  In flight
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-3 text-xs text-[#59637C]">
               <span>{steps} steps</span>

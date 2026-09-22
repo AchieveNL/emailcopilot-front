@@ -16,46 +16,14 @@ import type {
   Template,
   TemplateStep,
   TemplateForm,
+  TemplateModalProps,
 } from "@/lib/types/templates";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { templatesApi } from "@/lib/api";
+import { toEditorContent } from "@/lib/helpers";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
-
-interface TemplateModalProps {
-  editingTemplate: Template | null;
-  initialSteps?: TemplateStep[];
-  form: TemplateForm;
-  saving: boolean;
-  onFormChange: (form: TemplateForm) => void;
-  onSave: (steps: TemplateStep[]) => void;
-  onClose: () => void;
-}
-
-const escapeHtml = (value: string) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-
-const toEditorContent = (value: string) => {
-  if (!value) return "";
-  const trimmedValue = value.trim();
-  if (trimmedValue.startsWith("<")) {
-    return value;
-  }
-  return value
-    .trim()
-    .split(/\n\s*\n/)
-    .map((paragraph) => {
-      const lines = paragraph.split(/\n/).map(escapeHtml);
-      return `<p>${lines.join("<br />")}</p>`;
-    })
-    .join("");
-};
 
 const INITIAL_STEPS: TemplateStep[] = [
   {
@@ -111,7 +79,9 @@ export default function TemplateModal({
     // stale name/subject if it fires before the parent re-render flushes.
     formRef.current = newForm;
     if (editor) {
-      editor.commands.setContent(toEditorContent(newBody), { emitUpdate: false });
+      editor.commands.setContent(toEditorContent(newBody), {
+        emitUpdate: false,
+      });
     }
     if (t.steps && t.steps.length > 0) {
       setSteps(t.steps);

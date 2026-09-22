@@ -101,7 +101,7 @@ export default function OverviewPage() {
   ];
 
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <DashboardHeader
         title={`Welcome back, ${user?.firstName || user?.fullName || "there"}!👋`}
         description={`Here's what's happening with your outreach today`}
