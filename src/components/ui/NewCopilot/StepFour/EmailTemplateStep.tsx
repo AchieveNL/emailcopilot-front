@@ -50,6 +50,10 @@ export default function EmailTemplateStep() {
   const [subjectInput, setSubjectInput] = useState(
     "Quick idea to help {{companyName}} book more appointments",
   );
+  // Tracks which input was last focused so variable insertion goes to the right field
+  const [lastFocusedField, setLastFocusedField] = useState<
+    "name" | "subject" | "body"
+  >("body");
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
@@ -153,9 +157,15 @@ export default function EmailTemplateStep() {
   });
 
   const insertVariable = (variableName: string) => {
-    if (!editor) return;
-
-    editor.chain().focus().insertContent(variableName).run();
+    if (lastFocusedField === "body") {
+      if (!editor) return;
+      editor.chain().focus().insertContent(variableName).run();
+    } else if (lastFocusedField === "subject") {
+      setSubjectInput((prev) => prev + variableName);
+    } else {
+      setTemplateName((prev) => prev + variableName);
+      return;
+    }
     if (variableInput.includes(variableName)) return;
     setVariableInput([...variableInput, variableName]);
   };
@@ -286,6 +296,7 @@ export default function EmailTemplateStep() {
             type="text"
             value={templateName}
             onChange={(e) => setTemplateName(e.target.value)}
+            onFocus={() => setLastFocusedField("name")}
             className="flex-1 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
           />
         </div>
@@ -442,6 +453,7 @@ export default function EmailTemplateStep() {
                 setSubjectInput(e.target.value);
                 removeVariable();
               }}
+              onFocus={() => setLastFocusedField("subject")}
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
             />
           </div>
@@ -457,7 +469,10 @@ export default function EmailTemplateStep() {
               </span>
             </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all bg-white">
+            <div
+              className="border border-slate-200 rounded-xl overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all bg-white"
+              onFocus={() => setLastFocusedField("body")}
+            >
               <EditorContent className="editor" editor={editor} />
 
               {/* Toolbar */}

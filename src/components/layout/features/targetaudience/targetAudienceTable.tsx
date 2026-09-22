@@ -80,7 +80,9 @@ function AudienceRow({
         onClick={() =>
           setOpenMenuId(openMenuId === audience.id ? null : audience.id)
         }
-        className="text-gray-300 hover:text-gray-500 transition-colors"
+        className="text-gray-300 transition-colors hover:text-gray-500"
+        aria-haspopup="menu"
+        aria-expanded={openMenuId === audience.id}
         aria-label="Row actions"
       >
         {openMenuId === audience.id ? (
