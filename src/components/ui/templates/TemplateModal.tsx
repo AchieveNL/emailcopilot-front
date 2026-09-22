@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Plus,
   Mail,
@@ -18,6 +18,7 @@ import type {
   TemplateForm,
 } from "@/lib/types/templates";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { templatesApi } from "@/lib/api";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
@@ -85,6 +86,50 @@ export default function TemplateModal({
   const [lastFocusedField, setLastFocusedField] = useState<
     "name" | "subject" | "body"
   >("body");
+  const [existingTemplates, setExistingTemplates] = useState<Template[]>([]);
+
+  useEffect(() => {
+    templatesApi
+      .getAll()
+      .then((res) => {
+        setExistingTemplates(res.data || []);
+      })
+      .catch(() => {});
+  }, []);
+
+  function loadTemplate(t: Template) {
+    const newBody = t.body || "";
+    const newForm = {
+      ...form,
+      name: t.name || "",
+      subject: t.subject || "",
+      body: newBody,
+      category: t.category || form.category,
+    };
+    onFormChange(newForm);
+    // Update formRef immediately so the editor's onUpdate handler won't read
+    // stale name/subject if it fires before the parent re-render flushes.
+    formRef.current = newForm;
+    if (editor) {
+      editor.commands.setContent(toEditorContent(newBody), { emitUpdate: false });
+    }
+    if (t.steps && t.steps.length > 0) {
+      setSteps(t.steps);
+    }
+  }
+
+  // Always holds the latest form so the editor's onUpdate handler never reads stale values.
+  const formRef = useRef(form);
+  useEffect(() => {
+    formRef.current = form;
+  });
+
+  // Also keep a stable ref to onFormChange so the update handler doesn't need
+  // to be torn down and re-created whenever the parent re-renders.
+  const onFormChangeRef = useRef(onFormChange);
+  useEffect(() => {
+    onFormChangeRef.current = onFormChange;
+  });
 
   const editor = useEditor({
     extensions: [
@@ -93,9 +138,7 @@ export default function TemplateModal({
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: toEditorContent(form.body),
-    onUpdate: ({ editor }) => {
-      onFormChange({ ...form, body: editor.getHTML() });
-    },
+    // No onUpdate here — see the useEffect below.
     editorProps: {
       attributes: {
         class:
@@ -104,11 +147,29 @@ export default function TemplateModal({
     },
   });
 
+  // Register the update listener via effect so it always reads the *current*
+  // form through the ref, avoiding the stale-closure that was overwriting
+  // name/subject with old values.
+  useEffect(() => {
+    if (!editor) return;
+    const handler = () => {
+      onFormChangeRef.current({ ...formRef.current, body: editor.getHTML() });
+    };
+    editor.on("update", handler);
+    return () => {
+      editor.off("update", handler);
+    };
+  }, [editor]);
+
+  // When editingTemplate changes, sync the editor content without firing the
+  // update handler (which would overwrite the newly-loaded name/subject).
+  // Use formRef.current so we always read the *latest* body, not the stale
+  // closure value that existed before the parent's state updates flushed.
   useEffect(() => {
     if (editor) {
-      const formatted = toEditorContent(form.body);
+      const formatted = toEditorContent(formRef.current.body);
       if (editor.getHTML() !== formatted) {
-        editor.commands.setContent(formatted);
+        editor.commands.setContent(formatted, { emitUpdate: false });
       }
     }
   }, [editingTemplate]);
@@ -538,62 +599,47 @@ export default function TemplateModal({
           </div>
 
           {/* Existing Templates Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="border border-gray-200 rounded-lg p-3">
-              <p className="font-semibold text-gray-900 text-sm mb-1">
-                Cold Outreach – SaaS
-              </p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-green-600">22.8% ↑</span>
-                <span className="text-gray-500">5 copilots</span>
-              </div>
+          {existingTemplates.length === 0 ? (
+            <p className="text-xs text-gray-400 text-center py-4">
+              No saved templates yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {existingTemplates.map((t) => {
+                const replyRate = t.replyRate ?? 0;
+                const isUp = (t.trend ?? "up") === "up";
+                const usedIn = t.usedIn ?? 0;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => loadTemplate(t)}
+                    className="border border-gray-200 rounded-lg p-5 py-6 text-left hover:border-blue-400 hover:bg-blue-50/40 transition-all group"
+                  >
+                    <p className="font-semibold text-gray-900 text-sm mb-1 truncate group-hover:text-blue-600 transition-colors">
+                      {t.name}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs">
+                      <span
+                        className={
+                          replyRate === 0
+                            ? "text-gray-500"
+                            : isUp
+                              ? "text-green-600"
+                              : "text-red-500"
+                        }
+                      >
+                        {replyRate}% {replyRate > 0 && (isUp ? "↑" : "↓")}
+                      </span>
+                      <span className="text-gray-500">
+                        {usedIn} {usedIn === 1 ? "copilot" : "copilots"}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
-            <div className="border border-gray-200 rounded-lg p-3">
-              <p className="font-semibold text-gray-900 text-sm mb-1">
-                Follow-up – No Response
-              </p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-green-600">12.7% ↑</span>
-                <span className="text-gray-500">3 copilots</span>
-              </div>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-3">
-              <p className="font-semibold text-gray-900 text-sm mb-1">
-                Product Demo Invite
-              </p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-gray-500">0% ↑</span>
-                <span className="text-gray-500">0 copilot</span>
-              </div>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-3">
-              <p className="font-semibold text-gray-900 text-sm mb-1">
-                Cold Outreach
-              </p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-green-600">9.2% ↑</span>
-                <span className="text-gray-500">2 copilots</span>
-              </div>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-3">
-              <p className="font-semibold text-gray-900 text-sm mb-1">
-                Partnership Proposal
-              </p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-red-500">6.1% ↓</span>
-                <span className="text-gray-500">1 copilot</span>
-              </div>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-3">
-              <p className="font-semibold text-gray-900 text-sm mb-1">
-                Re-engagement Campaign
-              </p>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-green-600">22.8% ↑</span>
-                <span className="text-gray-500">4 copilots</span>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3">

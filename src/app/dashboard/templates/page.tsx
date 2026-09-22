@@ -164,6 +164,7 @@ export default function TemplatesPage() {
 
       {showModal && (
         <TemplateModal
+          key={editingTemplate?.id ?? "new"}
           editingTemplate={editingTemplate}
           initialSteps={editingTemplate?.steps}
           form={form}

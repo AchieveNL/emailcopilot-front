@@ -44,9 +44,9 @@ export default function TemplateRow({
 
         <span className="text-sm text-[#0F172A]">{steps}</span>
 
-        <span className="text-sm text-[#59637C]">{lastUpdated}</span>
+        <span className="text-sm text-[#0F172A]">{lastUpdated}</span>
 
-        <span className="text-sm text-[#59637C]">
+        <span className="text-sm text-[#0F172A]">
           {usedIn} {usedIn <= 1 ? "copilot" : "copilots"}
         </span>
 
