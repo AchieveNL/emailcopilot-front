@@ -135,7 +135,7 @@ export default function TemplatesPage() {
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5 flex flex-col">
       <DashboardHeader
-        title="Email templates"
+        title="Email Templates"
         description="Create and manage reusable email templates for your campaigns."
         actionLabel="Create New Email Template"
         onAction={openCreate}

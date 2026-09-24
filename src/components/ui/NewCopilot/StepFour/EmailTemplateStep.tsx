@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -155,6 +155,33 @@ export default function EmailTemplateStep() {
       },
     },
   });
+
+  // Load the copilot's linked template (edit/duplicate mode) once on mount
+  const templateHydratedRef = useRef(false);
+  useEffect(() => {
+    if (templateHydratedRef.current) return;
+    const id = copilotData.templateId;
+    if (!id) {
+      templateHydratedRef.current = true;
+      return;
+    }
+    if (!editor) return; // wait until Tiptap is ready
+    templateHydratedRef.current = true;
+
+    templatesApi
+      .getById(id)
+      .then((res) => {
+        const t = res.data?.data ?? res.data;
+        if (!t) return;
+        setTemplateName(t.name || "");
+        setSubjectInput(t.subject || "");
+        editor.commands.setContent(toEditorContent(t.body || ""));
+        if (Array.isArray(t.variables)) setVariableInput(t.variables);
+      })
+      .catch((err) => {
+        console.error("Failed to load linked template:", err);
+      });
+  }, [editor, copilotData.templateId]);
 
   const insertVariable = (variableName: string) => {
     if (lastFocusedField === "body") {

@@ -157,10 +157,25 @@ export default function TemplateModal({
     setSteps([...steps, newStep]);
   }
 
+  function normalizeSteps(steps: TemplateStep[]): TemplateStep[] {
+    return steps.map((s, i) => ({
+      ...s, // keep id
+      type: i === 0 ? "initial" : "followup",
+      title:
+        i === 0
+          ? "Step 1 - Initial Email"
+          : `Step ${i + 1} - Follow-up ${i - 1}`,
+      description:
+        i === 0
+          ? "A personalized cold email"
+          : `Send ${2 * i} days after no reply`, // delays: 0, 2, 4… matches old chain
+      delayDays: i * 2,
+    }));
+  }
   function deleteStep(id: number) {
     const target = steps.find((s) => s.id === id);
     if (target?.type === "initial") return;
-    setSteps((prev) => prev.filter((s) => s.id !== id));
+    setSteps((prev) => normalizeSteps(prev.filter((s) => s.id !== id)));
     setSelectedStep((prev) => {
       if (prev === id) {
         const remaining = steps.filter((s) => s.id !== id);
