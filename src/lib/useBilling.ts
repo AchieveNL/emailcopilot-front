@@ -111,6 +111,19 @@ export function useBilling() {
         },
     });
 
+    // Mollie owns the card details, so updating one means bouncing through their
+    // hosted flow when a checkout URL comes back; otherwise just re-read the subscription.
+    const updatePaymentMethodMutation = useMutation({
+        mutationFn: () => billingApi.updatePaymentMethod({}).then((r) => r.data),
+        onSuccess: (data) => {
+            if (data?.checkoutUrl) {
+                window.location.href = data.checkoutUrl;
+                return;
+            }
+            queryClient.invalidateQueries({ queryKey: billingKeys.subscription() });
+        },
+    });
+
     // ── Derived state ────────────────────────────────────────────────────────────
 
     const subscription = subscriptionQuery.data ?? null;
@@ -131,6 +144,7 @@ export function useBilling() {
         (limitsQuery.error as Error)?.message ??
         subscribeMutation.error?.message ??
         cancelMutation.error?.message ??
+        updatePaymentMethodMutation.error?.message ??
         null;
 
     return {
@@ -147,6 +161,7 @@ export function useBilling() {
         // ── Actions ───────────────────────────────────────────────────────────────
         subscribe: (planId: PlanId) => subscribeMutation.mutateAsync(planId),
         cancel: () => cancelMutation.mutateAsync(),
+        updatePaymentMethod: () => updatePaymentMethodMutation.mutateAsync(),
 
         // Explicit refresh for e.g. post-Mollie redirect return pages
         refresh: () =>
@@ -158,6 +173,7 @@ export function useBilling() {
         // Mutation loading states — useful for disabling buttons
         isSubscribing: subscribeMutation.isPending,
         isCanceling: cancelMutation.isPending,
+        isUpdatingPaymentMethod: updatePaymentMethodMutation.isPending,
 
         // ── Helpers ───────────────────────────────────────────────────────────────
         isActive: subscription?.status === "active",

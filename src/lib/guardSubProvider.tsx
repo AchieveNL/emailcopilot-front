@@ -6,7 +6,15 @@ import { DashboardProviders } from "@/lib/providers";
 import { useBilling } from "@/lib/useBilling";
 import { useRouter, usePathname } from "next/navigation";
 
+// Billing and everything nested under it (e.g. the FAQ) must stay reachable without
+// a subscription — otherwise users with no plan cannot read how billing works.
 const BILLING_EXEMPT = ["/dashboard/billing"];
+
+function isBillingExempt(pathname: string) {
+    return BILLING_EXEMPT.some(
+        (path) => pathname === path || pathname.startsWith(`${path}/`),
+    );
+}
 
 export default function GuardSubscriptionProvider({ children }: { children: React.ReactNode }) {
 
@@ -15,7 +23,7 @@ export default function GuardSubscriptionProvider({ children }: { children: Reac
     const { subscription, loading, isActive } = useBilling();
     useEffect(() => {
         if (loading) return;
-        if (BILLING_EXEMPT.includes(pathname)) return;
+        if (isBillingExempt(pathname)) return;
 
         const needsSubscription = !subscription || (!isActive && subscription.status !== "trialing");
 
@@ -25,7 +33,7 @@ export default function GuardSubscriptionProvider({ children }: { children: Reac
     }, [loading, subscription, isActive, pathname, router]);
 
     // Avoid flashing protected content while checking
-    if (loading || (!isActive && !BILLING_EXEMPT.includes(pathname))) {
+    if (loading || (!isActive && !isBillingExempt(pathname))) {
         return (
             <div className="flex h-screen items-center justify-center">
                 <span className="text-muted-foreground text-sm">Loading…</span>
