@@ -75,7 +75,7 @@ export default function BillingFaqList() {
           <div className="flex shrink-0 flex-col items-center gap-1">
             <a
               href={`mailto:${BILLING_SUPPORT_EMAIL}`}
-              className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="btn-cta rounded-lg border border-transparent px-5 py-2 text-sm font-semibold text-white"
             >
               Email us
             </a>
