@@ -48,12 +48,10 @@ export default function FlightSchedulePage() {
       const res = await copilotsApi.getAll();
       const list = Array.isArray(res.data) ? res.data : [];
       setCopilots(
-        list.map(
-          (c: CopilotLite & Record<string, unknown>) => ({
-            id: c.id,
-            flightScheduleId: c.flightScheduleId ?? null,
-          }),
-        ),
+        list.map((c: CopilotLite & Record<string, unknown>) => ({
+          id: c.id,
+          flightScheduleId: c.flightScheduleId ?? null,
+        })),
       );
     } catch {
       setCopilots([]);
@@ -172,7 +170,7 @@ export default function FlightSchedulePage() {
   return (
     <DashboardContainer>
       <DashboardHeader
-        title="Flight schedule"
+        title="Flight Schedule"
         description="Control when your campaigns send emails."
         actionLabel="Create New Flight Schedule"
         onAction={openCreateModal}

@@ -26,7 +26,6 @@ import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTempla
 import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
-import ScheduleList from "@/components/ui/NewCopilot/StepFive/ScheduleList";
 import { toast } from "sonner";
 
 // RemoteOption IDs are numbers — matches serial PKs in schema
@@ -92,11 +91,7 @@ function NewCopilotPageContent() {
     },
     {
       id: 5,
-      component: () => (
-        <ScheduleStep>
-          <ScheduleList />
-        </ScheduleStep>
-      ),
+      component: () => <ScheduleStep />,
       sideBar: () => <ScheduleSideBar />,
     },
     {
