@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import StepsActions from "../StepsActions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
 import ct from "countries-and-timezones";
 import { flightSchedulesApi } from "@/lib/api";
 import { toast } from "sonner";
+import ScheduleList from "./ScheduleList";
 
 const DAYS = [
   { value: 1, label: "Mon" },
@@ -30,11 +31,33 @@ const TIMEZONES = Object.values(ct.getAllTimezones()).map((tz) => ({
   utcOffset: tz.utcOffset,
 }));
 
-export default function ScheduleStep({
-  children,
-}: {
-  children?: React.ReactNode;
-}) {
+/** The schedule fields that determine whether the form was modified. */
+type ScheduleFields = {
+  name: string;
+  sendLimit: number | null;
+  sendLimitActive: boolean;
+  activeDays: number[];
+  sendingHours: { start: string; end: string };
+  sendingHoursActive: boolean;
+  timezone: string;
+};
+
+function pickFields(s: Partial<ScheduleFields>): ScheduleFields {
+  return {
+    name: s.name ?? "",
+    sendLimit: s.sendLimit ?? null,
+    sendLimitActive: s.sendLimitActive ?? false,
+    activeDays: [...(s.activeDays ?? [])].sort((a, b) => a - b),
+    sendingHours: {
+      start: s.sendingHours?.start ?? "08:00",
+      end: s.sendingHours?.end ?? "17:00",
+    },
+    sendingHoursActive: s.sendingHoursActive ?? false,
+    timezone: s.timezone ?? DEFAULT_TIMEZONE,
+  };
+}
+
+export default function ScheduleStep() {
   const { copilotData, updateCopilotData, updateFlightSchedule, setStep } =
     useCopilotStore();
 
@@ -42,20 +65,57 @@ export default function ScheduleStep({
   const selectedId = copilotData.flightScheduleId;
 
   const [loading, setLoading] = useState(false);
-  // show alert when user tries to leave the page with unsaved changes
+  // Open by default when nothing is linked yet (edit mode hydrates later).
+  const [listOpen, setListOpen] = useState(!copilotData.flightScheduleId);
+
   useEffect(() => {
+    if (copilotData.flightScheduleId) setListOpen(false);
+  }, [copilotData.flightScheduleId]);
+
+  // Local text for the daily limit so the field can be cleared/typed freely.
+  const [limitText, setLimitText] = useState(
+    String(schedule.sendLimit ?? 30),
+  );
+
+  useEffect(() => {
+    setLimitText(String(schedule.sendLimit ?? 30));
+  }, [schedule.sendLimit]);
+
+  // Baseline = the linked saved schedule (null = custom, nothing linked).
+  // dirty = user changed the form after (or without) selecting a schedule.
+  const [baseline, setBaseline] = useState<{ id: number; data: ScheduleFields } | null>(
+    selectedId ? { id: selectedId, data: pickFields(schedule) } : null,
+  );
+  const prevSelectedIdRef = useRef(selectedId);
+
+  useEffect(() => {
+    if (prevSelectedIdRef.current === selectedId) return;
+    prevSelectedIdRef.current = selectedId;
+    if (selectedId) {
+      setBaseline({ id: selectedId, data: pickFields(schedule) });
+    } else {
+      // Deselect: values stay in the form but nothing is linked anymore.
+      setBaseline(null);
+    }
+  }, [selectedId, schedule]);
+
+  const dirty =
+    baseline !== null &&
+    JSON.stringify(pickFields(schedule)) !== JSON.stringify(baseline.data);
+
+  // Only warn about unsaved changes when the form actually differs from the
+  // linked schedule (or is a filled-in custom schedule).
+  useEffect(() => {
+    if (!dirty) return;
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-
       event.returnValue = "";
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [dirty]);
 
   const toggleDay = (day: number) => {
     let newDays;
@@ -68,33 +128,49 @@ export default function ScheduleStep({
   };
 
   const handleSave = async () => {
-    if (selectedId) {
-      // User selected an existing schedule
-      setStep(6);
-      return;
-    }
-
     if (schedule.activeDays.length === 0) {
       toast.error("Please select at least one active day.");
       return;
     }
 
+    // Selected schedule, untouched → pure reuse, nothing is written.
+    if (selectedId && !dirty) {
+      setStep(6);
+      return;
+    }
+
     setLoading(true);
     try {
+      const baseName = schedule.name || "Custom Copilot Schedule";
+      // Forked copies are marked so they stay distinguishable from the
+      // original (and repeated forks don't stack the suffix).
+      const name = selectedId
+        ? `${baseName.replace(/\s*\(edited\)$/i, "")} (edited)`
+        : baseName;
       const payload = {
-        name: schedule.name || "Custom Copilot Schedule",
+        name,
         sendLimit: schedule.sendLimitActive ? schedule.sendLimit : null,
         sendLimitActive: schedule.sendLimitActive,
-        activeDays: schedule.activeDays,
+        activeDays: [...schedule.activeDays].sort((a, b) => a - b),
         sendingHours: schedule.sendingHours,
         sendingHoursActive: schedule.sendingHoursActive,
         timezone: schedule.timezone,
       };
-      console.log("Creating flight schedule with payload:", payload);
       const res = await flightSchedulesApi.create(payload);
 
-      // Update the copilot store with the new schedule ID
-      updateCopilotData({ flightScheduleId: res.data.id });
+      // Link the copilot to the new schedule and keep the store preview in sync.
+      updateCopilotData({
+        flightScheduleId: res.data.id,
+        flightSchedule: payload,
+      });
+
+      if (selectedId) {
+        toast.success(
+          "Changes saved as a new schedule — the original schedule was not changed.",
+        );
+      } else {
+        toast.success("Flight schedule created and linked.");
+      }
       setStep(6);
     } catch (error) {
       toast.error("Failed to create flight schedule. Please try again.");
@@ -115,17 +191,7 @@ export default function ScheduleStep({
         </p>
       </div>
 
-      <div
-        className={`flex flex-col gap-8 w-full max-w-4xl transition-opacity ${selectedId ? "opacity-50 pointer-events-none" : "opacity-100"}`}
-      >
-        {selectedId && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-4 text-sm flex items-center justify-center">
-            <CircleAlert className="w-5 h-5 mr-2" />
-            You have selected an existing schedule above. Deselect it to create
-            a custom one here.
-          </div>
-        )}
-
+      <div className="flex flex-col gap-8 w-full max-w-4xl">
         <div className="border-b border-slate-100 pb-8">
           <h3 className="text-sm font-bold text-slate-900 mb-2">
             Schedule Name (if creating new)
@@ -168,9 +234,34 @@ export default function ScheduleStep({
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <div className="px-4 py-2 min-w-15 text-center text-sm font-medium border-x border-slate-200">
-                      {schedule.sendLimit || 30}
-                    </div>
+                    <input
+                      type="number"
+                      min={1}
+                      inputMode="numeric"
+                      value={limitText}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        setLimitText(raw);
+                        const n = parseInt(raw, 10);
+                        if (!Number.isNaN(n) && n >= 1) {
+                          updateFlightSchedule({ sendLimit: n });
+                        }
+                      }}
+                      onBlur={() => {
+                        const n = parseInt(limitText, 10);
+                        const final = Number.isNaN(n) || n < 1
+                          ? schedule.sendLimit ?? 30
+                          : n;
+                        setLimitText(String(final));
+                        if (final !== schedule.sendLimit) {
+                          updateFlightSchedule({ sendLimit: final });
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") e.currentTarget.blur();
+                      }}
+                      className="w-20 px-2 py-2 text-center text-sm font-medium border-x border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    />
                     <button
                       type="button"
                       onClick={() =>
@@ -397,12 +488,73 @@ export default function ScheduleStep({
           </div>
         </div>
       </div>
-      {/* Render ScheduleList (which updates selectedId) */}
-      <div className="mb-8">{children}</div>
+
+      {/* Mode chip: makes explicit what "Save & Continue" will do */}
+      {baseline === null ? (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50 mt-8">
+          <CircleAlert className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
+          <p className="text-xs font-medium text-gray-700 leading-relaxed">
+            Custom schedule — a new schedule will be created and linked when
+            you continue.
+          </p>
+        </div>
+      ) : dirty ? (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50/60 mt-8">
+          <CircleAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs font-medium text-amber-800 leading-relaxed">
+            Modified from “{baseline.data.name}” — your changes will be saved
+            as a <strong>new schedule</strong>. The original schedule stays
+            unchanged.
+          </p>
+        </div>
+      ) : (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/50 mt-8">
+          <CircleAlert className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+          <p className="text-xs font-medium text-slate-700 leading-relaxed">
+            Using saved schedule: {baseline.data.name} — nothing will be
+            changed when you continue.
+          </p>
+        </div>
+      )}
+
+      {/* Saved schedules — collapsed dropdown so the form stays on top */}
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={() => setListOpen((o) => !o)}
+          aria-expanded={listOpen}
+          className="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border border-[#E2E8F0] rounded-lg bg-white hover:bg-gray-50 transition-colors"
+        >
+          <span className="flex items-center gap-2.5 min-w-0">
+            <Clock size={16} className="text-[#59637C] shrink-0" />
+            <span className="text-sm font-bold text-gray-900">
+              Your Flight Schedules
+            </span>
+            {baseline !== null && (
+              <span className="truncate max-w-48 text-xs font-medium text-primary bg-primary-light px-2 py-0.5 rounded-full">
+                Using: {baseline.data.name}
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            size={16}
+            className={`text-gray-400 shrink-0 transition-transform ${
+              listOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {listOpen && (
+          <div className="mt-4">
+            <ScheduleList onSelect={() => setListOpen(false)} />
+          </div>
+        )}
+      </div>
+
       <StepsActions
         onPress={handleSave}
         isLoading={loading}
-        canContinue={true}
+        canContinue={schedule.activeDays.length > 0}
       />
     </div>
   );

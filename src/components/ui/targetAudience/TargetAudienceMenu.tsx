@@ -28,19 +28,19 @@ function TargetAudienceMenu({
     {
       key: "duplicate",
       label: "Duplicate",
-      icon: <Copy size={15} strokeWidth={1.75} />,
+      icon: <Copy size={13} />,
       onClick: () => onDuplicate && onDuplicate(id),
     },
     {
       key: "edit",
       label: "Edit",
-      icon: <Pencil size={15} strokeWidth={1.75} />,
+      icon: <Pencil size={13} />,
       onClick: () => onEdit && onEdit(id),
     },
     {
       key: "delete",
       label: "Delete",
-      icon: <Trash2 size={15} strokeWidth={1.75} />,
+      icon: <Trash2 size={13} />,
       onClick: () => onDelete && onDelete(id),
       variant: "danger",
     },
@@ -49,29 +49,27 @@ function TargetAudienceMenu({
   return (
     <div
       role="menu"
-      className={`w-40 bg-white absolute top-10 mt-1 right-10 z-20 rounded-lg shadow-lg border border-gray-100 py-1.5 ${className}`}
+      className={`w-44 bg-white absolute top-10 mt-1 right-10 z-20 rounded-xl shadow-lg border border-gray-200 py-1 overflow-hidden ${className}`}
     >
       {items.map((item) => (
-        <button
-          key={item.key}
-          role="menuitem"
-          type="button"
-          onClick={item.onClick}
-          className={`w-full flex items-center gap-2.5 px-3.5 py-2 font-medium text-[13px] text-left transition-colors ${
-            item.variant === "danger"
-              ? "text-rose-500 hover:bg-rose-50"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
-        >
-          <span
-            className={
-              item.variant === "danger" ? "text-rose-400" : "text-gray-400"
-            }
+        <React.Fragment key={item.key}>
+          {item.variant === "danger" && (
+            <div className="my-1 border-t border-gray-100" />
+          )}
+          <button
+            role="menuitem"
+            type="button"
+            onClick={item.onClick}
+            className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
+              item.variant === "danger"
+                ? "text-red-600 hover:bg-red-50"
+                : "text-gray-700 hover:bg-gray-50"
+            }`}
           >
             {item.icon}
-          </span>
-          {item.label}
-        </button>
+            {item.label}
+          </button>
+        </React.Fragment>
       ))}
     </div>
   );

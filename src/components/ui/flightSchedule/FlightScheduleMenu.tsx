@@ -1,18 +1,20 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Copy, Edit2, Trash2, MoreVertical, X } from "lucide-react";
 
-interface TemplateActionsProps {
+interface FlightScheduleMenuProps {
   onEdit: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
 }
 
-export default function TemplateActions({
+export default function FlightScheduleMenu({
   onEdit,
   onDelete,
   onDuplicate,
-}: TemplateActionsProps) {
+}: FlightScheduleMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -36,9 +38,9 @@ export default function TemplateActions({
     if (!open && ref.current) {
       const rect = ref.current.getBoundingClientRect();
       setPosition({
-          top: rect.bottom + 4,
-          left: rect.right - 176,
-        });
+        top: rect.bottom + 4,
+        left: rect.right - 176,
+      });
     }
     setOpen(!open);
   }
@@ -49,7 +51,7 @@ export default function TemplateActions({
         onClick={handleToggle}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Template actions"
+        aria-label="Flight schedule actions"
         className="text-gray-300 transition-colors hover:text-gray-500"
       >
         {open ? <X size={18} /> : <MoreVertical size={18} />}
@@ -59,10 +61,12 @@ export default function TemplateActions({
         createPortal(
           <div
             ref={menuRef}
+            role="menu"
             className="fixed w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-[9999] py-1 overflow-hidden"
             style={{ top: position.top, left: position.left }}
           >
             <button
+              role="menuitem"
               onMouseDown={(e) => {
                 e.stopPropagation();
                 onDuplicate();
@@ -74,6 +78,7 @@ export default function TemplateActions({
               Duplicate
             </button>
             <button
+              role="menuitem"
               onMouseDown={(e) => {
                 e.stopPropagation();
                 onEdit();
@@ -86,6 +91,7 @@ export default function TemplateActions({
             </button>
             <div className="my-1 border-t border-gray-100" />
             <button
+              role="menuitem"
               onMouseDown={(e) => {
                 e.stopPropagation();
                 onDelete();

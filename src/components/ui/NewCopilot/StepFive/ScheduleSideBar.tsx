@@ -8,7 +8,7 @@ const DEFAULT_TIMEZONE = "Europe/Brussels";
 
 export default function ScheduleSideBar() {
   const { copilotData } = useCopilotStore();
-  const sendLimit = copilotData?.flightSchedule?.sendLimit || 30;
+  const sendLimit = copilotData?.flightSchedule?.sendLimit;
   const timezone = copilotData?.flightSchedule?.timezone || DEFAULT_TIMEZONE;
   const activeDays = copilotData?.flightSchedule?.activeDays || [1, 2, 3, 4, 5];
   const fromTime = copilotData?.flightSchedule?.sendingHours.start || "08:00";
@@ -39,7 +39,7 @@ export default function ScheduleSideBar() {
 
   const activeDaysPerMonth = activeDays.length * 4;
   const monthlyVolume = sendLimitActive
-    ? `~${sendLimit * activeDaysPerMonth}`
+    ? `~${(sendLimit ?? 30) * activeDaysPerMonth}`
     : "Unlimited";
 
   return (
@@ -63,7 +63,7 @@ export default function ScheduleSideBar() {
             </h4>
             <p className="text-xs text-slate-500">
               {sendLimitActive
-                ? `${sendLimit} emails per day`
+                ? `${sendLimit ?? 30} emails per day`
                 : "Unlimited emails"}
             </p>
           </div>

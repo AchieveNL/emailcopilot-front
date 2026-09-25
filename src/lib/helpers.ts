@@ -11,12 +11,30 @@ export const handlePlanNameChange = (planName: string): string => {
   }
 };
 
-export function formatDateTime(apiDateString: string) {
+/** Month-name date ("Sep 22, 2026") — the standard table date format. */
+export function formatDate(apiDateString?: string | null): string {
+  if (!apiDateString) return "—";
   const date = new Date(apiDateString);
+  if (isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function formatDateTime(apiDateString: string, includeTime = true) {
+  if (!apiDateString) return "";
+  const date = new Date(apiDateString);
+  if (isNaN(date.getTime())) return "";
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
+
+  if (!includeTime) {
+    return `${day}/${month}/${year}`;
+  }
 
   let hours = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -127,3 +145,35 @@ export function getDateRange(days = 7): string {
 
   return `${formatDate(startDate)} - ${formatDate(today)}`;
 }
+
+// ─── Template editor helpers ───────────────────────────────────────────────────
+
+/** Escapes special HTML characters so plain-text is safe inside HTML tags. */
+export const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+/**
+ * Converts a plain-text or already-HTML body string into TipTap-ready HTML.
+ * - If the value already starts with `<` it is returned as-is.
+ * - Otherwise double-newlines become `<p>` tags and single newlines become `<br />`.
+ */
+export const toEditorContent = (value: string): string => {
+  if (!value) return "";
+  const trimmedValue = value.trim();
+  if (trimmedValue.startsWith("<")) {
+    return value;
+  }
+  return value
+    .trim()
+    .split(/\n\s*\n/)
+    .map((paragraph) => {
+      const lines = paragraph.split(/\n/).map(escapeHtml);
+      return `<p>${lines.join("<br />")}</p>`;
+    })
+    .join("");
+};

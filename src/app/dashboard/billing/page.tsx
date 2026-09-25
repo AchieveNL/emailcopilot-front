@@ -67,7 +67,7 @@ export default function BillingPage() {
     );
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
         <p className="text-gray-500 text-sm mt-1">

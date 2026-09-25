@@ -76,7 +76,7 @@ export default function TemplateTable({
         {TABLE_HEADERS.map((col) => (
           <span
             key={col}
-            className="font-bold text-sm leading-5 text-[#0F172A]"
+            className="font-normal text-xs leading-5 text-[#94A3B8]"
           >
             {col}
           </span>

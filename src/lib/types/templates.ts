@@ -24,7 +24,7 @@ export type Template = {
   usageCount?: number;
   createdAt?: string;
   steps?: TemplateStep[];
-  lastUpdated?: string;
+  updatedAt?: string;
   usedIn?: number;
   replyRate?: number;
   trend?: "up" | "down";
@@ -54,3 +54,14 @@ export type TemplateForm = {
   body: string;
   category: string;
 };
+
+/** Props for the TemplateModal component */
+export interface TemplateModalProps {
+  editingTemplate: Template | null;
+  initialSteps?: TemplateStep[];
+  form: TemplateForm;
+  saving: boolean;
+  onFormChange: (form: TemplateForm) => void;
+  onSave: (steps: TemplateStep[]) => void;
+  onClose: () => void;
+}

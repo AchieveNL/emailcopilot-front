@@ -18,7 +18,7 @@ function EmailAccountStatus({ status }: { status: AccountStatus }) {
 
   return (
     <span
-      className={`inline-block rounded-md px-2.5 py-1 text-xs capitalize font-medium ${
+      className={`inline-block rounded-md px-3 py-2 text-[12px] capitalize font-medium ${
         handleStatusChange(status).bg
       }`}
     >

@@ -9,8 +9,8 @@ import CopilotTable, {
 } from "@/components/layout/features/copilots/CopilotTable";
 import CopilotCardsList from "@/components/layout/features/copilots/CopilotCardsList";
 import CopilotToolbar from "@/components/ui/copilots/CopilotToolBar";
-import { Pagination } from "@/components/ui/Pagination";
-import type { PaginatedMeta } from "@/lib/types";
+import TemplatesPagination from "@/components/ui/templates/Pagination";
+import { useRowsPerPage } from "@/lib/hooks";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import Link from "next/link";
 
@@ -22,9 +22,9 @@ export default function CopilotsPage() {
   const [status, setStatus] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
-  // Pagination state
+  // Pagination state — same responsive rows-per-page as the templates table
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const perPage = useRowsPerPage(10);
 
   useEffect(() => {
     fetchCopilots();
@@ -61,28 +61,11 @@ export default function CopilotsPage() {
 
   // Calculate pagination
   const totalItems = sorted.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * perPage;
+  const endIndex = startIndex + perPage;
   const paginatedData = sorted.slice(startIndex, endIndex);
-
-  // Create pagination meta
-  const meta: PaginatedMeta = {
-    total: totalItems,
-    page: currentPage,
-    limit: itemsPerPage,
-    totalPages: totalPages,
-  };
-
-  // Pagination handlers
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleLimitChange = (limit: number) => {
-    setItemsPerPage(limit);
-    setCurrentPage(1); // Reset to first page when changing limit
-  };
 
   // Reset page when filters change
   useEffect(() => {
@@ -90,7 +73,7 @@ export default function CopilotsPage() {
   }, [status, search]);
 
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       {/* Header */}
       <DashboardHeader
         title="Copilots"
@@ -101,7 +84,7 @@ export default function CopilotsPage() {
 
 
       {/* Toolbar */}
-      <div className="w-full p-2 border border-gray-200 mb-3 bg-white rounded-lg">
+      <div className="w-full p-2 border border-[#E2E8F0] mb-3 bg-white rounded-lg">
         <CopilotToolbar
           search={search}
           onSearchChange={setSearch}
@@ -152,14 +135,12 @@ export default function CopilotsPage() {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {totalItems > 0 && (
         <div className="mt-4">
-          <Pagination
-            meta={meta}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            onLimitChange={handleLimitChange}
-            showLimitSelector={false}
+          <TemplatesPagination
+            currentPage={safeCurrentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
           />
         </div>
       )}

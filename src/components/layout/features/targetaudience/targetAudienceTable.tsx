@@ -1,9 +1,10 @@
-import { EllipsisVertical, X } from "lucide-react";
+import { EllipsisVertical, X, Search, Target } from "lucide-react";
 import type { TargetAudience } from "@/store/copilotStore";
 import TargetAudienceMenu from "@/components/ui/targetAudience/TargetAudienceMenu";
-import TargetAudienceSearchBar from "@/components/ui/targetAudience/TargetAudienceSearchBar";
-import { Pagination } from "@/components/ui/Pagination";
-import { useState, useEffect } from "react";
+import TemplatesPagination from "@/components/ui/templates/Pagination";
+import { useRowsPerPage } from "@/lib/hooks";
+import { formatDate } from "@/lib/helpers";
+import { useState } from "react";
 
 export interface TargetAudienceTableProps {
   targetAudiences: TargetAudience[];
@@ -11,18 +12,7 @@ export interface TargetAudienceTableProps {
   onEdit?: (audience: TargetAudience) => void;
   onDelete?: (audience: TargetAudience) => void;
   onDuplicate?: (audience: TargetAudience) => void;
-}
-
-// Formats an ISO date string ("2026-07-25T14:08:23.212Z") into "Jul 25,2026"
-// to match the "May 24,2026" style shown in the design.
-function formatDate(isoString: string | null | undefined): string {
-  if (!isoString) return "—";
-  const date = new Date(isoString);
-  if (isNaN(date.getTime())) return "—";
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-  return `${month} ${day},${year}`;
+  onCreateNew?: () => void;
 }
 
 function formatCount(value: number | null | undefined): string {
@@ -30,19 +20,191 @@ function formatCount(value: number | null | undefined): string {
   return value.toLocaleString("en-US");
 }
 
-interface Column {
-  key: keyof TargetAudience;
-  label: string;
+const TABLE_HEADERS = [
+  "Target Audience name",
+  "Industry",
+  "Country",
+  "City",
+  "Est. Audience Size",
+  "Last updated",
+  "Actions",
+];
+
+const COLUMNS = "1.4fr 1.1fr 0.8fr 0.8fr 0.8fr 0.8fr 0.4fr";
+
+function SearchInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="relative w-full sm:w-80">
+      <Search
+        size={20}
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-[#59637C]"
+      />
+      <input
+        type="text"
+        placeholder="Search target audience..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Search target audiences by name"
+        className="w-full h-10 border border-[#E2E8F0] rounded-lg pl-10 pr-4 text-sm bg-white focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+        style={{ color: "#59637C" }}
+      />
+    </div>
+  );
 }
 
-const COLUMNS: Column[] = [
-  { key: "name", label: "Target Audience name" },
-  { key: "searchQuery", label: "Industry" },
-  { key: "country", label: "Country" },
-  { key: "city", label: "City" },
-  { key: "resultsCount", label: "Est. Audience Size" },
-  { key: "updatedAt", label: "Last updated" },
-];
+function AudienceRow({
+  audience,
+  openMenuId,
+  setOpenMenuId,
+  onEdit,
+  onDelete,
+  onDuplicate,
+}: {
+  audience: TargetAudience;
+  openMenuId: number | null;
+  setOpenMenuId: (id: number | null) => void;
+  onEdit?: (audience: TargetAudience) => void;
+  onDelete?: (audience: TargetAudience) => void;
+  onDuplicate?: (audience: TargetAudience) => void;
+}) {
+  const menu = (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          setOpenMenuId(openMenuId === audience.id ? null : audience.id)
+        }
+        className="text-gray-300 transition-colors hover:text-gray-500"
+        aria-haspopup="menu"
+        aria-expanded={openMenuId === audience.id}
+        aria-label="Row actions"
+      >
+        {openMenuId === audience.id ? (
+          <X size={18} />
+        ) : (
+          <EllipsisVertical size={18} />
+        )}
+      </button>
+      {openMenuId === audience.id && (
+        <TargetAudienceMenu
+          id={audience.id}
+          onDuplicate={(id) => {
+            console.log("Duplicate clicked for audience:", audience);
+            onDuplicate?.(audience);
+            setOpenMenuId(null);
+          }}
+          onEdit={(id) => {
+            onEdit?.(audience);
+            setOpenMenuId(null);
+          }}
+          onDelete={(id) => {
+            onDelete?.(audience);
+            setOpenMenuId(null);
+          }}
+        />
+      )}
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Row */}
+      <div
+        className="hidden lg:grid items-center px-5 py-6 border-b border-[#E2E8F0] hover:bg-gray-50 transition-colors"
+        style={{ gridTemplateColumns: COLUMNS }}
+      >
+        <span className="font-semibold truncate pr-4 text-sm text-[#0F172A]">
+          {audience.name || "—"}
+        </span>
+
+        <span className="min-w-0 truncate text-sm text-[#0F172A]">
+          {audience.searchQuery || "—"}
+        </span>
+
+        <span className="text-sm text-[#0F172A]">{audience.country || "—"}</span>
+
+        <span className="text-sm text-[#0F172A]">{audience.city || "—"}</span>
+
+        <span className="text-sm text-[#0F172A]">
+          {formatCount(audience.resultsCount)}
+        </span>
+
+        <span className="text-sm text-[#0F172A]">
+          {formatDate(audience.updatedAt)}
+        </span>
+
+        <div className="flex items-center relative">{menu}</div>
+      </div>
+
+      {/* Mobile Row */}
+      <div className="lg:hidden px-4 py-5 border-b border-[#E2E8F0] hover:bg-gray-50 transition-colors">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold truncate text-sm text-[#0F172A]">
+                {audience.name || "—"}
+              </span>
+            </div>
+            <div className="truncate text-xs text-[#59637C]">
+              {audience.searchQuery || "—"}
+            </div>
+            <div className="mt-0.5 text-xs text-[#59637C]">
+              {[audience.country, audience.city].filter(Boolean).join(" · ") ||
+                "—"}{" "}
+              · {formatCount(audience.resultsCount)} leads
+            </div>
+            <div className="mt-0.5 text-xs text-[#59637C]">
+              {formatDate(audience.updatedAt)}
+            </div>
+          </div>
+          <div className="relative shrink-0">{menu}</div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function EmptyState({ onCreateNew }: { onCreateNew?: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 sm:py-20 px-4">
+      <div
+        className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg flex items-center justify-center mb-4"
+        style={{ backgroundColor: "var(--color-primary-light)" }}
+      >
+        <Target
+          size={32}
+          className="sm:hidden"
+          style={{ color: "var(--color-primary)" }}
+        />
+        <Target
+          size={40}
+          className="hidden sm:block"
+          style={{ color: "var(--color-primary)" }}
+        />
+      </div>
+      <h3 className="font-bold mb-2 text-center text-lg leading-7 text-[#0F172A]">
+        No Target Audiences Found
+      </h3>
+      <p className="mb-6 text-center text-sm leading-5 font-light text-[#59637C]">
+        Create a target audience for easier access later
+      </p>
+      {onCreateNew && (
+        <button
+          onClick={onCreateNew}
+          className="inline-flex items-center gap-2 btn-cta text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+        >
+          Create New Target Audience
+        </button>
+      )}
+    </div>
+  );
+}
 
 function TargetAudienceTable({
   targetAudiences = [],
@@ -50,142 +212,86 @@ function TargetAudienceTable({
   onDelete,
   onRowMenuClick,
   onDuplicate,
+  onCreateNew,
 }: TargetAudienceTableProps) {
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [query]);
+  // Same responsive rows-per-page as the templates table
+  const perPage = useRowsPerPage(10);
 
   const filtered = targetAudiences.filter((a) =>
     a.name.toLowerCase().includes(query.toLowerCase()),
   );
 
-  const total = filtered.length;
-  const totalPages = Math.ceil(total / limit);
-  const startIndex = (currentPage - 1) * limit;
-  const paginatedData = filtered.slice(startIndex, startIndex + limit);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedData = filtered.slice(
+    (safeCurrentPage - 1) * perPage,
+    safeCurrentPage * perPage,
+  );
 
-  if (!targetAudiences || targetAudiences.length === 0) {
-    return (
-      <div className="w-full bg-white rounded-lg border border-gray-100">
-        <div className="py-16 text-center text-sm text-gray-400">
-          No target audiences yet.
-        </div>
-      </div>
-    );
+  function handleSearchChange(value: string) {
+    setQuery(value);
+    setCurrentPage(1);
   }
 
   return (
-    <div className="w-full   rounded-lg overflow-hidden flex flex-col gap-4">
-      <div className="overflow-x-auto  pb-4 border border-gray-100 bg-white rounded-lg flex flex-col">
-        <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between px-6 py-4 border-b border-gray-100">
-          <h1 className="text-gray-900 font-bold">
-            Your Target Audiences ({targetAudiences.length})
-          </h1>
-          <TargetAudienceSearchBar onSearch={setQuery} />
+    <>
+      <div className="bg-white border border-[#E2E8F0] rounded-lg">
+        {/* Card Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[#E2E8F0]">
+          <h2 className="font-bold text-lg leading-6 text-[#0F172A]">
+            Your Target Audiences ({filtered.length})
+          </h2>
+          <SearchInput value={query} onChange={handleSearchChange} />
         </div>
-        <div className="overflow-auto flex-1 max-h-150">
-          <table className="w-full border-collapse   ">
-            <thead>
-              <tr className="border-b border-gray-100 sticky top-0 z-60 bg-white">
-                {COLUMNS.map((col) => (
-                  <th
-                    key={col.key}
-                    className="text-left text-[13px] font-medium text-gray-900 px-6 py-4 whitespace-nowrap"
-                  >
-                    {col.label}
-                  </th>
-                ))}
-                <th className="px-4 py-4 w-10" />
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map((audience) => (
-                <tr
-                  key={audience.id}
-                  className="border-b border-gray-50 last:border-b-0 hover:bg-gray-50/60 transition-colors"
-                >
-                  <td className="px-6 py-4 text-[14px] font-medium text-gray-900 whitespace-nowrap">
-                    {audience.name || "—"}
-                  </td>
-                  <td className="px-6 py-4 text-[14px] text-gray-600 whitespace-nowrap">
-                    {audience.searchQuery || "—"}
-                  </td>
-                  <td className="px-6 py-4 text-[14px] text-gray-600 whitespace-nowrap">
-                    {audience.country || "—"}
-                  </td>
-                  <td className="px-6 py-4 text-[14px] text-gray-600 whitespace-nowrap">
-                    {audience.city || "—"}
-                  </td>
-                  <td className="px-6 py-4 text-[14px] text-gray-600 whitespace-nowrap">
-                    {formatCount(audience.resultsCount)}
-                  </td>
-                  <td className="px-6 py-4 text-[14px] text-gray-600 whitespace-nowrap">
-                    {formatDate(audience.updatedAt)}
-                  </td>
-                  <td className="px-4 py-4 text-right relative">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenMenuId(
-                          openMenuId === audience.id ? null : audience.id,
-                        )
-                      }
-                      className="text-gray-300 hover:text-gray-500 transition-colors"
-                      aria-label="Row actions"
-                    >
-                      {openMenuId === audience.id ? (
-                        <X size={18} />
-                      ) : (
-                        <EllipsisVertical size={18} />
-                      )}
-                    </button>
-                    {openMenuId === audience.id && (
-                      <TargetAudienceMenu
-                        id={audience.id}
-                        onDuplicate={(id) => {
-                          console.log(
-                            "Duplicate clicked for audience:",
-                            audience,
-                          );
-                          onDuplicate?.(audience);
-                          setOpenMenuId(null);
-                        }}
-                        onEdit={(id) => {
-                          onEdit?.(audience);
-                          setOpenMenuId(null);
-                        }}
-                        onDelete={(id) => {
-                          onDelete?.(audience);
-                          setOpenMenuId(null);
-                        }}
-                      />
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {/* Desktop Table Header */}
+        <div
+          className="hidden lg:grid px-5 py-3 border-b border-[#E2E8F0]"
+          style={{ gridTemplateColumns: COLUMNS }}
+        >
+          {TABLE_HEADERS.map((col) => (
+            <span
+              key={col}
+              className="font-normal text-xs leading-5 text-[#94A3B8]"
+            >
+              {col}
+            </span>
+          ))}
         </div>
+
+        {/* Rows / Empty */}
+        {filtered.length === 0 ? (
+          <EmptyState onCreateNew={onCreateNew} />
+        ) : (
+          <div>
+            {paginatedData.map((audience) => (
+              <AudienceRow
+                key={audience.id}
+                audience={audience}
+                openMenuId={openMenuId}
+                setOpenMenuId={setOpenMenuId}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onDuplicate={onDuplicate}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {totalPages > 1 && (
-        <Pagination
-          meta={{ total, page: currentPage, limit, totalPages }}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          onLimitChange={(newLimit) => {
-            setLimit(newLimit);
-            setCurrentPage(1);
-          }}
-          showLimitSelector={false}
-        />
+      {filtered.length > 0 && (
+        <div className="mt-4">
+          <TemplatesPagination
+            currentPage={safeCurrentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 }
 

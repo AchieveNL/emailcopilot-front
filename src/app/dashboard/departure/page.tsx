@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { Suspense, useState, useEffect, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   MapPin,
@@ -24,6 +24,7 @@ import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -136,7 +137,7 @@ function Tooltip({
   );
 }
 
-export default function LeadsPage() {
+function LeadsPageContent() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [meta, setMeta] = useState<PaginatedMeta>(MOCK_META);
   const [loading, setLoading] = useState(true);
@@ -245,7 +246,7 @@ export default function LeadsPage() {
   };
 
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div className="">
@@ -553,5 +554,22 @@ export default function LeadsPage() {
         }}
       />
     </div>
+  );
+}
+
+export default function LeadsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-8 px-4 w-full mx-auto flex items-center justify-center min-h-100">
+          <div className="flex items-center gap-3 text-gray-500">
+            <Loader2 size={20} className="animate-spin" />
+            <span>Loading...</span>
+          </div>
+        </div>
+      }
+    >
+      <LeadsPageContent />
+    </Suspense>
   );
 }
