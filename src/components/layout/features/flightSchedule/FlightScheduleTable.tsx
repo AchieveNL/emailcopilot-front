@@ -104,7 +104,9 @@ function ScheduleRow({
           {schedule.name || "—"}
         </span>
 
-        <span className="text-sm text-[#0F172A]">{formatDays(schedule.activeDays)}</span>
+        <span className="text-sm text-[#0F172A]">
+          {formatDays(schedule.activeDays)}
+        </span>
 
         <span className="text-sm text-[#0F172A]">{formatTime(schedule)}</span>
 
@@ -112,7 +114,9 @@ function ScheduleRow({
           {schedule.timezone || "—"}
         </span>
 
-        <span className="text-sm text-[#0F172A]">{formatUsedBy(schedule.usedBy)}</span>
+        <span className="text-sm text-[#0F172A]">
+          {formatUsedBy(schedule.usedBy)}
+        </span>
 
         <span>
           <CopilotStatus status="draft" />
@@ -204,7 +208,7 @@ export default function FlightScheduleTable({
       {/* Card Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[#E2E8F0]">
         <h2 className="font-bold text-lg leading-6 text-[#0F172A]">
-          Your flight schedules ({filteredCount})
+          Your Flight Schedules ({filteredCount})
         </h2>
         <div className="relative w-full sm:w-80">
           <Search
@@ -244,7 +248,10 @@ export default function FlightScheduleTable({
           Loading flight schedules…
         </div>
       ) : filteredCount === 0 ? (
-        <EmptyState onCreateNew={onCreateNew} isFiltered={schedules.length > 0} />
+        <EmptyState
+          onCreateNew={onCreateNew}
+          isFiltered={schedules.length > 0}
+        />
       ) : (
         <div>
           {schedules.map((schedule) => (

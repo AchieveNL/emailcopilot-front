@@ -141,8 +141,14 @@ export default function ScheduleStep() {
 
     setLoading(true);
     try {
+      const baseName = schedule.name || "Custom Copilot Schedule";
+      // Forked copies are marked so they stay distinguishable from the
+      // original (and repeated forks don't stack the suffix).
+      const name = selectedId
+        ? `${baseName.replace(/\s*\(edited\)$/i, "")} (edited)`
+        : baseName;
       const payload = {
-        name: schedule.name || "Custom Copilot Schedule",
+        name,
         sendLimit: schedule.sendLimitActive ? schedule.sendLimit : null,
         sendLimitActive: schedule.sendLimitActive,
         activeDays: [...schedule.activeDays].sort((a, b) => a - b),
