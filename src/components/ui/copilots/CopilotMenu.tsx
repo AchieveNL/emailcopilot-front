@@ -24,7 +24,8 @@ export default function CopilotMenu({
     copilot.status !== "archived" &&
     copilot.status !== "active" &&
     copilot.status !== "completed";
-  const showPauseButton = copilot.status === "running";
+  const showPauseButton =
+    copilot.status === "running" || copilot.status === "active";
   const showResumeButton = copilot.status === "paused";
 
   async function toggleStatus(next: "active" | "paused") {
