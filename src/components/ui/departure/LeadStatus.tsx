@@ -1,5 +1,5 @@
 "use client";
-type LeadStatusType = "new" | "sent" | "replied" | "failed";
+type LeadStatusType = "new" | "sent" | "replied" | "failed" | "suppressed";
 
 function LeadStatus({
   status,
@@ -26,6 +26,12 @@ function LeadStatus({
         return {
           text: "text-primary",
           bg: "bg-primary/5",
+        };
+
+      case "suppressed":
+        return {
+          text: "text-gray-500",
+          bg: "bg-gray-100",
         };
 
       default:

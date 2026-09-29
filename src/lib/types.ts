@@ -54,6 +54,7 @@ export type Lead = {
   sourceQuery: string | null;
   sentAt: string | null;
   templateId: number | null;
+  suppressed: boolean;
 };
 
 export type PaginatedMeta = {
