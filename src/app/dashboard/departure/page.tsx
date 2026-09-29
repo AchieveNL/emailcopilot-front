@@ -16,6 +16,7 @@ import {
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
 import LeadStatus from "@/components/ui/departure/LeadStatus";
+import LeadMenu from "@/components/ui/departure/LeadMenu";
 import { Pagination } from "@/components/ui/Pagination";
 import EmailPreviewCard from "@/components/ui/EmialPreview";
 import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
@@ -245,6 +246,18 @@ function LeadsPageContent() {
     fetchLeads();
   };
 
+  const handleDeleteLead = (id: number) => {
+    setLeads((prev) => prev.filter((lead) => lead.id !== id));
+  };
+
+  const handleSuppressLead = (id: number) => {
+    setLeads((prev) =>
+      prev.map((lead) =>
+        lead.id === id ? { ...lead, suppressed: true } : lead,
+      ),
+    );
+  };
+
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <div className="mb-8">
@@ -320,8 +333,11 @@ function LeadsPageContent() {
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-40  sticky top-0 right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5">
                       Status
+                    </th>
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white border-l border-gray-100">
+                      <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
@@ -497,16 +513,33 @@ function LeadsPageContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky w-20 align-middle right-0 z-30 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
+                      <td className="px-6 py-5 align-middle transition-colors">
                         <div className="flex items-center gap-2 ">
                           <Tooltip
                             text={
-                              lead.status.charAt(0).toUpperCase() +
-                                lead.status.slice(1) || "Sent"
+                              lead.suppressed
+                                ? "Suppressed"
+                                : lead.status.charAt(0).toUpperCase() +
+                                    lead.status.slice(1) || "Sent"
                             }
                           >
-                            <LeadStatus status={lead.status || "sent"} />
+                            <LeadStatus
+                              status={
+                                lead.suppressed
+                                  ? "suppressed"
+                                  : lead.status || "sent"
+                              }
+                            />
                           </Tooltip>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white border-l border-gray-100 transition-colors">
+                        <div className="flex items-center justify-center">
+                          <LeadMenu
+                            lead={lead}
+                            onDeleted={handleDeleteLead}
+                            onSuppressed={handleSuppressLead}
+                          />
                         </div>
                       </td>
                     </tr>

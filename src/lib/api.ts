@@ -176,6 +176,8 @@ export const leadsApi = {
   }) => api.get("/leads", { params }),
 
   getById: (id: number) => api.get(`/leads/${id}`),
+  updateDoNotContact: (id: number, doNotContact: boolean) =>
+    api.patch(`/leads/${id}`, { doNotContact }),
 };
 
 // ─── Email Logs ───────────────────────────────────────────────────────────────
