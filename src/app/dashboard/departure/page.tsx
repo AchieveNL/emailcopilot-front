@@ -250,11 +250,9 @@ function LeadsPageContent() {
     setLeads((prev) => prev.filter((lead) => lead.id !== id));
   };
 
-  const handleSuppressLead = (id: number) => {
+  const handleSuppressionChange = (id: number, suppressed: boolean) => {
     setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === id ? { ...lead, suppressed: true } : lead,
-      ),
+      prev.map((lead) => (lead.id === id ? { ...lead, suppressed } : lead)),
     );
   };
 
@@ -267,11 +265,7 @@ function LeadsPageContent() {
               Departure
             </h1>
             <p className="text-gray-500 text-xs sm:text-sm mt-1 line-clamp-2">
-              Recipients who have been emailed by
-              <span className="font-bold text-gray-950 ">
-                {" " + copilotName}
-              </span>
-              .
+              Recipients who have been emailed by your copilots.{" "}
             </p>
           </div>
 
@@ -301,42 +295,42 @@ function LeadsPageContent() {
         </div>
       ) : (
         <>
-          <div className="bg-white min-h-120 border border-gray-200 rounded-xl  overflow-hidden mb-6">
+          <div className="bg-white min-h-120 border border-[#E2E8F0] rounded-lg  overflow-hidden mb-6">
             <div className="overflow-auto max-h-125">
               <table className="w-full text-sm min-w-225">
                 <thead>
-                  <tr className="border-b sticky top-0 z-40 border-gray-100 bg-white">
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                  <tr className="border-b sticky top-0 z-40 border-[#E2E8F0] bg-white">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Copilot
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Company
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Address
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Website
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Email
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Phone
                     </th>
-                    <th className=" font-semibold  bg-white text-gray-900 px-6    py-5">
+                    <th className="font-normal text-left text-xs leading-5 bg-white text-[#94A3B8] px-6 py-3">
                       Target Audience
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Departured at
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Status
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -345,7 +339,7 @@ function LeadsPageContent() {
                   {leads.map((lead, index) => (
                     <tr
                       key={lead.id + index}
-                      className=" border-b text-xs border-gray-50 hover:bg-gray-50/50 transition-colors"
+                      className=" border-b text-sm border-[#E2E8F0] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
@@ -357,7 +351,7 @@ function LeadsPageContent() {
                               target="_blank"
                               rel="noopener noreferrer"
                               href={`/dashboard/copilots#${lead.copilotName?.replace(" ", "-") || "unknown-copilot"}`}
-                              className="font-semibold line-clamp-1 text-gray-900"
+                              className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                             >
                               {lead.copilotName || "Unknown Copilot"}
                             </a>
@@ -370,7 +364,7 @@ function LeadsPageContent() {
                             <Building size={12} />
                           </div>
                           <Tooltip text={lead.companyName}>
-                            <div className="font-semibold line-clamp-1 text-gray-900">
+                            <div className="font-semibold line-clamp-2 text-sm text-[#0F172A]">
                               {lead.companyName}
                             </div>
                           </Tooltip>
@@ -387,7 +381,7 @@ function LeadsPageContent() {
                                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lead.address)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="font-semibold line-clamp-1 text-gray-900"
+                                className="font-semibold line-clamp-2 text-sm text-[#0F172A]"
                               >
                                 {lead.address}
                               </a>
@@ -408,7 +402,7 @@ function LeadsPageContent() {
                               target="_blank"
                               rel="noopener noreferrer"
                               href={normalizeUrl(lead.website || "#")}
-                              className="font-semibold text- line-clamp-1 text-gray-900"
+                              className="font-semibold text- line-clamp-2 text-sm text-[#0F172A]"
                             >
                               {lead.website}
                             </a>
@@ -430,7 +424,7 @@ function LeadsPageContent() {
                               target="_blank"
                               rel="noopener noreferrer"
                               href={`mailto:${lead.email}`}
-                              className="underline line-clamp-1 decoration-blue-200 underline-offset-4 group-hover:decoration-blue-400 transition-colors"
+                              className="line-clamp-2 transition-colors"
                             >
                               {lead.email}
                             </a>
@@ -439,7 +433,7 @@ function LeadsPageContent() {
                       </td>
 
                       <td className="px-6 py-5  text-gray-600">
-                        <div className="flex items-center gap-2 group relative whitespace-nowrap">
+                        <div className="flex items-center gap-2 group relative ">
                           {lead.phone ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
@@ -450,7 +444,7 @@ function LeadsPageContent() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   href={`https://wa.me/${lead.phone.replace("+", "")}`}
-                                  className="font-semibold line-clamp-1 text-gray-900"
+                                  className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                                 >
                                   {lead.phone}
                                 </a>
@@ -461,8 +455,8 @@ function LeadsPageContent() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5  bg-white  text-gray-600">
-                        <div className="flex items-center gap-2  whitespace-nowrap">
+                      <td className="px-6 py-5  text-gray-600">
+                        <div className="flex items-center gap-2">
                           {lead.sourceQuery ? (
                             <>
                               <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white ">
@@ -471,7 +465,7 @@ function LeadsPageContent() {
                               <Tooltip text={lead.sourceQuery}>
                                 <a
                                   href={`/dashboard/target-audiences#${lead.sourceQuery.replace(" ", "-")}`}
-                                  className="font-semibold line-clamp-1 text-gray-900"
+                                  className="font-semibold line-clamp-2 text-sm text-[#0F172A]"
                                 >
                                   {lead.sourceQuery}
                                 </a>
@@ -495,7 +489,7 @@ function LeadsPageContent() {
                                 : "Unknown"
                             }
                           >
-                            <div className="font-semibold line-clamp-1 text-gray-900">
+                            <div className="font-semibold line-clamp-2 text-sm text-[#0F172A]">
                               {lead.sentAt
                                 ? formatDateTime(lead.sentAt)
                                 : "Unknown"}
@@ -533,12 +527,12 @@ function LeadsPageContent() {
                           </Tooltip>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white border-l border-gray-100 transition-colors">
+                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white transition-colors">
                         <div className="flex items-center justify-center">
                           <LeadMenu
                             lead={lead}
                             onDeleted={handleDeleteLead}
-                            onSuppressed={handleSuppressLead}
+                            onSuppressionChange={handleSuppressionChange}
                           />
                         </div>
                       </td>
