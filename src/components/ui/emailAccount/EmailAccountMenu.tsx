@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { MoreVertical, Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { MoreVertical, Pencil, ShieldCheck, Trash2, X } from "lucide-react";
 import { useEmailAccountStore } from "@/store/emailAccountStore";
 import { Loader2 } from "lucide-react";
 import { EmailAccount } from "@/lib/types";
@@ -89,9 +89,9 @@ function EmailAccountMenu({ account }: AccountActionsMenuProps) {
           aria-haspopup="menu"
           aria-expanded={isOpen}
           aria-label="Open account actions"
-          className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          className="text-gray-300 transition-colors hover:text-gray-500"
         >
-          <MoreVertical size={16} />
+          {isOpen ? <X size={18} /> : <MoreVertical size={18} />}
         </button>
       )}
 
@@ -99,23 +99,27 @@ function EmailAccountMenu({ account }: AccountActionsMenuProps) {
         <div
           role="menu"
           aria-label="Account actions"
-          className="absolute right-0 z-10 mt-1 w-36 overflow-hidden rounded-lg border border-gray-100 bg-white py-1 shadow-lg"
+          className="absolute right-0 z-10 mt-1 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
         >
           {items.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              role="menuitem"
-              onClick={() => handleSelect(item)}
-              className={`flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] ${
-                item.variant === "danger"
-                  ? "text-red-600 hover:bg-red-50"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              <item.icon size={14} />
-              {item.label}
-            </button>
+            <Fragment key={item.label}>
+              {item.variant === "danger" && (
+                <div className="my-1 border-t border-gray-100" />
+              )}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleSelect(item)}
+                className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors ${
+                  item.variant === "danger"
+                    ? "text-red-600 hover:bg-red-50"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                <item.icon size={13} />
+                {item.label}
+              </button>
+            </Fragment>
           ))}
         </div>
       )}

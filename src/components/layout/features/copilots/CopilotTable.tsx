@@ -275,7 +275,7 @@ function CopilotTable({
   const [menuCopilotId, setMenuCopilotId] = React.useState<number | null>(null);
   if (!copilots || copilots.length === 0) {
     return (
-      <div className="w-full relative rounded-lg border border-gray-100 bg-white">
+      <div className="w-full relative rounded-lg border border-[#E2E8F0] bg-white">
         <div className="py-16 text-center text-sm text-gray-400">
           No copilots yet.
         </div>
@@ -284,24 +284,26 @@ function CopilotTable({
   }
 
   return (
-    <div className={`w-full overflow-hidden rounded-lg bg-white ${className}`}>
+    <div
+      className={`w-full overflow-hidden rounded-lg bg-white border border-[#E2E8F0] ${className}`}
+    >
       <div className="overflow-x-auto flex-1 max-h-150">
         <table className="w-full min-w-225 border-collapse ">
           <thead>
-            <tr className="border-b border-gray-100">
-              <th className="whitespace-nowrap px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+            <tr className="border-b border-[#E2E8F0]">
+              <th className="whitespace-nowrap px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
                 Copilots
               </th>
-              <th className="whitespace-nowrap px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                Workflow Status
+              <th className="whitespace-nowrap px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
+                Workflow status
               </th>
-              <th className="whitespace-nowrap px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+              <th className="whitespace-nowrap px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
                 Sent
               </th>
-              <th className="whitespace-nowrap sticky right-0 z-40 bg-white px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+              <th className="whitespace-nowrap sticky right-0 z-40 bg-white px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
                 Status
               </th>
-              <th className="w-10 px-4 py-3" />
+              <th className="w-10 px-5 py-3" />
             </tr>
           </thead>
           <tbody className=" relative">
@@ -313,15 +315,15 @@ function CopilotTable({
               return (
                 <tr
                   key={copilot.id}
-                  className="border-b  max-h-16 border-gray-50 align-top last:border-b-0 hover:bg-gray-50/60 transition-colors"
+                  className="border-b border-[#E2E8F0] align-top last:border-b-0 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-6 py-4 align-middle">
+                  <td className="px-5 py-4 align-middle">
                     <div className="max-w-55">
-                      <p className="text-[14px] font-medium text-gray-900">
+                      <p className="text-sm font-semibold text-[#0F172A]">
                         {copilot.name}
                       </p>
                       {copilot.description && (
-                        <p className="mt-0.5 line-clamp-2 font-light text-[12px] text-gray-500">
+                        <p className="mt-0.5 line-clamp-2 font-light text-xs text-[#59637C]">
                           {copilot.description}
                         </p>
                       )}
@@ -332,17 +334,17 @@ function CopilotTable({
                       )}
                     </div>
                   </td>
-                  <td className="px-6  py-4 align-middle  ">
+                  <td className="px-5 py-4 align-middle">
                     <WorkflowStepper steps={steps} copilotId={copilot.id} />
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-[14px] align-middle text-gray-700">
+                  <td className="whitespace-nowrap px-5 py-4 text-sm align-middle text-[#0F172A]">
                     {copilot.emailsSent}
                   </td>
-                  <td className="whitespace-nowrap sticky right-0 bg-white z-40 px-6 py-4 align-middle">
+                  <td className="whitespace-nowrap sticky right-0 bg-white z-40 px-5 py-4 align-middle">
                     {/* <StatusBadge status={copilot.status} /> */}
                     <CopilotStatus status={copilot.status} />
                   </td>
-                  <td className="px-4 py-4 text-right align-middle">
+                  <td className="px-5 py-4 text-right align-middle">
                     <button
                       type="button"
                       onClick={() =>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -20,6 +20,7 @@ import {
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
 import { useCopilotStore } from "@/store/copilotStore";
+import { toEditorContent } from "@/lib/helpers";
 
 const initialEmailBody = `
 <p>Hi,</p>
@@ -33,31 +34,6 @@ const initialEmailBody = `
 <p>Best regards,<br />
 {{senderName}}</p>
 `;
-
-const escapeHtml = (value: string) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-
-const toEditorContent = (value: string) => {
-  const trimmedValue = value.trim();
-
-  if (trimmedValue.startsWith("<")) {
-    return value;
-  }
-
-  return value
-    .trim()
-    .split(/\n\s*\n/)
-    .map((paragraph) => {
-      const lines = paragraph.split(/\n/).map(escapeHtml);
-      return `<p>${lines.join("<br />")}</p>`;
-    })
-    .join("");
-};
 
 export default function EmailTemplateStep() {
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");
@@ -74,6 +50,10 @@ export default function EmailTemplateStep() {
   const [subjectInput, setSubjectInput] = useState(
     "Quick idea to help {{companyName}} book more appointments",
   );
+  // Tracks which input was last focused so variable insertion goes to the right field
+  const [lastFocusedField, setLastFocusedField] = useState<
+    "name" | "subject" | "body"
+  >("body");
 
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
@@ -176,10 +156,43 @@ export default function EmailTemplateStep() {
     },
   });
 
-  const insertVariable = (variableName: string) => {
-    if (!editor) return;
+  // Load the copilot's linked template (edit/duplicate mode) once on mount
+  const templateHydratedRef = useRef(false);
+  useEffect(() => {
+    if (templateHydratedRef.current) return;
+    const id = copilotData.templateId;
+    if (!id) {
+      templateHydratedRef.current = true;
+      return;
+    }
+    if (!editor) return; // wait until Tiptap is ready
+    templateHydratedRef.current = true;
 
-    editor.chain().focus().insertContent(variableName).run();
+    templatesApi
+      .getById(id)
+      .then((res) => {
+        const t = res.data?.data ?? res.data;
+        if (!t) return;
+        setTemplateName(t.name || "");
+        setSubjectInput(t.subject || "");
+        editor.commands.setContent(toEditorContent(t.body || ""));
+        if (Array.isArray(t.variables)) setVariableInput(t.variables);
+      })
+      .catch((err) => {
+        console.error("Failed to load linked template:", err);
+      });
+  }, [editor, copilotData.templateId]);
+
+  const insertVariable = (variableName: string) => {
+    if (lastFocusedField === "body") {
+      if (!editor) return;
+      editor.chain().focus().insertContent(variableName).run();
+    } else if (lastFocusedField === "subject") {
+      setSubjectInput((prev) => prev + variableName);
+    } else {
+      setTemplateName((prev) => prev + variableName);
+      return;
+    }
     if (variableInput.includes(variableName)) return;
     setVariableInput([...variableInput, variableName]);
   };
@@ -310,6 +323,7 @@ export default function EmailTemplateStep() {
             type="text"
             value={templateName}
             onChange={(e) => setTemplateName(e.target.value)}
+            onFocus={() => setLastFocusedField("name")}
             className="flex-1 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
           />
         </div>
@@ -466,6 +480,7 @@ export default function EmailTemplateStep() {
                 setSubjectInput(e.target.value);
                 removeVariable();
               }}
+              onFocus={() => setLastFocusedField("subject")}
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
             />
           </div>
@@ -481,7 +496,10 @@ export default function EmailTemplateStep() {
               </span>
             </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all bg-white">
+            <div
+              className="border border-slate-200 rounded-xl overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all bg-white"
+              onFocus={() => setLastFocusedField("body")}
+            >
               <EditorContent className="editor" editor={editor} />
 
               {/* Toolbar */}
@@ -669,8 +687,7 @@ export default function EmailTemplateStep() {
                     setTemplateName(template.name || "");
                     setSubjectInput(template.subject || "");
                     editor?.commands.setContent(
-                      // toEditorContent(template.body || ""),
-                      template.body || "",
+                      toEditorContent(template.body || ""),
                     );
                     if (template.variables)
                       setVariableInput(template.variables);

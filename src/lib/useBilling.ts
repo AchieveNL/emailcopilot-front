@@ -178,6 +178,13 @@ export function useBilling() {
         // ── Helpers ───────────────────────────────────────────────────────────────
         isActive: subscription?.status === "active",
         isPending: subscription?.status === "pending",
+        // A subscription counts as "has subscription" while it is active,
+        // trialing, or still being processed — pending users must see the
+        // current-plan billing view (and its pending banner), not the plan
+        // selector.
+        hasSubscription:
+            !!subscription &&
+            ["active", "trialing", "pending"].includes(subscription.status),
         currentPlan: plans.find((p) => p.id === subscription?.planId) ?? null,
         amountDue: (cents: number) =>
             new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(

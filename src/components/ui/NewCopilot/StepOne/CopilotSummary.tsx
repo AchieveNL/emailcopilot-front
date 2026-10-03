@@ -47,7 +47,7 @@ function CopilotSummary({ draftId }: { draftId?: string }) {
 
       {/* Draft status card */}
       {draftId && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 ">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 mt-5">
           <p className="text-xs font-medium text-gray-900 mb-0.5">
             Draft saved
           </p>

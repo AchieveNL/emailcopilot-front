@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { Suspense, useState, useEffect, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   MapPin,
@@ -16,6 +16,7 @@ import {
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
 import LeadStatus from "@/components/ui/departure/LeadStatus";
+import LeadMenu from "@/components/ui/departure/LeadMenu";
 import { Pagination } from "@/components/ui/Pagination";
 import EmailPreviewCard from "@/components/ui/EmialPreview";
 import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
@@ -24,6 +25,7 @@ import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const MOCK_META: PaginatedMeta = {
   total: 50,
@@ -136,7 +138,7 @@ function Tooltip({
   );
 }
 
-export default function LeadsPage() {
+function LeadsPageContent() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [meta, setMeta] = useState<PaginatedMeta>(MOCK_META);
   const [loading, setLoading] = useState(true);
@@ -244,8 +246,20 @@ export default function LeadsPage() {
     fetchLeads();
   };
 
+  const handleDeleteLead = (id: number) => {
+    setLeads((prev) => prev.filter((lead) => lead.id !== id));
+  };
+
+  const handleSuppressLead = (id: number) => {
+    setLeads((prev) =>
+      prev.map((lead) =>
+        lead.id === id ? { ...lead, suppressed: true } : lead,
+      ),
+    );
+  };
+
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div className="">
@@ -319,8 +333,11 @@ export default function LeadsPage() {
                     <th className="font-semibold text-gray-900 px-6 py-5">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-40  sticky top-0 right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5">
                       Status
+                    </th>
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white border-l border-gray-100">
+                      <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
@@ -496,16 +513,33 @@ export default function LeadsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky w-20 align-middle right-0 z-30 bg-white group-hover:bg-gray-50/50 border-l border-gray-100 transition-colors">
+                      <td className="px-6 py-5 align-middle transition-colors">
                         <div className="flex items-center gap-2 ">
                           <Tooltip
                             text={
-                              lead.status.charAt(0).toUpperCase() +
-                                lead.status.slice(1) || "Sent"
+                              lead.suppressed
+                                ? "Suppressed"
+                                : lead.status.charAt(0).toUpperCase() +
+                                    lead.status.slice(1) || "Sent"
                             }
                           >
-                            <LeadStatus status={lead.status || "sent"} />
+                            <LeadStatus
+                              status={
+                                lead.suppressed
+                                  ? "suppressed"
+                                  : lead.status || "sent"
+                              }
+                            />
                           </Tooltip>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white border-l border-gray-100 transition-colors">
+                        <div className="flex items-center justify-center">
+                          <LeadMenu
+                            lead={lead}
+                            onDeleted={handleDeleteLead}
+                            onSuppressed={handleSuppressLead}
+                          />
                         </div>
                       </td>
                     </tr>
@@ -553,5 +587,22 @@ export default function LeadsPage() {
         }}
       />
     </div>
+  );
+}
+
+export default function LeadsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-8 px-4 w-full mx-auto flex items-center justify-center min-h-100">
+          <div className="flex items-center gap-3 text-gray-500">
+            <Loader2 size={20} className="animate-spin" />
+            <span>Loading...</span>
+          </div>
+        </div>
+      }
+    >
+      <LeadsPageContent />
+    </Suspense>
   );
 }

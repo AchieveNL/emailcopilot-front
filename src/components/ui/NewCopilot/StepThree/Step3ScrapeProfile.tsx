@@ -265,11 +265,22 @@ export default function Step3ScrapeProfile() {
     targetAudiencesApi
       .getAll()
       .then((res) => {
-        const fetched = res.data?.data || res.data || [];
+        const fetched: TargetAudience[] = res.data?.data || res.data || [];
         setProfiles(fetched);
-        console.log("Fetched target audience:", fetched);
-        if (fetched.length > 0 && !copilotData.targetAudienceId) {
-          // Defaults handled below if needed
+
+        // If a target audience was already linked (edit/duplicate mode),
+        // hydrate the form fields from that profile so chips show on load.
+        const selectedId = copilotData.targetAudienceId;
+        if (selectedId) {
+          const selected = fetched.find((p) => p.id === selectedId);
+          if (selected) {
+            updateTargetProfile({
+              industries: selected.name ? [selected.name] : [],
+              countries: selected.country ? [selected.country] : [],
+              cities: selected.city ? [selected.city] : [],
+            });
+            setEnableCity(Boolean(selected.city));
+          }
         }
       })
       .catch((err) => {
@@ -278,6 +289,7 @@ export default function Step3ScrapeProfile() {
       .finally(() => {
         setLoadingProfiles(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [copilotData.targetAudienceId]);
 
   // Derive available cities from selected countries
@@ -509,6 +521,7 @@ export default function Step3ScrapeProfile() {
                         cities: profile.city ? [profile.city] : [],
                         industries: profile.name ? [profile.name] : [],
                       });
+                      setEnableCity(Boolean(profile.city));
                     }
                   }}
                 >

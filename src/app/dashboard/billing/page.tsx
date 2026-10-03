@@ -24,7 +24,7 @@ export default function BillingPage() {
     subscribe,
     cancel,
     updatePaymentMethod,
-    isActive,
+    hasSubscription,
     isPending,
     isCanceling,
     isUpdatingPaymentMethod,
@@ -37,8 +37,6 @@ export default function BillingPage() {
   const [subscribingPlanId, setSubscribingPlanId] = useState<PlanId | null>(
     null,
   );
-
-  const hasSubscription = isActive || subscription?.status === "trialing";
 
   async function handleSubscribe(planId: PlanId) {
     setSubscribingPlanId(planId);

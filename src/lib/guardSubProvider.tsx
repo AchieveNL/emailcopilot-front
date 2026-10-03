@@ -20,20 +20,18 @@ export default function GuardSubscriptionProvider({ children }: { children: Reac
 
     const router = useRouter();
     const pathname = usePathname();
-    const { subscription, loading, isActive } = useBilling();
+    const { loading, hasSubscription } = useBilling();
     useEffect(() => {
         if (loading) return;
         if (isBillingExempt(pathname)) return;
 
-        const needsSubscription = !subscription || (!isActive && subscription.status !== "trialing");
-
-        if (needsSubscription) {
+        if (!hasSubscription) {
             router.replace("/dashboard/billing");
         }
-    }, [loading, subscription, isActive, pathname, router]);
+    }, [loading, hasSubscription, pathname, router]);
 
     // Avoid flashing protected content while checking
-    if (loading || (!isActive && !isBillingExempt(pathname))) {
+    if (loading || (!hasSubscription && !isBillingExempt(pathname))) {
         return (
             <div className="flex h-screen items-center justify-center">
                 <span className="text-muted-foreground text-sm">Loading…</span>

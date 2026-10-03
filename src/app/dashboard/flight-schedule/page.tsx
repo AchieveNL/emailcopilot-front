@@ -1,29 +1,32 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Plus, Calendar, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { flightSchedulesApi } from "@/lib/api";
-import FlightScheduleCard from "@/components/ui/flightSchedule/FlightScheduleCard";
+import { flightSchedulesApi, copilotsApi } from "@/lib/api";
+import FlightScheduleTable, {
+  type FlightScheduleRow,
+} from "@/components/layout/features/flightSchedule/FlightScheduleTable";
 import FlightScheduleFormModal from "@/components/ui/flightSchedule/FlightScheduleFormModal";
 import type { Schedule } from "@/components/ui/flightSchedule/FlightScheduleCard";
-import {
-  SearchAndFilter,
-  type SortOrder,
-} from "@/components/ui/SearchAndFilter";
 import DashboardHeader from "@/components/layout/DashboardHeader";
+import DashboardContainer from "@/components/layout/DashboardContainer";
+import Pagination from "@/components/ui/templates/Pagination";
+import { useRowsPerPage } from "@/lib/hooks";
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+interface CopilotLite {
+  id: number;
+  flightScheduleId: number | null;
+}
 
 export default function FlightSchedulePage() {
+  const perPage = useRowsPerPage(10);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [copilots, setCopilots] = useState<CopilotLite[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
-
-  // Search & Filter state
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
 
@@ -31,7 +34,7 @@ export default function FlightSchedulePage() {
     try {
       setLoading(true);
       const res = await flightSchedulesApi.getAll();
-      setSchedules(res.data);
+      setSchedules(Array.isArray(res.data) ? res.data : []);
     } catch {
       toast.error("Failed to load flight schedules.");
       setSchedules([]);
@@ -40,21 +43,61 @@ export default function FlightSchedulePage() {
     }
   }, []);
 
+  const fetchCopilots = useCallback(async () => {
+    try {
+      const res = await copilotsApi.getAll();
+      const list = Array.isArray(res.data) ? res.data : [];
+      setCopilots(
+        list.map((c: CopilotLite & Record<string, unknown>) => ({
+          id: c.id,
+          flightScheduleId: c.flightScheduleId ?? null,
+        })),
+      );
+    } catch {
+      setCopilots([]);
+    }
+  }, []);
+
   useEffect(() => {
     fetchSchedules();
-  }, [fetchSchedules]);
+    fetchCopilots();
+  }, [fetchSchedules, fetchCopilots]);
 
   useEffect(() => {
-    const checkNewParam = () => {
-      const params = new URLSearchParams(window.location.search);
-      const isNew = params.get("new") === "true";
-
-      if (isNew) {
-        setIsModalOpen(true);
-      }
-    };
-    checkNewParam();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "true") {
+      setIsModalOpen(true);
+    }
   }, []);
+
+  // ── Enrich: derive used-by counts from copilots ────────────────────────────
+
+  const rows: FlightScheduleRow[] = useMemo(
+    () =>
+      schedules.map((s) => ({
+        ...s,
+        usedBy: copilots.filter((c) => c.flightScheduleId === s.id).length,
+      })),
+    [schedules, copilots],
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((s) => s.name?.toLowerCase().includes(q));
+  }, [rows, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice(
+    (safeCurrentPage - 1) * perPage,
+    safeCurrentPage * perPage,
+  );
+
+  function handleSearchChange(value: string) {
+    setSearch(value);
+    setCurrentPage(1);
+  }
 
   // ── Create / Update ────────────────────────────────────────────────────────
 
@@ -72,15 +115,36 @@ export default function FlightSchedulePage() {
 
   // ── Delete ─────────────────────────────────────────────────────────────────
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (schedule: Schedule) => {
+    if (!schedule.id) return;
     if (!confirm("Are you sure you want to delete this flight schedule?"))
       return;
     try {
-      await flightSchedulesApi.delete(id);
+      await flightSchedulesApi.delete(schedule.id);
       toast.success("Flight schedule deleted.");
       fetchSchedules();
     } catch {
       toast.error("Failed to delete flight schedule.");
+    }
+  };
+
+  // ── Duplicate (client-side — no API duplicate endpoint) ────────────────────
+
+  const handleDuplicate = async (schedule: Schedule) => {
+    try {
+      await flightSchedulesApi.create({
+        name: `${schedule.name || "Flight Schedule"} (Copy)`,
+        sendLimit: schedule.sendLimit,
+        sendLimitActive: schedule.sendLimitActive,
+        activeDays: schedule.activeDays,
+        sendingHours: schedule.sendingHours,
+        sendingHoursActive: schedule.sendingHoursActive,
+        timezone: schedule.timezone,
+      });
+      toast.success("Flight schedule duplicated.");
+      fetchSchedules();
+    } catch {
+      toast.error("Failed to duplicate flight schedule.");
     }
   };
 
@@ -101,48 +165,17 @@ export default function FlightSchedulePage() {
     setEditingSchedule(null);
   };
 
-  // ── Filtering and Sorting ──────────────────────────────────────────────────
-
-  const filteredSchedules = useMemo(() => {
-    return schedules
-      .filter((s) => {
-        if (!searchQuery) return true;
-        return s.name?.toLowerCase().includes(searchQuery.toLowerCase());
-      })
-      .sort((a, b) => {
-        // Fallback to ID if createdAt is missing
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : a.id || 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : b.id || 0;
-
-        if (sortOrder === "asc") {
-          return dateA - dateB;
-        } else {
-          return dateB - dateA;
-        }
-      });
-  }, [schedules, searchQuery, sortOrder]);
-
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-5 w-full max-w-6xl mx-auto">
-      {/* Header */}
+    <DashboardContainer>
       <DashboardHeader
         title="Flight Schedule"
-        description="Manage your flight schedules."
-        actionLabel="New Flight Schedule"
+        description="Control when your campaigns send emails."
+        actionLabel="Create New Flight Schedule"
         onAction={openCreateModal}
       />
 
-      <SearchAndFilter
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        sortOrder={sortOrder}
-        onSortChange={setSortOrder}
-        placeholder="Search flight schedules..."
-      />
-
-      {/* Modal */}
       {isModalOpen && (
         <FlightScheduleFormModal
           schedule={editingSchedule}
@@ -151,48 +184,27 @@ export default function FlightSchedulePage() {
         />
       )}
 
-      {/* Content */}
-      {loading ? (
-        <div className="min-h-120 flex items-center justify-center text-gray-400">
-          <Loader2 size={24} className="animate-spin" />
-        </div>
-      ) : filteredSchedules.length === 0 ? (
-        <div className="min-h-120 flex flex-col items-center justify-center p-12 text-center">
-          <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Calendar size={20} className="text-primary" />
-          </div>
-          <h2 className="font-bold text-gray-900 mb-2">
-            No flight schedules found
-          </h2>
-          <p className="text-sm text-gray-500 mb-5">
-            {searchQuery
-              ? "We couldn't find any flight schedules matching your search."
-              : "Flight schedules will appear here once created."}
-          </p>
-          {!searchQuery && (
-            <button
-              onClick={openCreateModal}
-              className="btn btn-main btn-cta flex items-center gap-2"
-            >
-              <Plus size={15} />
-              New Flight Schedule
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSchedules.map((schedule) => (
-            <div key={schedule.id}>
-              <FlightScheduleCard
-                schedules={schedule}
-                showEditAndDeleteButton={true}
-                onEdit={() => openEditModal(schedule)}
-                onDelete={() => schedule.id && handleDelete(schedule.id)}
-              />
-            </div>
-          ))}
+      <FlightScheduleTable
+        schedules={paginated}
+        filteredCount={filtered.length}
+        search={search}
+        onSearchChange={handleSearchChange}
+        onEdit={openEditModal}
+        onDelete={handleDelete}
+        onDuplicate={handleDuplicate}
+        onCreateNew={openCreateModal}
+        loading={loading}
+      />
+
+      {filtered.length > 0 && (
+        <div className="mt-4">
+          <Pagination
+            currentPage={safeCurrentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
-    </div>
+    </DashboardContainer>
   );
 }
