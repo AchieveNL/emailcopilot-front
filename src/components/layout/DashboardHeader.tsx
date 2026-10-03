@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
 
 interface DashboardHeaderProps {
   title: string;
-  description?: string;
+  description?: ReactNode;
   actionLabel: string;
   mobileActionLabel?: string;
   actionHref?: string;
