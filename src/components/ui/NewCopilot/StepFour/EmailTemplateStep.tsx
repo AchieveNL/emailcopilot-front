@@ -67,7 +67,8 @@ export default function EmailTemplateStep() {
     variables: string[];
   } | null>(null);
 
-  const { copilotData, updateCopilotData, setStep, persistDraft } = useCopilotStore();
+  const { copilotData, updateCopilotData, setStep, persistDraft } =
+    useCopilotStore();
 
   const [templateName, setTemplateName] = useState(
     copilotData?.name || "Intro - Book More Appointments",
@@ -163,6 +164,15 @@ export default function EmailTemplateStep() {
         setSubjectInput(t.subject || "");
         editor.commands.setContent(toEditorContent(t.body || ""));
         if (Array.isArray(t.variables)) setVariableInput(t.variables);
+        // Seed the edit snapshot so a save with changes edits THIS
+        // template in place instead of creating a copy.
+        setOriginalTemplate({
+          id: String(t.id ?? id),
+          body: t.body || "",
+          subject: t.subject || "",
+          name: t.name || "",
+          variables: Array.isArray(t.variables) ? t.variables : [],
+        });
       })
       .catch((err) => {
         console.error("Failed to load linked template:", err);
@@ -243,7 +253,6 @@ export default function EmailTemplateStep() {
 
     try {
       const currentBody = editor.getHTML();
-      console.log("Current body:", currentBody);
 
       const isUnchanged =
         !!originalTemplate &&
@@ -265,17 +274,42 @@ export default function EmailTemplateStep() {
         return;
       }
 
-      const response = await templatesApi.create({
+      const templatePayload = {
         name: templateName || "initial template",
         subject: subjectInput,
         body: currentBody,
         variables: variableInput,
-      });
+      };
 
-      updateCopilotData({ templateId: response.data.id, name: templateName });
+      const existingId = originalTemplate
+        ? Number(originalTemplate.id)
+        : NaN;
+
+      if (originalTemplate && !Number.isNaN(existingId)) {
+        // Editing an existing template: update it in place. The copilot
+        // already points at this id, so nothing on the copilot changes.
+        await templatesApi.update(existingId, templatePayload);
+
+        // Refresh the snapshot so a re-save without edits is "unchanged".
+        setOriginalTemplate({
+          id: originalTemplate.id,
+          body: currentBody,
+          subject: subjectInput,
+          name: templateName,
+          variables: variableInput,
+        });
+
+        setStep(5);
+        return;
+      }
+
+      // Brand-new template: create it and attach only its id to the copilot.
+      const response = await templatesApi.create(templatePayload);
+
+      updateCopilotData({ templateId: response.data.id });
 
       try {
-        await persistDraft();
+        await persistDraft({ templateId: response.data.id });
       } catch {
         toast.error("Failed to save draft. Please try again.");
         return;

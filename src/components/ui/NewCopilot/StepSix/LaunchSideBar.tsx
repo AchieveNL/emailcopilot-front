@@ -9,6 +9,7 @@ import {
 import { useCopilotStore } from "../../../../store/copilotStore";
 import {
   useWizardEmailAccounts,
+  useWizardTargetAudiences,
   useWizardTemplates,
 } from "@/lib/useWizardOptions";
 
@@ -20,14 +21,32 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
   const { copilotData } = useCopilotStore();
   const { data: emailAccounts = [] } = useWizardEmailAccounts();
   const { data: templates = [] } = useWizardTemplates();
+  // Same cached entry the review card already fetches — no extra request.
+  const { data: targetAudiences = [] } = useWizardTargetAudiences();
 
   const selectedEmailProfile = emailAccounts.find(
-    (p) => p.id === copilotData.emailAccountId,
+    (p) => String(p.id) === String(copilotData.emailAccountId),
   );
 
   const selectedTemplate = templates.find(
-    (t) => t.id === copilotData.templateId,
+    (t) => String(t.id) === String(copilotData.templateId),
   );
+
+  // The linked audience record is the source of truth for the display name;
+  // the wizard-local targetProfile is only a fallback for inline builds.
+  const selectedAudience = targetAudiences.find(
+    (a) => String(a.id) === String(copilotData.targetAudienceId),
+  );
+
+  const readyAll =
+    !!copilotData.name?.trim() &&
+    selectedEmailProfile != null &&
+    (selectedAudience != null ||
+      (copilotData.targetProfile?.industries?.length ?? 0) > 0) &&
+    selectedTemplate != null &&
+    copilotData.flightScheduleId != null;
+
+  const sched = copilotData.flightSchedule;
 
   const Days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -40,6 +59,12 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
     const shortDays = days.map((d) => d.slice(0, 3));
     return shortDays.join(", ");
   };
+
+  const scheduleSummary = !copilotData.flightScheduleId
+    ? "Not selected"
+    : `${sched?.sendLimitActive ? `${sched?.sendLimit ?? 30} emails per day` : "Unlimited"}, ${formatActiveDays(
+        sched?.activeDays?.map((day) => Days[day - 1]),
+      )}`;
 
   return (
     <div className="w-full ">
@@ -56,7 +81,7 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
               Copilot name
             </p>
             <p className="text-[13px] text-gray-500">
-              {copilotData.name || "Private Jet Operators"}
+              {copilotData.name || "Not set yet"}
             </p>
           </div>
         </div>
@@ -69,7 +94,9 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
               Email Account
             </p>
             <p className="text-[13px] text-gray-500">
-              {selectedEmailProfile?.profileName || "N/A"}
+              {selectedEmailProfile?.profileName ||
+                selectedEmailProfile?.email ||
+                "N/A"}
             </p>
           </div>
         </div>
@@ -82,9 +109,10 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
               Target Audience
             </p>
             <p className="text-[13px] text-gray-500">
-              {copilotData.targetProfile?.industries?.length
-                ? copilotData.targetProfile.industries.join(", ")
-                : "Private Jet Operators"}
+              {selectedAudience?.name ||
+                (copilotData.targetProfile?.industries?.length
+                  ? copilotData.targetProfile.industries.join(", ")
+                  : "N/A")}
             </p>
           </div>
         </div>
@@ -109,14 +137,7 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
             <p className="text-[13px] font-bold text-gray-900 mb-1">
               Flight Schedule
             </p>
-            <p className="text-[13px] text-gray-500">
-              {copilotData.flightSchedule.sendLimit || 30} emails per day,{" "}
-              {formatActiveDays(
-                copilotData.flightSchedule?.activeDays?.map(
-                  (day) => Days[day - 1],
-                ),
-              )}
-            </p>
+            <p className="text-[13px] text-gray-500">{scheduleSummary}</p>
           </div>
         </div>
 
@@ -125,7 +146,9 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
           <ShieldCheck size={20} className="text-gray-700 mt-0.5 shrink-0" />
           <div>
             <p className="text-[13px] font-bold text-gray-900 mb-1">Status</p>
-            <p className="text-[13px] text-gray-500">Ready to take-off</p>
+            <p className="text-[13px] text-gray-500">
+              {readyAll ? "Ready to take-off" : "Incomplete — finish setup"}
+            </p>
           </div>
         </div>
       </div>

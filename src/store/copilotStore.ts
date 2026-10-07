@@ -98,13 +98,26 @@ interface CopilotStore {
   /**
    * Persists the current draft to the backend (upsert): PUTs when a draft
    * id is known, otherwise POSTs and captures the new id. Returns the id.
+   * Pass `partial` to PUT only the fields that changed (update path) —
+   * e.g. `persistDraft({ templateId })` sends just `{"templateId": …}`.
+   * Creates always send the full payload (a POST needs all fields).
    * Throwing lets callers refuse to advance on failed saves.
    */
-  persistDraft: () => Promise<number>;
+  persistDraft: (partial?: Partial<PersistDraftPayload>) => Promise<number>;
 }
 
-const defaultCopilotData: CopilotData = {
-  name: "",
+export type PersistDraftPayload = {
+  name: string;
+  description: string;
+  goal: string;
+  emailAccountId: number | null;
+  targetAudienceId: number | null;
+  templateId: number | null;
+  flightScheduleId: number | null;
+  status: "draft";
+};
+
+const defaultCopilotData: CopilotData = {  name: "",
   description: "",
   goal: "",
   emailAccountId: null,
@@ -175,9 +188,9 @@ export const useCopilotStore = create<CopilotStore>((set, get) => ({
 
   setDraftId: (id) => set({ draftId: id }),
 
-  persistDraft: async () => {
+  persistDraft: async (partial) => {
     const { copilotData, draftId } = get();
-    const payload = {
+    const fullPayload: PersistDraftPayload = {
       name: copilotData.name?.trim() || "Untitled Copilot",
       description: copilotData.description || "",
       goal: copilotData.goal || "",
@@ -188,10 +201,12 @@ export const useCopilotStore = create<CopilotStore>((set, get) => ({
       status: "draft" as const,
     };
     if (draftId) {
-      await copilotsApi.update(draftId, payload);
+      // Update path: send only the changed fields when provided, so
+      // untouched copilot data can never be overwritten by stale state.
+      await copilotsApi.update(draftId, partial ?? fullPayload);
       return draftId;
     }
-    const res = await copilotsApi.create(payload);
+    const res = await copilotsApi.create(fullPayload);
     const id = res.data.id;
     set({ draftId: id });
     return id;

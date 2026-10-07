@@ -220,12 +220,10 @@ function NewCopilotPageContent() {
       };
 
       if (draftId) {
-        const { data } = await copilotsApi.update(draftId, payload);
-        console.log("Updated copilot data:", data);
+        await copilotsApi.update(draftId, payload);
         await copilotsApi.updateStatus(draftId, "active");
       } else {
-        const { data } = await copilotsApi.create(payload);
-        console.log("Created copilot data:", data);
+        await copilotsApi.create(payload);
       }
 
       resetStore();
