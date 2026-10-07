@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Plus } from "lucide-react";
+import { Plus, type LucideIcon } from "lucide-react";
 
 interface DashboardHeaderProps {
   title: string;
@@ -10,6 +10,8 @@ interface DashboardHeaderProps {
   actionLabel: string;
   mobileActionLabel?: string;
   actionHref?: string;
+  actionIcon?: LucideIcon;
+  actionVariant?: "primary" | "outline";
   onAction?: () => void;
   showAction?: boolean;
 }
@@ -20,9 +22,28 @@ export default function DashboardHeader({
   actionLabel,
   mobileActionLabel = "Add",
   showAction = true,
+  actionHref,
+  actionIcon: ActionIcon = Plus,
+  actionVariant = "primary",
 
   onAction,
 }: DashboardHeaderProps) {
+  // The primary variant floats above the content on mobile; the outline variant is a
+  // secondary affordance and stays inline in the header at every size.
+  const actionClassName =
+    actionVariant === "outline"
+      ? "flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
+      : "flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta z-41 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors";
+
+  const actionContent = (
+    <>
+      <ActionIcon size={18} />
+
+      {/* Large */}
+      <span className="text-[10px] lg:text-sm">{actionLabel}</span>
+    </>
+  );
+
   return (
     <div className="flex items-center justify-between gap-4 mb-8">
       {/* Title */}
@@ -38,17 +59,16 @@ export default function DashboardHeader({
         )}
       </div>
 
-      {showAction && (
-        <button
-          onClick={onAction}
-          className="flex shrink-0 fixed right-6 bottom-6 md:static items-center gap-2 btn-cta z-41 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
-        >
-          <Plus size={18} />
-
-          {/* Large */}
-          <span className="text-[10px] lg:text-sm">{actionLabel}</span>
-        </button>
-      )}
+      {showAction &&
+        (actionHref ? (
+          <Link href={actionHref} onClick={onAction} className={actionClassName}>
+            {actionContent}
+          </Link>
+        ) : (
+          <button onClick={onAction} className={actionClassName}>
+            {actionContent}
+          </button>
+        ))}
     </div>
   );
 }
