@@ -7,24 +7,25 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useCopilotStore } from "../../../../store/copilotStore";
-import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
+import {
+  useWizardEmailAccounts,
+  useWizardTemplates,
+} from "@/lib/useWizardOptions";
 
 interface LaunchSideBarProps {
   draftId?: string;
-  remoteContext?: NewCopilotContext;
 }
 
-export default function LaunchSideBar({
-  draftId,
-  remoteContext,
-}: LaunchSideBarProps) {
+export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
   const { copilotData } = useCopilotStore();
+  const { data: emailAccounts = [] } = useWizardEmailAccounts();
+  const { data: templates = [] } = useWizardTemplates();
 
-  const selectedEmailProfile = remoteContext?.emailAccount?.find(
+  const selectedEmailProfile = emailAccounts.find(
     (p) => p.id === copilotData.emailAccountId,
   );
 
-  const selectedTemplate = remoteContext?.templates?.find(
+  const selectedTemplate = templates.find(
     (t) => t.id === copilotData.templateId,
   );
 
@@ -68,7 +69,7 @@ export default function LaunchSideBar({
               Email Account
             </p>
             <p className="text-[13px] text-gray-500">
-              {selectedEmailProfile?.name || "karim@achieve.nl"}
+              {selectedEmailProfile?.profileName || "N/A"}
             </p>
           </div>
         </div>
@@ -96,7 +97,7 @@ export default function LaunchSideBar({
               Email Template
             </p>
             <p className="text-[13px] text-gray-500">
-              {selectedTemplate?.name || "Book More Appointments"}
+              {selectedTemplate?.name || "N/A"}
             </p>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Ban, Printer, Trash2, MoreVertical, X } from "lucide-react";
+import { Ban, MailCheck, Printer, Trash2, MoreVertical, X } from "lucide-react";
 import { toast } from "sonner";
 import { leadsApi } from "@/lib/api";
 import type { Lead } from "@/lib/types";
@@ -10,7 +10,7 @@ import type { Lead } from "@/lib/types";
 interface LeadMenuProps {
   lead: Lead;
   onDeleted: (id: number) => void;
-  onSuppressed: (id: number) => void;
+  onSuppressionChange: (id: number, suppressed: boolean) => void;
 }
 
 function escapeCsvCell(value: string | null | undefined): string {
@@ -56,7 +56,7 @@ function exportLeadCsv(lead: Lead) {
 export default function LeadMenu({
   lead,
   onDeleted,
-  onSuppressed,
+  onSuppressionChange,
 }: LeadMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -91,8 +91,20 @@ export default function LeadMenu({
   async function handleNeverEmailAgain() {
     try {
       await leadsApi.updateDoNotContact(lead.id, true);
-      onSuppressed(lead.id);
+      onSuppressionChange(lead.id, true);
       toast.success(`You will never email ${lead.email} again.`);
+    } catch {
+      toast.error("Failed to update lead.");
+    } finally {
+      setOpen(false);
+    }
+  }
+
+  async function handleEmailAgain() {
+    try {
+      await leadsApi.updateDoNotContact(lead.id, false);
+      onSuppressionChange(lead.id, false);
+      toast.success(`You can email ${lead.email} again.`);
     } catch {
       toast.error("Failed to update lead.");
     } finally {
@@ -133,17 +145,31 @@ export default function LeadMenu({
             className="fixed w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-[9999] py-1 overflow-hidden"
             style={{ top: position.top, left: position.left }}
           >
-            <button
-              role="menuitem"
-              onMouseDown={(e) => {
-                e.stopPropagation();
-                handleNeverEmailAgain();
-              }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <Ban size={13} />
-              Never Email Again
-            </button>
+            {lead.suppressed ? (
+              <button
+                role="menuitem"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleEmailAgain();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <MailCheck size={13} />
+                Email Again
+              </button>
+            ) : (
+              <button
+                role="menuitem"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleNeverEmailAgain();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Ban size={13} />
+                Never Email Again
+              </button>
+            )}
             <button
               role="menuitem"
               onMouseDown={(e) => {

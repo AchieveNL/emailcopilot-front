@@ -93,6 +93,14 @@ interface CopilotStore {
   loadCopilot: (data: CopilotData, id?: number, mode?: CopilotMode) => void;
   resetStore: () => void;
   getAllCopilots: () => Promise<void>;
+  draftId: number | null;
+  setDraftId: (id: number | null) => void;
+  /**
+   * Persists the current draft to the backend (upsert): PUTs when a draft
+   * id is known, otherwise POSTs and captures the new id. Returns the id.
+   * Throwing lets callers refuse to advance on failed saves.
+   */
+  persistDraft: () => Promise<number>;
 }
 
 const defaultCopilotData: CopilotData = {
@@ -121,7 +129,7 @@ const defaultCopilotData: CopilotData = {
   },
 };
 
-export const useCopilotStore = create<CopilotStore>((set) => ({
+export const useCopilotStore = create<CopilotStore>((set, get) => ({
   currentStep: 1,
   copilotData: defaultCopilotData,
   copilots: [],
@@ -130,6 +138,7 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
   mode: "create",
   editingId: null,
   highestStep: 1,
+  draftId: null,
 
   setStep: (step) =>
     set((state) => ({
@@ -164,6 +173,30 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
 
   setEditingId: (id) => set({ editingId: id }),
 
+  setDraftId: (id) => set({ draftId: id }),
+
+  persistDraft: async () => {
+    const { copilotData, draftId } = get();
+    const payload = {
+      name: copilotData.name?.trim() || "Untitled Copilot",
+      description: copilotData.description || "",
+      goal: copilotData.goal || "",
+      emailAccountId: copilotData.emailAccountId,
+      targetAudienceId: copilotData.targetAudienceId,
+      templateId: copilotData.templateId,
+      flightScheduleId: copilotData.flightScheduleId,
+      status: "draft" as const,
+    };
+    if (draftId) {
+      await copilotsApi.update(draftId, payload);
+      return draftId;
+    }
+    const res = await copilotsApi.create(payload);
+    const id = res.data.id;
+    set({ draftId: id });
+    return id;
+  },
+
   loadCopilot: (data, id, mode = "edit") =>
     set({
       copilotData: data,
@@ -179,6 +212,7 @@ export const useCopilotStore = create<CopilotStore>((set) => ({
       launched: false,
       mode: "create",
       editingId: null,
+      draftId: null,
       highestStep: 1,
     }),
   getAllCopilots: async () => {

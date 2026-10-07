@@ -10,31 +10,44 @@ import {
   Check,
   ArrowLeft,
   Rocket,
+  Save,
 } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
-import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
-import { useEffect } from "react";
+import {
+  useWizardEmailAccounts,
+  useWizardTargetAudiences,
+  useWizardTemplates,
+} from "@/lib/useWizardOptions";
+import { useEffect, useState } from "react";
 
 interface Step4LaunchProps {
-  remoteContext: NewCopilotContext;
   onLaunch: () => void;
   launching: boolean;
+  onSaveDraft: () => Promise<void>;
 }
 
 export default function Step4Launch({
-  remoteContext,
   onLaunch,
   launching,
+  onSaveDraft,
 }: Step4LaunchProps) {
   const { copilotData, setStep } = useCopilotStore();
+  const [saving, setSaving] = useState(false);
+  const { data: emailAccounts = [], isLoading: loadingAccounts } =
+    useWizardEmailAccounts();
+  const { data: targetAudiences = [], isLoading: loadingAudiences } =
+    useWizardTargetAudiences();
+  const { data: templates = [], isLoading: loadingTemplates } =
+    useWizardTemplates();
+  const loadingOptions = loadingAccounts || loadingAudiences || loadingTemplates;
 
-  const selectedEmailProfile = remoteContext.emailAccount.find(
+  const selectedEmailProfile = emailAccounts.find(
     (p) => p.id === copilotData.emailAccountId,
   );
-  const selectedScrapeProfile = remoteContext.targetAudiences.find(
+  const selectedScrapeProfile = targetAudiences.find(
     (p) => p.id === copilotData.targetAudienceId,
   );
-  const selectedTemplate = remoteContext.templates?.find(
+  const selectedTemplate = templates.find(
     (t) => t.id === copilotData.templateId,
   );
   const Days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -126,7 +139,7 @@ export default function Step4Launch({
                   Sending as
                 </div>
                 <div className="text-gray-500 group-hover:text-blue-500">
-                  {selectedEmailProfile?.name || "N/A"}
+                  {selectedEmailProfile?.profileName || "N/A"}
                 </div>
                 <div className="font-semibold text-gray-900 group-hover:text-primary">
                   Email Account
@@ -323,20 +336,45 @@ export default function Step4Launch({
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <button
           onClick={() => setStep(5)}
           className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft size={15} /> Back
         </button>
-        <button
-          onClick={onLaunch}
-          disabled={launching || remoteContext.loadingOptions}
-          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Rocket size={15} /> {launching ? "Launching..." : "Launch Copilot"}
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={async () => {
+              setSaving(true);
+              try {
+                await onSaveDraft();
+              } finally {
+                setSaving(false);
+              }
+            }}
+            disabled={saving || launching}
+            className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {saving ? (
+              <span className="flex items-center">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></span>
+                Saving...
+              </span>
+            ) : (
+              <>
+                <Save size={15} /> Save as Draft
+              </>
+            )}
+          </button>
+          <button
+            onClick={onLaunch}
+            disabled={launching || loadingOptions}
+            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Rocket size={15} /> {launching ? "Launching..." : "Launch Copilot"}
+          </button>
+        </div>
       </div>
     </div>
   );

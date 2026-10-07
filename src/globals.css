@@ -514,7 +514,6 @@ button:disabled {
 th,
 tr {
   text-align: left;
-  font-weight: 600;
   max-width: 300px;
 }
 th {

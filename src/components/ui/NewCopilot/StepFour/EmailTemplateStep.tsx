@@ -19,8 +19,10 @@ import {
 } from "lucide-react";
 import StepsActions from "../StepsActions";
 import { templatesApi } from "@/lib/api";
+import { useWizardTemplates } from "@/lib/useWizardOptions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { toEditorContent } from "@/lib/helpers";
+import { toast } from "sonner";
 
 const initialEmailBody = `
 <p>Hi,</p>
@@ -55,8 +57,8 @@ export default function EmailTemplateStep() {
     "name" | "subject" | "body"
   >("body");
 
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+  const { data: templates = [], isLoading: isLoadingTemplates } =
+    useWizardTemplates();
   const [originalTemplate, setOriginalTemplate] = useState<{
     id: string;
     body: string;
@@ -65,7 +67,7 @@ export default function EmailTemplateStep() {
     variables: string[];
   } | null>(null);
 
-  const { copilotData, updateCopilotData, setStep } = useCopilotStore();
+  const { copilotData, updateCopilotData, setStep, persistDraft } = useCopilotStore();
 
   const [templateName, setTemplateName] = useState(
     copilotData?.name || "Intro - Book More Appointments",
@@ -120,22 +122,6 @@ export default function EmailTemplateStep() {
       desc: "A personalized cold email",
     },
   ];
-
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      setIsLoadingTemplates(true);
-      try {
-        const res = await templatesApi.getAll();
-        setTemplates(res.data.data || res.data || []);
-        console.log("Fetched templates:", res.data.data || res.data || []);
-      } catch (error) {
-        console.error("Failed to load templates:", error);
-      } finally {
-        setIsLoadingTemplates(false);
-      }
-    };
-    fetchTemplates();
-  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -268,6 +254,12 @@ export default function EmailTemplateStep() {
           JSON.stringify(variableInput);
 
       if (isUnchanged) {
+        try {
+          await persistDraft();
+        } catch {
+          toast.error("Failed to save draft. Please try again.");
+          return;
+        }
         setStep(5);
 
         return;
@@ -282,9 +274,16 @@ export default function EmailTemplateStep() {
 
       updateCopilotData({ templateId: response.data.id, name: templateName });
 
+      try {
+        await persistDraft();
+      } catch {
+        toast.error("Failed to save draft. Please try again.");
+        return;
+      }
+
       // Update the snapshot so re-saving without further edits is recognized as "unchanged" too.
       setOriginalTemplate({
-        id: response.data.id,
+        id: String(response.data.id),
         body: currentBody,
         subject: subjectInput,
         name: templateName,
@@ -294,6 +293,7 @@ export default function EmailTemplateStep() {
       setStep(5);
     } catch (error) {
       console.error("Failed to save template:", error);
+      toast.error("Failed to save template. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -695,7 +695,7 @@ export default function EmailTemplateStep() {
                       templateId: template.id,
                     });
                     setOriginalTemplate({
-                      id: template.id,
+                      id: String(template.id),
                       body: editor?.getHTML() ?? "",
                       subject: template.subject || "",
                       name: template.name || "",

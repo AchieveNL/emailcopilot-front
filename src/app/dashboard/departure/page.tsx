@@ -2,17 +2,7 @@
 
 import { Suspense, useState, useEffect, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
-import {
-  MapPin,
-  Mail,
-  Phone,
-  Building,
-  Globe,
-  Users,
-  Send,
-  Target,
-  Calendar,
-} from "lucide-react";
+import { Users, Search } from "lucide-react";
 import { leadsApi } from "@/lib/api";
 import type { Lead, PaginatedMeta } from "@/lib/types";
 import LeadStatus from "@/components/ui/departure/LeadStatus";
@@ -23,6 +13,7 @@ import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 import { templatesApi } from "@/lib/api";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
+import { useRowsPerPage } from "@/lib/hooks";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -143,10 +134,14 @@ function LeadsPageContent() {
   const [meta, setMeta] = useState<PaginatedMeta>(MOCK_META);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(50);
+  const autoPerPage = useRowsPerPage(8);
+  const [manualLimit, setManualLimit] = useState<number | null>(null);
+  const effectiveLimit = manualLimit ?? autoPerPage;
+  const [copilotId, setCopilotId] = useState<number | null>(null);
   const [copilotName, setCopilotName] = useState<string | null>("All Copilots");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const searchParams = useSearchParams();
+  const [search, setSearch] = useState("");
   const [activeLeadId, setActiveLeadId] = useState<number | null>(null);
   const [templateData, setTemplateData] = useState<{
     subject?: string;
@@ -197,13 +192,17 @@ function LeadsPageContent() {
     }
   };
 
-  async function fetchLeads(copilotId?: number) {
+  async function fetchLeads(
+    targetPage: number,
+    targetLimit: number,
+    targetCopilotId: number | null,
+  ) {
     try {
       setLoading(true);
       const res = await leadsApi.getAll({
-        page,
-        limit,
-        copilotId,
+        page: targetPage,
+        limit: targetLimit,
+        ...(targetCopilotId != null ? { copilotId: targetCopilotId } : {}),
       });
       console.log("Fetched leads:", res.data);
       setLeads(res.data.data);
@@ -216,17 +215,32 @@ function LeadsPageContent() {
   }
 
   useEffect(() => {
-    const copilotId = searchParams.get("copilotId");
-    const copilotName = searchParams.get("name");
-    console.log("Search params:", { copilotId, copilotName });
+    const paramId = searchParams.get("copilotId");
+    const paramName = searchParams.get("name");
+    console.log("Search params:", { copilotId: paramId, copilotName: paramName });
 
-    if (copilotId && copilotName) {
-      setCopilotName(copilotName);
-      fetchLeads(Number(copilotId));
+    if (paramId && paramName) {
+      setCopilotId(Number(paramId));
+      setCopilotName(paramName);
     } else {
-      fetchLeads(); // fallback only when no params
+      setCopilotId(null);
     }
+    setPage(1);
   }, [searchParams]);
+
+  useEffect(() => {
+    fetchLeads(page, effectiveLimit, copilotId);
+  }, [page, effectiveLimit, copilotId]);
+
+  // When the viewport-derived size changes and the user hasn't picked a
+  // manual size, restart from page 1 so the new size applies from the top.
+  // A manual selection always wins over the automatic size.
+  useEffect(() => {
+    if (manualLimit == null) {
+      setPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPerPage]);
 
   // normalize URL to ensure it has a protocol (http or https)
   const normalizeUrl = (url: string) => {
@@ -236,54 +250,55 @@ function LeadsPageContent() {
   };
 
   const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
+    setManualLimit(newLimit);
     setPage(1);
-    fetchLeads();
   };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    fetchLeads();
   };
 
   const handleDeleteLead = (id: number) => {
     setLeads((prev) => prev.filter((lead) => lead.id !== id));
   };
 
-  const handleSuppressLead = (id: number) => {
+  const handleSuppressionChange = (id: number, suppressed: boolean) => {
     setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === id ? { ...lead, suppressed: true } : lead,
-      ),
+      prev.map((lead) => (lead.id === id ? { ...lead, suppressed } : lead)),
     );
   };
 
-  return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row md:items-center md:justify-between gap-4 mb-8">
-          <div className="">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
-              Departure
-            </h1>
-            <p className="text-gray-500 text-xs sm:text-sm mt-1 line-clamp-2">
-              Recipients who have been emailed by
-              <span className="font-bold text-gray-950 ">
-                {" " + copilotName}
-              </span>
-              .
-            </p>
-          </div>
+  // Client-side search over the loaded page (the leads API exposes no
+  // search param). Matches copilot, company, email, website, phone,
+  // address, and target audience.
+  const query = search.trim().toLowerCase();
+  const visibleLeads = query
+    ? leads.filter((lead) =>
+        [
+          lead.copilotName,
+          lead.companyName,
+          lead.email,
+          lead.website,
+          lead.phone,
+          lead.address,
+          lead.sourceQuery,
+        ].some((field) => field?.toLowerCase().includes(query)),
+      )
+    : leads;
 
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="btn-main w-fit btn-cta text-xs md:text-sm  "
-            style={{ padding: "9px 20px" }}
-          >
-            Select Copilot
-          </button>
-        </div>
-      </div>
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  return (
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:min-h-full [@media(min-height:1081px)]:flex-col">
+      <DashboardHeader
+        title="Departure"
+        description="Recipients who have been emailed by your copilots."
+        actionLabel="Select Copilot"
+        onAction={() => setIsSidebarOpen(true)}
+      />
 
       {loading ? (
         <div className="flex items-center justify-center h-48 text-gray-400">
@@ -301,63 +316,96 @@ function LeadsPageContent() {
         </div>
       ) : (
         <>
-          <div className="bg-white min-h-120 border border-gray-200 rounded-xl  overflow-hidden mb-6">
-            <div className="overflow-auto max-h-125">
+          <div className="bg-white border border-[#E2E8F0] rounded-lg px-4 sm:px-5 py-4 mb-4 flex items-center">
+            <div className="relative w-full sm:w-[378px]">
+              <Search
+                size={20}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#59637C]"
+              />
+              <input
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Search leads..."
+                className="w-full h-11 border border-[#E2E8F0] rounded-lg pl-10 pr-4 text-[15px] font-light bg-white focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+                style={{ color: "#59637C" }}
+              />
+            </div>
+          </div>
+          {visibleLeads.length === 0 ? (
+            <div className="bg-white border border-[#E2E8F0] rounded-lg flex flex-col items-center justify-center py-12 px-6 text-center">
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Search size={18} className="text-gray-400" />
+              </div>
+              <h2 className="font-semibold text-sm text-gray-900 mb-1">
+                No results found
+              </h2>
+              <p className="text-sm text-gray-500 mb-4">
+                No leads match &quot;{search.trim()}&quot;. Try a different
+                search term.
+              </p>
+              <button
+                onClick={() => handleSearchChange("")}
+                className="px-4 py-2 border border-[#E2E8F0] rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Clear search
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden mb-6 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col">
+            <div className="overflow-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-320px)]">
               <table className="w-full text-sm min-w-225">
                 <thead>
-                  <tr className="border-b sticky top-0 z-40 border-gray-100 bg-white">
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                  <tr className="border-b sticky top-0 z-40 border-[#E2E8F0] bg-white">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Copilot
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Company
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Address
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Website
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Email
                     </th>
-                    <th className=" font-semibold text-gray-900 px-6 py-5">
+                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Phone
                     </th>
-                    <th className=" font-semibold  bg-white text-gray-900 px-6    py-5">
+                    <th className="font-normal text-left text-xs leading-5 bg-white text-[#94A3B8] px-6 py-3">
                       Target Audience
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Departured at
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Template
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5">
+                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Status
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white border-l border-gray-100">
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody className="max-h-75 overflow-y-auto">
-                  {leads.map((lead, index) => (
+                  {visibleLeads.map((lead, index) => (
                     <tr
                       key={lead.id + index}
-                      className=" border-b text-xs border-gray-50 hover:bg-gray-50/50 transition-colors"
+                      className=" border-b text-sm border-[#E2E8F0] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                            <Send size={12} />
-                          </div>
                           <Tooltip text={lead.copilotName || "Unknown Copilot"}>
                             <a
                               target="_blank"
                               rel="noopener noreferrer"
                               href={`/dashboard/copilots#${lead.copilotName?.replace(" ", "-") || "unknown-copilot"}`}
-                              className="font-semibold line-clamp-1 text-gray-900"
+                              className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                             >
                               {lead.copilotName || "Unknown Copilot"}
                             </a>
@@ -366,11 +414,8 @@ function LeadsPageContent() {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                            <Building size={12} />
-                          </div>
                           <Tooltip text={lead.companyName}>
-                            <div className="font-semibold line-clamp-1 text-gray-900">
+                            <div className="font-semibold line-clamp-2 max-w-48 text-sm text-[#0F172A]">
                               {lead.companyName}
                             </div>
                           </Tooltip>
@@ -378,16 +423,13 @@ function LeadsPageContent() {
                       </td>
                       <td className="px-6 py-5  ">
                         <div className=" text-gray-400 hover:text-blue-500  gap-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center ">
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white">
-                            <MapPin size={12} />
-                          </div>
                           {lead.address ? (
                             <Tooltip text={lead.address}>
                               <a
                                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lead.address)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="font-semibold line-clamp-1 text-gray-900"
+                                className="font-semibold line-clamp-2 max-w-48 text-sm text-[#0F172A]"
                               >
                                 {lead.address}
                               </a>
@@ -399,16 +441,13 @@ function LeadsPageContent() {
                       </td>
                       <td className="px-6 py-5 ">
                         <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                            <Globe size={12} />
-                          </div>
 
                           <Tooltip text={lead?.website}>
                             <a
                               target="_blank"
                               rel="noopener noreferrer"
                               href={normalizeUrl(lead.website || "#")}
-                              className="font-semibold text- line-clamp-1 text-gray-900"
+                              className="font-semibold line-clamp-2 text-sm text-blue-500 hover:text-blue-600 transition-colors"
                             >
                               {lead.website}
                             </a>
@@ -422,15 +461,12 @@ function LeadsPageContent() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium group transition-colors"
                         >
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                            <Mail size={12} />
-                          </div>
                           <Tooltip text={lead.email}>
                             <a
                               target="_blank"
                               rel="noopener noreferrer"
                               href={`mailto:${lead.email}`}
-                              className="underline line-clamp-1 decoration-blue-200 underline-offset-4 group-hover:decoration-blue-400 transition-colors"
+                              className="line-clamp-2 underline decoration-blue-200 underline-offset-4 transition-colors group-hover:decoration-blue-400"
                             >
                               {lead.email}
                             </a>
@@ -439,18 +475,15 @@ function LeadsPageContent() {
                       </td>
 
                       <td className="px-6 py-5  text-gray-600">
-                        <div className="flex items-center gap-2 group relative whitespace-nowrap">
+                        <div className="flex items-center gap-2 group relative ">
                           {lead.phone ? (
                             <>
-                              <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                                <Phone size={12} />
-                              </div>
                               <Tooltip text={lead.phone}>
                                 <a
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   href={`https://wa.me/${lead.phone.replace("+", "")}`}
-                                  className="font-semibold line-clamp-1 text-gray-900"
+                                className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                                 >
                                   {lead.phone}
                                 </a>
@@ -461,17 +494,14 @@ function LeadsPageContent() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5  bg-white  text-gray-600">
-                        <div className="flex items-center gap-2  whitespace-nowrap">
+                      <td className="px-6 py-5  text-gray-600">
+                        <div className="flex items-center gap-2">
                           {lead.sourceQuery ? (
                             <>
-                              <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white ">
-                                <Target size={12} />
-                              </div>
                               <Tooltip text={lead.sourceQuery}>
                                 <a
                                   href={`/dashboard/target-audiences#${lead.sourceQuery.replace(" ", "-")}`}
-                                  className="font-semibold line-clamp-1 text-gray-900"
+                                className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                                 >
                                   {lead.sourceQuery}
                                 </a>
@@ -485,9 +515,6 @@ function LeadsPageContent() {
 
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded border border-gray-200 flex items-center justify-center text-gray-400 bg-white shrink-0">
-                            <Calendar size={12} />
-                          </div>
                           <Tooltip
                             text={
                               lead.sentAt
@@ -495,7 +522,7 @@ function LeadsPageContent() {
                                 : "Unknown"
                             }
                           >
-                            <div className="font-semibold line-clamp-1 text-gray-900">
+                            <div className="font-semibold whitespace-nowrap text-sm text-[#0F172A]">
                               {lead.sentAt
                                 ? formatDateTime(lead.sentAt)
                                 : "Unknown"}
@@ -508,7 +535,13 @@ function LeadsPageContent() {
                           className=" text-gray-400   gap-2  rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
                           onClick={() => handleShowPreview(lead)}
                         >
-                          <div className="text-xs capitalize hover:bg-primary/5 hover:text-primary text-gray-800 mt-1 w-fit px-3 py-1 rounded-lg  leading-relaxed">
+                          <div
+                            className="inline-flex min-w-[60px] items-center justify-center rounded-lg px-3.5 py-1.5 text-xs leading-4 font-semibold capitalize transition-colors hover:brightness-95"
+                            style={{
+                              backgroundColor: "#F5F7FF",
+                              color: "#2563EB",
+                            }}
+                          >
                             show
                           </div>
                         </div>
@@ -533,12 +566,12 @@ function LeadsPageContent() {
                           </Tooltip>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white border-l border-gray-100 transition-colors">
+                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white transition-colors">
                         <div className="flex items-center justify-center">
                           <LeadMenu
                             lead={lead}
                             onDeleted={handleDeleteLead}
-                            onSuppressed={handleSuppressLead}
+                            onSuppressionChange={handleSuppressionChange}
                           />
                         </div>
                       </td>
@@ -556,6 +589,8 @@ function LeadsPageContent() {
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
             />
+          )}
+            </>
           )}
         </>
       )}
@@ -576,13 +611,14 @@ function LeadsPageContent() {
 
       <CopilotsPopup
         isOpen={isSidebarOpen}
-        onClose={(copilotId, copilotName) => {
+        onClose={(selectedId, selectedName) => {
           setIsSidebarOpen(false);
-          if (copilotId) {
-            fetchLeads(copilotId);
+          if (selectedId) {
+            setCopilotId(selectedId);
+            setPage(1);
           }
-          if (copilotName) {
-            setCopilotName(copilotName + " Copilot");
+          if (selectedName) {
+            setCopilotName(selectedName + " Copilot");
           }
         }}
       />

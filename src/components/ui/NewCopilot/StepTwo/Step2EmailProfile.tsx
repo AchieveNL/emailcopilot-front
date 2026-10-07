@@ -1,26 +1,21 @@
 "use client";
 
 import { useCopilotStore } from "@/store/copilotStore";
-import type { NewCopilotContext } from "@/app/dashboard/copilots/new/page";
 import OtherProviderPopUp from "@/components/ui/NewCopilot/StepTwo/OtherProviderPopUp";
 import StepsActions from "../StepsActions";
 import { useState, useEffect } from "react";
 import ProvidersOption from "@/components/layout/features/emailAccount/ProvidersOption";
 import EmailAccountList from "./EmailAccountList";
 import { useEmailAccountStore } from "@/store/emailAccountStore";
+import { toast } from "sonner";
 
-interface Step2EmailProfileProps {
-  remoteContext: NewCopilotContext;
-}
-
-export default function Step2EmailProfile({
-  remoteContext,
-}: Step2EmailProfileProps) {
-  const { copilotData, setStep } = useCopilotStore();
+export default function Step2EmailProfile() {
+  const { copilotData, setStep, persistDraft } = useCopilotStore();
   const { fetchAccounts, showModal, setShowModal, currentAccount, setEditingAccount } = useEmailAccountStore();
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(
     null,
   );
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchAccounts();
@@ -58,8 +53,18 @@ export default function Step2EmailProfile({
       )}
 
       <StepsActions
-        onPress={() => setStep(3)}
-        isLoading={false}
+        onPress={async () => {
+          setSaving(true);
+          try {
+            await persistDraft();
+            setStep(3);
+          } catch {
+            toast.error("Failed to save draft. Please try again.");
+          } finally {
+            setSaving(false);
+          }
+        }}
+        isLoading={saving}
         canContinue={canContinue}
       />
     </>
