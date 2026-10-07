@@ -58,7 +58,7 @@ function pickFields(s: Partial<ScheduleFields>): ScheduleFields {
 }
 
 export default function ScheduleStep() {
-  const { copilotData, updateCopilotData, updateFlightSchedule, setStep } =
+  const { copilotData, updateCopilotData, updateFlightSchedule, setStep, persistDraft } =
     useCopilotStore();
 
   const schedule = copilotData.flightSchedule;
@@ -135,7 +135,15 @@ export default function ScheduleStep() {
 
     // Selected schedule, untouched → pure reuse, nothing is written.
     if (selectedId && !dirty) {
-      setStep(6);
+      setLoading(true);
+      try {
+        await persistDraft();
+        setStep(6);
+      } catch {
+        toast.error("Failed to save draft. Please try again.");
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -163,6 +171,13 @@ export default function ScheduleStep() {
         flightScheduleId: res.data.id,
         flightSchedule: payload,
       });
+
+      try {
+        await persistDraft();
+      } catch {
+        toast.error("Failed to save draft. Please try again.");
+        return;
+      }
 
       if (selectedId) {
         toast.success(

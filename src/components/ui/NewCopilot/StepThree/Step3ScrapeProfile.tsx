@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { Country, City, ICountry, ICity } from "country-state-city";
 import StepsActions from "../StepsActions";
-import { useCopilotStore, TargetAudience } from "@/store/copilotStore";
+import { useCopilotStore } from "@/store/copilotStore";
+import { useWizardTargetAudiences } from "@/lib/useWizardOptions";
 import { targetAudiencesApi } from "@/lib/api";
 import { toast } from "sonner";
 import Switcher from "../../Switcher";
@@ -238,13 +239,13 @@ function getCitiesForCountries(countryNames: string[]): string[] {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function Step3ScrapeProfile() {
-  const { copilotData, updateTargetProfile, updateCopilotData, setStep } =
+  const { copilotData, updateTargetProfile, updateCopilotData, setStep, persistDraft } =
     useCopilotStore();
   const { industries, countries, cities } = copilotData.targetProfile;
   const [loading, setLoading] = useState(false);
-  const [loadingProfiles, setLoadingProfiles] = useState(true);
-  const [profiles, setProfiles] = useState<TargetAudience[]>([]);
   const [enableCity, setEnableCity] = useState(false);
+  const { data: profiles = [], isLoading: loadingProfiles } =
+    useWizardTargetAudiences();
 
   // show alert when user tries to leave the page with unsaved changes
   useEffect(() => {
@@ -261,36 +262,23 @@ export default function Step3ScrapeProfile() {
     };
   }, []);
 
+  // If a target audience was already linked (edit/duplicate mode) or the user
+  // picks an existing profile, hydrate the form fields from that profile so
+  // chips show. Runs when the selection or the cached list changes.
   useEffect(() => {
-    targetAudiencesApi
-      .getAll()
-      .then((res) => {
-        const fetched: TargetAudience[] = res.data?.data || res.data || [];
-        setProfiles(fetched);
-
-        // If a target audience was already linked (edit/duplicate mode),
-        // hydrate the form fields from that profile so chips show on load.
-        const selectedId = copilotData.targetAudienceId;
-        if (selectedId) {
-          const selected = fetched.find((p) => p.id === selectedId);
-          if (selected) {
-            updateTargetProfile({
-              industries: selected.name ? [selected.name] : [],
-              countries: selected.country ? [selected.country] : [],
-              cities: selected.city ? [selected.city] : [],
-            });
-            setEnableCity(Boolean(selected.city));
-          }
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch profiles", err);
-      })
-      .finally(() => {
-        setLoadingProfiles(false);
+    const selectedId = copilotData.targetAudienceId;
+    if (!selectedId || profiles.length === 0) return;
+    const selected = profiles.find((p) => p.id === selectedId);
+    if (selected) {
+      updateTargetProfile({
+        industries: selected.name ? [selected.name] : [],
+        countries: selected.country ? [selected.country] : [],
+        cities: selected.city ? [selected.city] : [],
       });
+      setEnableCity(Boolean(selected.city));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [copilotData.targetAudienceId]);
+  }, [copilotData.targetAudienceId, profiles]);
 
   // Derive available cities from selected countries
   const availableCities = useMemo(
@@ -319,9 +307,17 @@ export default function Step3ScrapeProfile() {
   const canContinue = !!copilotData.targetAudienceId || industries.length > 0;
 
   const handleONpress = async () => {
-    // If a profile is selected, just proceed using that profile.
+    // If a profile is selected, persist the link and proceed.
     if (copilotData.targetAudienceId) {
-      setStep(4);
+      setLoading(true);
+      try {
+        await persistDraft();
+        setStep(4);
+      } catch {
+        toast.error("Failed to save draft. Please try again.");
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -336,6 +332,12 @@ export default function Step3ScrapeProfile() {
       // Optionally update copilotData.targetAudienceId with newly created ID if returned
       if (res.data?.id) {
         updateCopilotData({ targetAudienceId: res.data.id });
+      }
+      try {
+        await persistDraft();
+      } catch {
+        toast.error("Failed to save draft. Please try again.");
+        return;
       }
       setStep(4);
       toast.success("Target Audience created successfully");

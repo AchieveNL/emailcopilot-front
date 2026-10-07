@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useEffect, useCallback } from "react";
-import { MoreVertical, ChevronRight, Save, Loader2 } from "lucide-react";
+import { MoreVertical, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Stepper from "@/components/ui/NewCopilot/Stepper";
@@ -14,12 +14,7 @@ import Step4Launch from "@/components/ui/NewCopilot/StepSix/Step4Launch";
 import TargetAudienceSummary from "@/components/ui/NewCopilot/StepThree/TargetAudienceSummary";
 import { useCopilotStore } from "@/store/copilotStore";
 import EmailTemplateStep from "@/components/ui/NewCopilot/StepFour/EmailTemplateStep";
-import {
-  copilotsApi,
-  emailAccountsApi,
-  targetAudiencesApi,
-  templatesApi,
-} from "@/lib/api";
+import { copilotsApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
 import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTemplateSidbar";
@@ -27,16 +22,6 @@ import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
 import { toast } from "sonner";
-
-// RemoteOption IDs are numbers — matches serial PKs in schema
-type RemoteOption = { id: number; name: string };
-
-export type NewCopilotContext = {
-  emailAccount: RemoteOption[];
-  targetAudiences: RemoteOption[];
-  templates: RemoteOption[];
-  loadingOptions: boolean;
-};
 
 function NewCopilotPageContent() {
   const defaultTimezone = "Europe/Brussels";
@@ -47,21 +32,14 @@ function NewCopilotPageContent() {
     copilotData,
     resetStore,
     mode,
-
+    draftId,
+    setDraftId,
+    persistDraft,
     loadCopilot,
   } = useCopilotStore();
 
-  const [savingDraft, setSavingDraft] = useState(false);
-  const [draftSaved, setDraftSaved] = useState(false);
   const [launching, setLaunching] = useState(false);
-  const [draftId, setDraftId] = useState<number | null>(null);
   const [loadingCopilot, setLoadingCopilot] = useState(false);
-
-  // Remote options for step dropdowns
-  const [emailAccount, setEmailAccount] = useState<RemoteOption[]>([]);
-  const [targetAudiences, setTargetAudiences] = useState<RemoteOption[]>([]);
-  const [templates, setTemplates] = useState<RemoteOption[]>([]);
-  const [loadingOptions, setLoadingOptions] = useState(true);
 
   const { user } = useUser();
 
@@ -76,7 +54,7 @@ function NewCopilotPageContent() {
     },
     {
       id: 2,
-      component: () => <Step2EmailProfile remoteContext={remoteContext} />,
+      component: () => <Step2EmailProfile />,
       sideBar: () => <EmailProfileSidebar />,
     },
     {
@@ -98,57 +76,16 @@ function NewCopilotPageContent() {
       id: 6,
       component: () => (
         <Step4Launch
-          remoteContext={remoteContext}
           onLaunch={handleLaunch}
           launching={launching}
+          onSaveDraft={handleSaveDraftStep}
         />
       ),
       sideBar: () => (
-        <LaunchSideBar
-          draftId={draftId?.toString() ?? undefined}
-          remoteContext={remoteContext}
-        />
+        <LaunchSideBar draftId={draftId?.toString() ?? undefined} />
       ),
     },
   ];
-
-  // Load dropdown options once on mount
-  useEffect(() => {
-    async function loadOptions() {
-      try {
-        setLoadingOptions(true);
-        const [ep, sp, tp] = await Promise.all([
-          emailAccountsApi.getAll(),
-          targetAudiencesApi.getAll(),
-          templatesApi.getAll(),
-        ]);
-        // id is number (serial PK), name is varchar — matches schema
-        setEmailAccount(
-          ep.data.map((e: { id: number; profileName: string }) => ({
-            id: e.id,
-            name: e.profileName,
-          })),
-        );
-        setTargetAudiences(
-          sp.data.map((s: { id: number; name: string }) => ({
-            id: s.id,
-            name: s.name,
-          })),
-        );
-        setTemplates(
-          tp.data.map((t: { id: number; name: string }) => ({
-            id: t.id,
-            name: t.name,
-          })),
-        );
-      } catch {
-        // Non-blocking — steps degrade gracefully
-      } finally {
-        setLoadingOptions(false);
-      }
-    }
-    loadOptions();
-  }, []);
 
   useEffect(() => {
     const editId = searchParams.get("edit");
@@ -241,8 +178,13 @@ function NewCopilotPageContent() {
           router.push("/dashboard/copilots");
         })
         .finally(() => setLoadingCopilot(false));
+    } else {
+      // Pure create mode (no ?edit= or ?duplicate=): wipe any leftover state
+      // from an abandoned wizard so every Create starts blank at step 1.
+      // Idempotent, so StrictMode double-fire is harmless.
+      resetStore();
     }
-  }, [searchParams, router, loadCopilot]);
+  }, [searchParams, router, loadCopilot, setDraftId, resetStore]);
 
   const getPageTitle = () => {
     if (mode === "edit") return "Edit Copilot";
@@ -250,40 +192,15 @@ function NewCopilotPageContent() {
     return "Create New Copilot";
   };
 
-  const handleSaveDraft = useCallback(async () => {
+  const handleSaveDraftStep = useCallback(async () => {
     try {
-      setSavingDraft(true);
-      const payload = {
-        name: copilotData.name,
-        description: copilotData.description,
-        goal: copilotData.goal,
-        emailAccountId: copilotData.emailAccountId,
-        targetAudienceId: copilotData.targetAudienceId,
-        templateId: copilotData.templateId,
-
-        flightScheduleId: copilotData.flightScheduleId,
-
-        status: "draft" as const,
-      };
-
-      let res;
-      if (mode === "edit" && draftId) {
-        res = await copilotsApi.update(draftId, payload);
-      } else {
-        res = await copilotsApi.create(payload);
-        if (mode === "edit") {
-          setDraftId(res.data.id);
-        }
-      }
-
-      setDraftSaved(true);
-      setTimeout(() => setDraftSaved(false), 2500);
+      await persistDraft();
+      toast.success("Draft saved — you can launch anytime.");
+      router.push("/dashboard/copilots");
     } catch {
       toast.error("Failed to save draft. Please try again.");
-    } finally {
-      setSavingDraft(false);
     }
-  }, [copilotData, draftId, mode]);
+  }, [persistDraft, router]);
 
   const handleLaunch = useCallback(async () => {
     try {
@@ -302,7 +219,7 @@ function NewCopilotPageContent() {
         status: "active" as const,
       };
 
-      if (mode === "edit" && draftId) {
+      if (draftId) {
         const { data } = await copilotsApi.update(draftId, payload);
         console.log("Updated copilot data:", data);
         await copilotsApi.updateStatus(draftId, "active");
@@ -318,14 +235,7 @@ function NewCopilotPageContent() {
     } finally {
       setLaunching(false);
     }
-  }, [copilotData, draftId, router, resetStore, mode]);
-
-  const remoteContext: NewCopilotContext = {
-    emailAccount,
-    targetAudiences,
-    templates,
-    loadingOptions,
-  };
+  }, [copilotData, draftId, router, resetStore, user]);
 
   if (loadingCopilot) {
     return (
@@ -363,19 +273,6 @@ function NewCopilotPageContent() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleSaveDraft}
-            disabled={savingDraft}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            {savingDraft ? (
-              <Loader2 size={13} className="animate-spin" />
-            ) : (
-              <Save size={13} />
-            )}
-            {draftSaved ? "Saved!" : savingDraft ? "Saving..." : "Save Draft"}
-          </button>
-
           {/* Kebab — discard */}
           <div className="relative group">
             <button className="w-9 h-9 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
