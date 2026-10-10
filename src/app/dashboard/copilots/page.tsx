@@ -24,7 +24,7 @@ export default function CopilotsPage() {
 
   // Pagination state — same responsive rows-per-page as the templates table
   const [currentPage, setCurrentPage] = useState(1);
-  const perPage = useRowsPerPage(10);
+  const perPage = useRowsPerPage(20);
 
   useEffect(() => {
     fetchCopilots();
@@ -67,13 +67,14 @@ export default function CopilotsPage() {
   const endIndex = startIndex + perPage;
   const paginatedData = sorted.slice(startIndex, endIndex);
 
-  // Reset page when filters change
+  // Reset page when filters change, and when the viewport-derived page
+  // size changes (otherwise a resize leaves a stale page offset)
   useEffect(() => {
     setCurrentPage(1);
-  }, [status, search]);
+  }, [status, search, perPage]);
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:min-h-full [@media(min-height:1081px)]:flex-col">
       {/* Header */}
       <DashboardHeader
         title="Copilots"
@@ -96,43 +97,45 @@ export default function CopilotsPage() {
       </div>
 
       {/* Content */}
-      {loading ? (
-        <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
-          Loading...
-        </div>
-      ) : copilots.length === 0 ? (
-        <div className="  p-14 text-center ">
-          <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Send size={22} className="text-gray-500" />
+      <div className="min-h-0 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col">
+        {loading ? (
+          <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+            Loading...
           </div>
-          <h2 className="font-bold text-gray-900 mb-2">No copilots yet</h2>
-          <p className="text-sm text-gray-500 mb-5 max-w-xs mx-auto">
-            Build your first copilot to start sending personalized emails at
-            scale.
-          </p>
-          <Link
-            href="/dashboard/copilots/new"
-            className="inline-flex items-center gap-2 btn-cta text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-          >
-            <Plus size={15} /> Create New Copilot
-          </Link>
-        </div>
-      ) : paginatedData.length === 0 ? (
-        <div className="  p-10 text-center ">
-          <p className="text-sm text-gray-500">
-            No copilots match your filter.
-          </p>
-        </div>
-      ) : viewMode === "grid" ? (
-        <div className="min-h-105">
-          <CopilotCardsList
-            copilots={paginatedData}
-            onRefresh={fetchCopilots}
-          />
-        </div>
-      ) : (
-        <CopilotTable copilots={paginatedData} onRefresh={fetchCopilots} />
-      )}
+        ) : copilots.length === 0 ? (
+          <div className="  p-14 text-center ">
+            <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Send size={22} className="text-gray-500" />
+            </div>
+            <h2 className="font-bold text-gray-900 mb-2">No copilots yet</h2>
+            <p className="text-sm text-gray-500 mb-5 max-w-xs mx-auto">
+              Build your first copilot to start sending personalized emails at
+              scale.
+            </p>
+            <Link
+              href="/dashboard/copilots/new"
+              className="inline-flex items-center gap-2 btn-cta text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
+            >
+              <Plus size={15} /> Create New Copilot
+            </Link>
+          </div>
+        ) : paginatedData.length === 0 ? (
+          <div className="  p-10 text-center ">
+            <p className="text-sm text-gray-500">
+              No copilots match your filter.
+            </p>
+          </div>
+        ) : viewMode === "grid" ? (
+          <div className="min-h-105 overflow-y-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-270px)]">
+            <CopilotCardsList
+              copilots={paginatedData}
+              onRefresh={fetchCopilots}
+            />
+          </div>
+        ) : (
+          <CopilotTable copilots={paginatedData} onRefresh={fetchCopilots} />
+        )}
+      </div>
 
       {/* Pagination */}
       {totalItems > 0 && (

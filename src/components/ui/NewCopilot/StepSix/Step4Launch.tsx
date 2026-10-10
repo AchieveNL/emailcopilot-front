@@ -19,6 +19,7 @@ import {
   useWizardTemplates,
 } from "@/lib/useWizardOptions";
 import { flightSchedulesApi } from "@/lib/api";
+import { estimateAudienceSize } from "@/lib/estimates";
 import { useEffect, useState } from "react";
 
 function ReadinessItem({ done, label }: { done: boolean; label: string }) {
@@ -223,12 +224,10 @@ export default function Step4Launch({
   const audienceSizeLabel =
     resultsCount != null && resultsCount > 0
       ? `${resultsCount.toLocaleString()} companies`
-      : `~${(
-          400 +
-          (((sched?.sendLimit ?? 30) * (sched?.activeDays?.length ?? 5) +
-            (copilotData.targetAudienceId ?? 0) * 37 +
-            (copilotData.name?.length ?? 7) * 11) %
-            4600)
+      : `~${estimateAudienceSize(
+          sched,
+          copilotData.targetAudienceId,
+          copilotData.name,
         ).toLocaleString()} companies`;
   return (
     <div className="w-full">

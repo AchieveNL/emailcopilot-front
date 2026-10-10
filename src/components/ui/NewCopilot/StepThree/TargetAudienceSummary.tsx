@@ -1,25 +1,28 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Building2, Globe, Map, Users } from "lucide-react";
 import { useCopilotStore } from "../../../../store/copilotStore";
+import { useWizardTargetAudiences } from "@/lib/useWizardOptions";
+import { estimateAudienceSize } from "@/lib/estimates";
 
 function TargetAudienceSummary() {
   const { copilotData } = useCopilotStore();
   const { industries, countries, cities } = copilotData.targetProfile;
+  const { data: targetAudiences = [] } = useWizardTargetAudiences();
 
-  // Mock a dynamic audience size based on the number of selected fields
-  // const estimatedSize = useMemo(() => {
-  //   if (industries.length === 0 && countries.length === 0 && cities.length === 0) return 0;
-
-  //   const base = 500;
-  //   const indMult = industries.length > 0 ? industries.length * 1.5 : 1;
-  //   const counMult = countries.length > 0 ? countries.length * 2 : 1;
-  //   const cityMult = cities.length > 0 ? cities.length * 1.2 : 1;
-
-  //   return Math.floor(base * indMult * counMult * cityMult);
-  // }, [industries, countries, cities]);
-  const estimatedSize = 8420;
+  const linkedAudience = targetAudiences.find(
+    (a) => String(a.id) === String(copilotData.targetAudienceId),
+  );
+  const realSize = linkedAudience?.resultsCount;
+  const isEstimate = realSize == null || realSize <= 0;
+  const estimatedSize = isEstimate
+    ? estimateAudienceSize(
+        copilotData.flightSchedule,
+        copilotData.targetAudienceId,
+        copilotData.name,
+      )
+    : realSize;
   let label = "";
 
   let colorClass = "text-gray-600 bg-gray-100";
@@ -92,6 +95,7 @@ function TargetAudienceSummary() {
             </p>
             <div className="flex  justify-between mt-1">
               <p className="text-xl font-bold text-gray-900">
+                {isEstimate ? "~" : ""}
                 {estimatedSize.toLocaleString()}{" "}
                 <span className="text-xs font-normal text-gray-500">
                   companies
