@@ -28,7 +28,15 @@ export default function CopilotMenu({
     copilot.status === "running" || copilot.status === "active";
   const showResumeButton = copilot.status === "paused";
 
+  const isComplete =
+    !!copilot.name?.trim() &&
+    copilot.emailAccountId != null &&
+    copilot.targetAudienceId != null &&
+    copilot.templateId != null &&
+    copilot.flightScheduleId != null;
+
   async function toggleStatus(next: "active" | "paused") {
+    if (next === "active" && !isComplete) return;
     try {
       await copilotsApi.updateStatus(copilot.id, next);
       onRefresh();
@@ -39,7 +47,7 @@ export default function CopilotMenu({
   }
 
   async function handleRunScrape() {
-    if (!copilot.targetAudienceId) return;
+    if (!isComplete) return;
     try {
       setRunningScrape(true);
       await copilotsApi.run(copilot.id);
@@ -113,15 +121,27 @@ export default function CopilotMenu({
         >
           <Copy size={13} /> Duplicate
         </button>
-        {copilot.targetAudienceId && showLaunchButton && (
-          <button
-            onClick={handleRunScrape}
-            disabled={runningScrape}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+        {showLaunchButton && (
+          <span
+            className="block"
+            title={
+              isComplete
+                ? undefined
+                : "Complete all setup steps before launching"
+            }
           >
-            <Play size={13} className={runningScrape ? "animate-pulse" : ""} />
-            {runningScrape ? "Running..." : "Launch"}
-          </button>
+            <button
+              onClick={handleRunScrape}
+              disabled={runningScrape || !isComplete}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Play
+                size={13}
+                className={runningScrape ? "animate-pulse" : ""}
+              />
+              {runningScrape ? "Running..." : "Launch"}
+            </button>
+          </span>
         )}
         {showPauseButton ? (
           <button
@@ -131,12 +151,22 @@ export default function CopilotMenu({
             <Pause size={13} /> Pause
           </button>
         ) : showResumeButton ? (
-          <button
-            onClick={() => toggleStatus("active")}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          <span
+            className="block"
+            title={
+              isComplete
+                ? undefined
+                : "Complete all setup steps before resuming"
+            }
           >
-            <Play size={13} /> Resume
-          </button>
+            <button
+              onClick={() => toggleStatus("active")}
+              disabled={!isComplete}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Play size={13} /> Resume
+            </button>
+          </span>
         ) : null}
         {copilot.status !== "archived" && (
           <button

@@ -35,6 +35,67 @@ const INITIAL_STEPS: TemplateStep[] = [
   },
 ];
 
+const VARIABLE_DEFS = [
+  { key: "CompanyName", label: "{{CompanyName}}", hint: "The company name" },
+  { key: "SenderName", label: "{{SenderName}}", hint: "First name of the contact" },
+  { key: "Website", label: "{{Website}}", hint: "Last name of the contact" },
+  { key: "Email", label: "{{Email}}", hint: "Email address of the contact" },
+];
+
+function VariableList({
+  selectedVariable,
+  onSelect,
+}: {
+  selectedVariable: string;
+  onSelect: (varName: string) => void;
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        {VARIABLE_DEFS.map((v) => {
+          const selected = selectedVariable === v.key;
+          return (
+            <button
+              key={v.key}
+              onClick={() => onSelect(v.key)}
+              className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
+                selected
+                  ? "bg-blue-50/60 border border-blue-100"
+                  : "bg-white border border-slate-200 hover:border-slate-300"
+              }`}
+            >
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-semibold text-xs ${
+                  selected
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-100 text-slate-500 border border-slate-200 rounded-lg font-medium"
+                }`}
+              >
+                T
+              </div>
+              <div className="min-w-0 text-left">
+                <p className="text-sm font-semibold text-gray-900 font-mono break-all">
+                  {v.label}
+                </p>
+                <p
+                  className={`text-xs mt-0.5 ${selected ? "text-slate-500" : "text-slate-400"}`}
+                >
+                  {v.hint}
+                </p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <button className="mt-3 w-full border border-[#E2E8F0] rounded-lg py-3 flex items-center justify-center gap-2 text-sm font-semibold text-[#2563EB] hover:bg-blue-50/50 transition-colors">
+        <Plus size={16} />
+        Add Variables
+      </button>
+    </>
+  );
+}
+
 export default function TemplateModal({
   editingTemplate,
   initialSteps,
@@ -55,14 +116,48 @@ export default function TemplateModal({
     "name" | "subject" | "body"
   >("body");
   const [existingTemplates, setExistingTemplates] = useState<Template[]>([]);
+  const [listVisible, setListVisible] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setListVisible(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!listVisible) return;
+    let cancelled = false;
     templatesApi
       .getAll()
       .then((res) => {
-        setExistingTemplates(res.data || []);
+        if (!cancelled) setExistingTemplates(res.data || []);
       })
       .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [listVisible]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => {
+      if (mq.matches) setActiveTab("steps");
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
   }, []);
 
   function loadTemplate(t: Template) {
@@ -203,25 +298,38 @@ export default function TemplateModal({
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <style>{`.template-modal-scroll{scrollbar-width:thin;scrollbar-color:transparent transparent}.template-modal-scroll:hover{scrollbar-color:#cbd5e1 transparent}.template-modal-scroll::-webkit-scrollbar{width:6px}.template-modal-scroll::-webkit-scrollbar-track{background:transparent}.template-modal-scroll::-webkit-scrollbar-thumb{background:transparent;border-radius:9999px}.template-modal-scroll:hover::-webkit-scrollbar-thumb{background:#cbd5e1}`}</style>
       <div
-        className="template-modal-scroll bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-6 py-6">
+        <div className="px-6 pt-6 pb-4 shrink-0">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">
               {editingTemplate
                 ? "Edit email template"
                 : "Create new email template"}
             </h2>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400"
-            >
-              <X size={20} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onSave(steps)}
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
+        </div>
+        <div className="template-modal-scroll flex-1 overflow-y-auto px-6 pb-6 min-h-0">
 
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-6 items-start">
+            <div className="min-w-0">
           {/* Email template name */}
           <div className="mb-5">
             <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -374,7 +482,7 @@ export default function TemplateModal({
               </button>
               <button
                 onClick={() => setActiveTab("variables")}
-                className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors lg:hidden ${
                   activeTab === "variables"
                     ? "text-blue-600 bg-white border border-blue-500 shadow-sm"
                     : "text-slate-700 hover:text-slate-900 border border-transparent"
@@ -449,133 +557,28 @@ export default function TemplateModal({
 
           {/* Variables Content */}
           {activeTab === "variables" && (
-            <div className="mb-5">
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => appendVariable("CompanyName")}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
-                    selectedVariable === "CompanyName"
-                      ? "bg-blue-50/60 border border-blue-100"
-                      : "bg-white border border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-semibold text-xs ${
-                      selectedVariable === "CompanyName"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-500 border border-slate-200 rounded-lg font-medium"
-                    }`}
-                  >
-                    T
-                  </div>
-                  <div className="min-w-0 text-left">
-                    <p
-                      className={`text-sm font-semibold font-mono ${selectedVariable === "CompanyName" ? "text-gray-900" : "text-gray-900"}`}
-                    >
-                      {"{{CompanyName}}"}
-                    </p>
-                    <p
-                      className={`text-xs mt-0.5 ${selectedVariable === "CompanyName" ? "text-slate-500" : "text-slate-400"}`}
-                    >
-                      The company name
-                    </p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => appendVariable("SenderName")}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
-                    selectedVariable === "SenderName"
-                      ? "bg-blue-50/60 border border-blue-100"
-                      : "bg-white border border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-semibold text-xs ${
-                      selectedVariable === "SenderName"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-500 border border-slate-200 rounded-lg font-medium"
-                    }`}
-                  >
-                    T
-                  </div>
-                  <div className="min-w-0 text-left">
-                    <p className="text-sm font-semibold text-gray-900 font-mono">
-                      {"{{SenderName}}"}
-                    </p>
-                    <p
-                      className={`text-xs mt-0.5 ${selectedVariable === "SenderName" ? "text-slate-500" : "text-slate-400"}`}
-                    >
-                      First name of the contact
-                    </p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => appendVariable("Website")}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
-                    selectedVariable === "Website"
-                      ? "bg-blue-50/60 border border-blue-100"
-                      : "bg-white border border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-semibold text-xs ${
-                      selectedVariable === "Website"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-500 border border-slate-200 rounded-lg font-medium"
-                    }`}
-                  >
-                    T
-                  </div>
-                  <div className="min-w-0 text-left">
-                    <p className="text-sm font-semibold text-gray-900 font-mono">
-                      {"{{Website}}"}
-                    </p>
-                    <p
-                      className={`text-xs mt-0.5 ${selectedVariable === "Website" ? "text-slate-500" : "text-slate-400"}`}
-                    >
-                      Last name of the contact
-                    </p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => appendVariable("Email")}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
-                    selectedVariable === "Email"
-                      ? "bg-blue-50/60 border border-blue-100"
-                      : "bg-white border border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-semibold text-xs ${
-                      selectedVariable === "Email"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-500 border border-slate-200 rounded-lg font-medium"
-                    }`}
-                  >
-                    T
-                  </div>
-                  <div className="min-w-0 text-left">
-                    <p className="text-sm font-semibold text-gray-900 font-mono">
-                      {"{{Email}}"}
-                    </p>
-                    <p
-                      className={`text-xs mt-0.5 ${selectedVariable === "Email" ? "text-slate-500" : "text-slate-400"}`}
-                    >
-                      Email address of the contact
-                    </p>
-                  </div>
-                </button>
-              </div>
-
-              <button className="mt-3 w-full border border-[#E2E8F0] rounded-lg py-3 flex items-center justify-center gap-2 text-sm font-semibold text-[#2563EB] hover:bg-blue-50/50 transition-colors">
-                <Plus size={16} />
-                Add Variables
-              </button>
+            <div className="mb-5 lg:hidden">
+              <VariableList
+                selectedVariable={selectedVariable}
+                onSelect={appendVariable}
+              />
             </div>
           )}
+            </div>
+            <aside className="hidden lg:block lg:sticky lg:top-0 border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+              <p className="text-sm font-semibold text-gray-900">Variables</p>
+              <p className="text-xs text-gray-500 mt-1 mb-3">
+                Click to insert at your cursor
+              </p>
+              <VariableList
+                selectedVariable={selectedVariable}
+                onSelect={appendVariable}
+              />
+            </aside>
+          </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 py-5 mb-1">
+          <div ref={listRef} className="flex items-center gap-4 py-5 mb-1">
             <div className="flex-1 h-px bg-gray-200" />
             <p className="text-sm text-gray-500 text-center whitespace-nowrap">
               Your email templates
@@ -589,8 +592,12 @@ export default function TemplateModal({
               No saved templates yet.
             </p>
           ) : (
+            <>
             <div className="grid grid-cols-2 gap-3 mb-6">
-              {existingTemplates.map((t) => {
+              {(showAll
+                ? existingTemplates
+                : existingTemplates.slice(0, 4)
+              ).map((t) => {
                 const replyRate = t.replyRate ?? 0;
                 const isUp = (t.trend ?? "up") === "up";
                 const usedIn = t.usedIn ?? 0;
@@ -624,6 +631,15 @@ export default function TemplateModal({
                 );
               })}
             </div>
+            {!showAll && existingTemplates.length > 4 && (
+              <button
+                onClick={() => setShowAll(true)}
+                className="w-full border border-[#E2E8F0] rounded-lg py-3 flex items-center justify-center gap-2 text-sm font-semibold text-[#2563EB] hover:bg-blue-50/50 transition-colors mb-6"
+              >
+                View more ({existingTemplates.length - 4} more)
+              </button>
+            )}
+            </>
           )}
 
           {/* Actions */}

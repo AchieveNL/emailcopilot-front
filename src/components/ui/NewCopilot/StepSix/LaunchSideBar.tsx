@@ -7,11 +7,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useCopilotStore } from "../../../../store/copilotStore";
-import {
-  useWizardEmailAccounts,
-  useWizardTargetAudiences,
-  useWizardTemplates,
-} from "@/lib/useWizardOptions";
+import { useTakeoffCopilot } from "@/lib/useTakeoffCopilot";
 
 interface LaunchSideBarProps {
   draftId?: string;
@@ -19,24 +15,18 @@ interface LaunchSideBarProps {
 
 export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
   const { copilotData } = useCopilotStore();
-  const { data: emailAccounts = [] } = useWizardEmailAccounts();
-  const { data: templates = [] } = useWizardTemplates();
-  // Same cached entry the review card already fetches — no extra request.
-  const { data: targetAudiences = [] } = useWizardTargetAudiences();
+  const { data: takeoff } = useTakeoffCopilot();
 
-  const selectedEmailProfile = emailAccounts.find(
-    (p) => String(p.id) === String(copilotData.emailAccountId),
-  );
+  const selectedEmailProfile = takeoff?.emailAccount ?? null;
 
-  const selectedTemplate = templates.find(
-    (t) => String(t.id) === String(copilotData.templateId),
-  );
+  const selectedTemplate = takeoff?.template ?? null;
 
   // The linked audience record is the source of truth for the display name;
   // the wizard-local targetProfile is only a fallback for inline builds.
-  const selectedAudience = targetAudiences.find(
-    (a) => String(a.id) === String(copilotData.targetAudienceId),
-  );
+  const selectedAudience = takeoff?.targetAudience ?? null;
+
+  const flightScheduleId =
+    takeoff?.flightScheduleId ?? copilotData.flightScheduleId;
 
   const readyAll =
     !!copilotData.name?.trim() &&
@@ -44,9 +34,9 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
     (selectedAudience != null ||
       (copilotData.targetProfile?.industries?.length ?? 0) > 0) &&
     selectedTemplate != null &&
-    copilotData.flightScheduleId != null;
+    flightScheduleId != null;
 
-  const sched = copilotData.flightSchedule;
+  const sched = takeoff?.flightSchedule ?? copilotData.flightSchedule;
 
   const Days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -60,7 +50,7 @@ export default function LaunchSideBar({ draftId }: LaunchSideBarProps) {
     return shortDays.join(", ");
   };
 
-  const scheduleSummary = !copilotData.flightScheduleId
+  const scheduleSummary = !flightScheduleId
     ? "Not selected"
     : `${sched?.sendLimitActive ? `${sched?.sendLimit ?? 30} emails per day` : "Unlimited"}, ${formatActiveDays(
         sched?.activeDays?.map((day) => Days[day - 1]),

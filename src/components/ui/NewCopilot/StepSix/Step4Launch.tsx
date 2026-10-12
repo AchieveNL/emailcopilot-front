@@ -13,12 +13,7 @@ import {
   Save,
 } from "lucide-react";
 import { useCopilotStore } from "@/store/copilotStore";
-import {
-  useWizardEmailAccounts,
-  useWizardTargetAudiences,
-  useWizardTemplates,
-} from "@/lib/useWizardOptions";
-import { flightSchedulesApi } from "@/lib/api";
+import { useTakeoffCopilot } from "@/lib/useTakeoffCopilot";
 import { estimateAudienceSize } from "@/lib/estimates";
 import { useEffect, useState } from "react";
 
@@ -50,53 +45,15 @@ export default function Step4Launch({
   launching,
   onSaveDraft,
 }: Step4LaunchProps) {
-  const { copilotData, setStep, updateFlightSchedule } = useCopilotStore();
+  const { copilotData, setStep } = useCopilotStore();
   const [saving, setSaving] = useState(false);
-  const { data: emailAccounts = [], isLoading: loadingAccounts } =
-    useWizardEmailAccounts();
-  const { data: targetAudiences = [], isLoading: loadingAudiences } =
-    useWizardTargetAudiences();
-  const { data: templates = [], isLoading: loadingTemplates } =
-    useWizardTemplates();
-  const loadingOptions = loadingAccounts || loadingAudiences || loadingTemplates;
+  const { data: takeoff, isLoading: loadingTakeoff } = useTakeoffCopilot();
 
-  // Backend and list endpoints disagree on ID types (string vs number),
-  // so compare normalized — otherwise every lookup silently misses while
-  // the readiness checks (ID != null) still show green.
-  const selectedEmailProfile = emailAccounts.find(
-    (p) => String(p.id) === String(copilotData.emailAccountId),
-  );
-  const selectedScrapeProfile = targetAudiences.find(
-    (p) => String(p.id) === String(copilotData.targetAudienceId),
-  );
-  const selectedTemplate = templates.find(
-    (t) => String(t.id) === String(copilotData.templateId),
-  );
-
-  // Temporary diagnostic — remove once lookups are confirmed resolving.
-  useEffect(() => {
-    console.debug("[takeoff] resolve:", {
-      emailAccountId: copilotData.emailAccountId,
-      emailFound: !!selectedEmailProfile,
-      audienceId: copilotData.targetAudienceId,
-      audienceFound: !!selectedScrapeProfile,
-      templateId: copilotData.templateId,
-      templateFound: !!selectedTemplate,
-      listSizes: {
-        accounts: emailAccounts.length,
-        audiences: targetAudiences.length,
-        templates: templates.length,
-      },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    copilotData.emailAccountId,
-    copilotData.targetAudienceId,
-    copilotData.templateId,
-    emailAccounts.length,
-    targetAudiences.length,
-    templates.length,
-  ]);
+  const selectedEmailProfile = takeoff?.emailAccount ?? null;
+  const selectedScrapeProfile = takeoff?.targetAudience ?? null;
+  const selectedTemplate = takeoff?.template ?? null;
+  const flightScheduleId =
+    takeoff?.flightScheduleId ?? copilotData.flightScheduleId;
   const Days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const formatActiveDays = (days: string[] = []) => {
     if (days.length === 0) return "None";
@@ -120,39 +77,6 @@ export default function Step4Launch({
     };
   }, []);
 
-  // The flight-schedule record is never fetched anywhere else: on edit entry
-  // the store only holds whatever GET /copilots/:id embedded (or defaults).
-  // Hydrate once from the source record so the review shows real values.
-  useEffect(() => {
-    const id = copilotData.flightScheduleId;
-    if (!id) return;
-    let cancelled = false;
-    flightSchedulesApi
-      .getById(id)
-      .then((res) => {
-        if (cancelled) return;
-        const s = res.data?.data ?? res.data;
-        if (!s) return;
-        updateFlightSchedule({
-          name: s.name ?? "",
-          sendLimit: s.sendLimit ?? null,
-          sendLimitActive: s.sendLimitActive ?? false,
-          activeDays: Array.isArray(s.activeDays)
-            ? s.activeDays
-            : [1, 2, 3, 4, 5],
-          sendingHours: s.sendingHours ?? { start: "08:00", end: "17:00" },
-          sendingHoursActive: s.sendingHoursActive ?? false,
-          timezone: s.timezone ?? "Europe/Brussels",
-        });
-      })
-      .catch(() => {
-        // Keep store as-is — the card falls back to stored/default values.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [copilotData.flightScheduleId, updateFlightSchedule]);
-
   // Readiness — what the "ready to take off" checks reflect.
   const readySetup = !!copilotData.name?.trim();
   // A step counts as done only when its record actually resolved —
@@ -162,7 +86,7 @@ export default function Step4Launch({
     selectedScrapeProfile != null ||
     (copilotData.targetProfile?.industries?.length ?? 0) > 0;
   const readyTemplate = selectedTemplate != null;
-  const readySchedule = copilotData.flightScheduleId != null;
+  const readySchedule = flightScheduleId != null;
   const readyAll =
     readySetup &&
     readyAccount &&
@@ -185,7 +109,7 @@ export default function Step4Launch({
   const sequenceCount = selectedTemplate?.steps?.length ?? 1;
 
   // Schedule display: honest about unlimited / unset states.
-  const sched = copilotData.flightSchedule;
+  const sched = takeoff?.flightSchedule ?? copilotData.flightSchedule;
   const scheduleLimit = !readySchedule
     ? "Not selected"
     : sched?.sendLimitActive
@@ -521,13 +445,23 @@ export default function Step4Launch({
               </>
             )}
           </button>
-          <button
-            onClick={onLaunch}
-            disabled={launching || loadingOptions}
-            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Rocket size={15} /> {launching ? "Launching..." : "Launch Copilot"}
-          </button>
+          <span className="group/tip relative inline-flex">
+            <button
+              onClick={onLaunch}
+              disabled={launching || loadingTakeoff || !readyAll}
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Rocket size={15} />{" "}
+              {launching ? "Launching..." : "Launch Copilot"}
+            </button>
+            {!launching && (loadingTakeoff || !readyAll) && (
+              <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/tip:opacity-100">
+                {loadingTakeoff
+                  ? "Loading copilot data…"
+                  : "Complete all steps before launching"}
+              </span>
+            )}
+          </span>
         </div>
       </div>
     </div>
