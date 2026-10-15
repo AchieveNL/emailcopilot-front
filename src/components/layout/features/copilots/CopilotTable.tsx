@@ -12,6 +12,7 @@ import { useCopilotStore, type Step } from "../../../../store/copilotStore";
 import { handleCardProp } from "@/components/ui/copilots/CopilotCard";
 import CopilotStatus from "@/components/ui/CopilotStatus";
 import type { CopilotStatusType } from "@/store/copilotStore";
+import { createPortal } from "react-dom";
 
 /* ------------------------------------------------------------------ */
 /* Types — trimmed to the fields this component actually reads.       */
@@ -273,6 +274,25 @@ function CopilotTable({
   className = "",
 }: CopilotTableProps) {
   const [menuCopilotId, setMenuCopilotId] = React.useState<number | null>(null);
+  const [menuPos, setMenuPos] = React.useState<{
+    top: number;
+    right: number;
+  } | null>(null);
+
+  React.useEffect(() => {
+    if (!menuCopilotId) return;
+    const close = () => {
+      setMenuCopilotId(null);
+      setMenuPos(null);
+    };
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [menuCopilotId]);
+
   if (!copilots || copilots.length === 0) {
     return (
       <div className="w-full relative rounded-lg border border-[#E2E8F0] bg-white">
@@ -285,25 +305,27 @@ function CopilotTable({
 
   return (
     <div
-      className={`w-full overflow-hidden rounded-lg bg-white border border-[#E2E8F0] ${className}`}
+      className={`w-full overflow-hidden rounded-lg bg-white border border-[#E2E8F0] [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col ${className}`}
     >
-      <div className="overflow-x-auto flex-1 max-h-150">
+      <div className="overflow-x-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-270px)]">
         <table className="w-full min-w-225 border-collapse ">
           <thead>
-            <tr className="border-b border-[#E2E8F0]">
-              <th className="whitespace-nowrap px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
+            <tr className="sticky top-0 z-50 border-b border-[#E2E8F0] bg-[#FAFAFE]">
+              <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Copilots
               </th>
-              <th className="whitespace-nowrap px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Workflow status
               </th>
-              <th className="whitespace-nowrap px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
-                Sent
+              <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+                Send
               </th>
-              <th className="whitespace-nowrap sticky right-0 z-40 bg-white px-5 py-3 text-left font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-[#FAFAFE] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Status
               </th>
-              <th className="w-10 px-5 py-3" />
+              <th className="w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className=" relative">
@@ -315,7 +337,7 @@ function CopilotTable({
               return (
                 <tr
                   key={copilot.id}
-                  className="border-b border-[#E2E8F0] align-top last:border-b-0 hover:bg-gray-50 transition-colors"
+                  className="group/row border-b border-[#E2E8F0] align-top last:border-b-0 hover:bg-gray-50 transition-colors"
                 >
                   <td className="px-5 py-4 align-middle">
                     <div className="max-w-55">
@@ -340,36 +362,58 @@ function CopilotTable({
                   <td className="whitespace-nowrap px-5 py-4 text-sm align-middle text-[#0F172A]">
                     {copilot.emailsSent}
                   </td>
-                  <td className="whitespace-nowrap sticky right-0 bg-white z-40 px-5 py-4 align-middle">
+                  <td className="whitespace-nowrap sticky right-0 bg-white group-hover/row:bg-gray-50 z-40 px-5 py-4 align-middle">
                     {/* <StatusBadge status={copilot.status} /> */}
                     <CopilotStatus status={copilot.status} />
                   </td>
                   <td className="px-5 py-4 text-right align-middle">
                     <button
                       type="button"
-                      onClick={() =>
-                        setMenuCopilotId(
-                          menuCopilotId === copilot.id ? null : copilot.id,
-                        )
-                      }
-                      className="text-gray-300 transition-colors hover:text-gray-500"
+                      onClick={(e) => {
+                        if (menuCopilotId === copilot.id) {
+                          setMenuCopilotId(null);
+                          setMenuPos(null);
+                          return;
+                        }
+                        const r = e.currentTarget.getBoundingClientRect();
+                        const MENU_H = 216;
+                        const top =
+                          r.bottom + 6 + MENU_H > window.innerHeight
+                            ? Math.max(8, r.top - MENU_H - 6)
+                            : r.bottom + 6;
+                        setMenuPos({
+                          top,
+                          right: Math.max(8, window.innerWidth - r.right),
+                        });
+                        setMenuCopilotId(copilot.id);
+                      }}
+                      className="text-gray-500 transition-colors hover:text-gray-800 p-1.5 rounded-md hover:bg-gray-100"
                       aria-label="Copilot actions"
                     >
                       {menuCopilotId === copilot.id ? (
-                        <X size={18} />
+                        <X size={20} strokeWidth={2.5} />
                       ) : (
-                        <MoreVertical size={18} />
+                        <MoreVertical size={20} strokeWidth={2.75} />
                       )}
                     </button>
-                    {menuCopilotId === copilot.id && (
-                      <div className="absolute right-10 top-8 z-43">
-                        <CopilotMenu
-                          copilot={copilot}
-                          onRefresh={onRefresh || (() => {})}
-                          onClose={() => setMenuCopilotId(null)}
-                        />
-                      </div>
-                    )}
+                    {menuCopilotId === copilot.id &&
+                      menuPos &&
+                      createPortal(
+                        <div
+                          className="fixed z-[100]"
+                          style={{ top: menuPos.top, right: menuPos.right }}
+                        >
+                          <CopilotMenu
+                            copilot={copilot}
+                            onRefresh={onRefresh || (() => {})}
+                            onClose={() => {
+                              setMenuCopilotId(null);
+                              setMenuPos(null);
+                            }}
+                          />
+                        </div>,
+                        document.body,
+                      )}
                   </td>
                 </tr>
               );

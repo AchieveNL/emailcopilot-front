@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { MoreVertical, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -42,6 +42,15 @@ function NewCopilotPageContent() {
   const [loadingCopilot, setLoadingCopilot] = useState(false);
 
   const { user } = useUser();
+
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    document.getElementById("dashboard-main")?.scrollTo({ top: 0 });
+  }, [currentStep]);
 
   // Define steps with their respective components and sidebar content
   const STEPS = [
@@ -220,12 +229,10 @@ function NewCopilotPageContent() {
       };
 
       if (draftId) {
-        const { data } = await copilotsApi.update(draftId, payload);
-        console.log("Updated copilot data:", data);
+        await copilotsApi.update(draftId, payload);
         await copilotsApi.updateStatus(draftId, "active");
       } else {
-        const { data } = await copilotsApi.create(payload);
-        console.log("Created copilot data:", data);
+        await copilotsApi.create(payload);
       }
 
       resetStore();
