@@ -5,7 +5,9 @@ import type { LimitsResponse } from "@/lib/types";
 import type { Plan, Subscription } from "@/lib/useBilling";
 import {
   formatBillingDate,
+  formatPlanFeature,
   handlePlanNameChange,
+  planAnnualPrice,
   PLAN_ICONS,
 } from "@/lib/helpers";
 import ActionMenu from "../ActionMenu";
@@ -35,6 +37,17 @@ export default function CurrentPlanCard({
   const emailsLimit = limits?.limits?.emailsPerMonth ?? 0;
   const emailsPercent = limits?.usage?.emailsPercent ?? 0;
   const isCanceling = Boolean(subscription?.cancelAtPeriodEnd);
+  const rawInterval = subscription?.billingInterval ?? plan?.interval;
+  const billingPeriod =
+    rawInterval === "year" || rawInterval === "annual"
+      ? "Annual"
+      : "Monthly";
+  const displayPrice =
+    plan == null
+      ? "0"
+      : billingPeriod === "Annual"
+        ? `${Math.floor(planAnnualPrice(plan))}`
+        : `${plan.price}`;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6">
@@ -68,9 +81,9 @@ export default function CurrentPlanCard({
               </p>
               <p className="text-sm text-gray-500">
                 <span className="font-semibold text-gray-900">
-                  €{plan?.price ?? 0}
+                  €{displayPrice}
                 </span>{" "}
-                / {plan?.interval ?? "month"}
+                / {billingPeriod}
               </p>
             </div>
           </div>
@@ -82,7 +95,7 @@ export default function CurrentPlanCard({
                   size={18}
                   className="shrink-0 fill-primary text-white"
                 />
-                <span className="text-sm text-gray-700">{feature}</span>
+                <span className="text-sm text-gray-700">{formatPlanFeature(feature)}</span>
               </li>
             ))}
           </ul>

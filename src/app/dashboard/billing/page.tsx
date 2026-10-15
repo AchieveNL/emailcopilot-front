@@ -11,6 +11,7 @@ import CurrentPlanCard from "@/components/ui/billing/CurrentPlanCard";
 import InvoicesCard from "@/components/ui/billing/InvoicesCard";
 import NeedHelpCard from "@/components/ui/billing/NeedHelpCard";
 import PlanSelector from "@/components/ui/billing/PlanSelector";
+import type { BillingInterval } from "@/components/ui/billing/PlanSelector";
 import { useBilling, type PlanId } from "@/lib/useBilling";
 
 export default function BillingPage() {
@@ -38,11 +39,14 @@ export default function BillingPage() {
     null,
   );
 
-  async function handleSubscribe(planId: PlanId) {
+  async function handleSubscribe(planId: PlanId, interval: BillingInterval) {
     setSubscribingPlanId(planId);
     try {
       // Resolves by navigating away to Mollie's hosted checkout.
-      await subscribe(planId);
+      await subscribe(
+        planId,
+        interval === "annual" ? "year" : "month",
+      );
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Could not start checkout. Try again.",
