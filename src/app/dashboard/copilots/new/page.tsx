@@ -36,6 +36,7 @@ function NewCopilotPageContent() {
     setDraftId,
     persistDraft,
     loadCopilot,
+    setStep,
   } = useCopilotStore();
 
   const [launching, setLaunching] = useState(false);
@@ -44,6 +45,7 @@ function NewCopilotPageContent() {
   const { user } = useUser();
 
   const firstRender = useRef(true);
+  const handledOAuthReturn = useRef(false);
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
@@ -100,6 +102,8 @@ function NewCopilotPageContent() {
     const editId = searchParams.get("edit");
     const duplicateId = searchParams.get("duplicate");
     const EmailAccountId = searchParams.get("accountId");
+    const connected = searchParams.get("connected");
+    const provider = searchParams.get("provider");
 
     if (editId) {
       const id = parseInt(editId, 10);
@@ -140,6 +144,17 @@ function NewCopilotPageContent() {
             "edit",
           );
           setDraftId(id);
+          // OAuth round-trip: land back on the email account step so the newly
+          // connected account (passed as ?accountId=) is visible and selected.
+          if (connected === "1" && !handledOAuthReturn.current) {
+            handledOAuthReturn.current = true;
+            setStep(2);
+            if (provider) {
+              toast.success(
+                `${provider.charAt(0).toUpperCase() + provider.slice(1)} connected successfully`,
+              );
+            }
+          }
         })
         .catch(() => {
           toast.error("Failed to load copilot. Please try again.");
@@ -193,7 +208,7 @@ function NewCopilotPageContent() {
       // Idempotent, so StrictMode double-fire is harmless.
       resetStore();
     }
-  }, [searchParams, router, loadCopilot, setDraftId, resetStore]);
+  }, [searchParams, router, loadCopilot, setDraftId, setStep, resetStore]);
 
   const getPageTitle = () => {
     if (mode === "edit") return "Edit Copilot";
