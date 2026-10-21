@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-// Omar note: TEMP - `Lock` is only used by the locked "Annual" option, remove it with the lock.
-import { ChevronLeft, Lock } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import type { Plan, PlanId } from "@/lib/useBilling";
-// Omar note: TEMP - re-import ANNUAL_DISCOUNT_PERCENT from "@/lib/helpers" when the
-// "Save 20%" badge comes back on the Annual option.
+import { ANNUAL_DISCOUNT_PERCENT } from "@/lib/helpers";
 import SegmentedControl from "../SegmentedControl";
 import PlanCard from "./PlanCard";
 import PlanTrustStrip from "./PlanTrustStrip";
@@ -16,7 +14,7 @@ interface PlanSelectorProps {
   plans: Plan[];
   currentPlanId?: PlanId | null;
   subscribingPlanId?: PlanId | null;
-  onChoose: (planId: PlanId) => void;
+  onChoose: (planId: PlanId, interval: BillingInterval) => void;
   /** Rendered only when the selector was opened from an active subscription. */
   onBack?: () => void;
 }
@@ -28,9 +26,6 @@ export default function PlanSelector({
   onChoose,
   onBack,
 }: PlanSelectorProps) {
-  // Omar note (see `annualPriceFromMonthly` in src/lib/helpers.ts): this interval only
-  // changes the displayed price — checkout is still monthly until the backend ships
-  // annual plans.
   const [interval, setInterval] = useState<BillingInterval>("monthly");
 
   return (
@@ -63,17 +58,9 @@ export default function PlanSelector({
             {
               value: "annual",
               label: "Annual",
-              // Omar note: TEMP - annual plans don't exist on the backend yet, so this
-              // option is locked with a "Coming soon" chip. When annual checkout works,
-              // remove `disabled` and the Lock import, and put back the original badge:
-              // <span className="rounded-md bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-              //   Save {ANNUAL_DISCOUNT_PERCENT}%
-              // </span>
-              disabled: true,
               badge: (
-                <span className="flex items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">
-                  <Lock size={11} />
-                  Coming soon
+                <span className="rounded-md bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
+                  Save {ANNUAL_DISCOUNT_PERCENT}%
                 </span>
               ),
             },
@@ -89,6 +76,11 @@ export default function PlanSelector({
             interval={interval}
             isCurrent={plan.id === currentPlanId}
             isSubscribing={subscribingPlanId === plan.id}
+            highlighted={
+              currentPlanId != null
+                ? plan.id === currentPlanId
+                : (plan.highlight ?? false)
+            }
             onChoose={onChoose}
           />
         ))}

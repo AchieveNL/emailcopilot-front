@@ -163,7 +163,26 @@ export const ANNUAL_DISCOUNT_PERCENT = 20;
 // /billing/subscribe) and this helper must be replaced by the real price coming from
 // GET /billing/plans.
 export function annualPriceFromMonthly(monthly: number): number {
-  return Math.floor(monthly * 12 * ((100 - ANNUAL_DISCOUNT_PERCENT) / 100));
+  return (
+    Math.round(monthly * 12 * ((100 - ANNUAL_DISCOUNT_PERCENT) / 100) * 100) /
+    100
+  );
+}
+
+export function planAnnualPrice(plan: {
+  price: number;
+  annual?: { price?: number | null } | null;
+}): number {
+  if (plan.annual?.price != null) return plan.annual.price;
+  return annualPriceFromMonthly(plan.price);
+}
+
+const FEATURE_FIXES: Record<string, string> = {
+  "1 Copilots": "1 Copilot",
+};
+
+export function formatPlanFeature(feature: string): string {
+  return FEATURE_FIXES[feature] ?? feature;
 }
 
 /** Short marketing line shown under each plan name on the billing page. */

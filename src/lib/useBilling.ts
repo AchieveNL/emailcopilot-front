@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { billingApi } from "./api";
 import { LimitsResponse } from "./types";
 
@@ -15,6 +16,11 @@ export interface Plan {
     amount: string;
     interval: string;
     currency: string;
+    annual?: {
+        price: number;
+        amount: string;
+        interval: string;
+    } | null;
     features: string[];
     highlight?: boolean;
 }
@@ -24,6 +30,7 @@ export interface Subscription {
     userId: number;
     planId: PlanId;
     status: "active" | "canceled" | "past_due" | "trialing" | "pending" | "suspended";
+    billingInterval?: string | null;
     mollieCustomerId: string | null;
     mollieSubscriptionId: string | null;
     currentPeriodStart: string | null;
@@ -74,8 +81,8 @@ export function useBilling() {
             try {
                 const { data } = await billingApi.getSubscription();
                 return data;
-            } catch (err: any) {
-                if (err?.response?.status === 404) return null; // no subscription yet — not an error
+            } catch (err) {
+                if (isAxiosError(err) && err.response?.status === 404) return null; // no subscription yet — not an error
                 throw err;
             }
         },
@@ -95,7 +102,13 @@ export function useBilling() {
 
     // Redirects to Mollie checkout on success — page navigates away.
     const subscribeMutation = useMutation({
-        mutationFn: (planId: PlanId) => billingApi.subscribe(planId).then((r) => r.data),
+        mutationFn: ({
+            planId,
+            interval,
+        }: {
+            planId: PlanId;
+            interval: "month" | "year";
+        }) => billingApi.subscribe(planId, interval).then((r) => r.data),
         onSuccess: (data) => {
             if (data.checkoutUrl) {
                 window.location.href = data.checkoutUrl;
@@ -159,7 +172,8 @@ export function useBilling() {
         error,
 
         // ── Actions ───────────────────────────────────────────────────────────────
-        subscribe: (planId: PlanId) => subscribeMutation.mutateAsync(planId),
+        subscribe: (planId: PlanId, interval: "month" | "year") =>
+            subscribeMutation.mutateAsync({ planId, interval }),
         cancel: () => cancelMutation.mutateAsync(),
         updatePaymentMethod: () => updatePaymentMethodMutation.mutateAsync(),
 

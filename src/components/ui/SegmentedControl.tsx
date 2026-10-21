@@ -7,10 +7,6 @@ export interface SegmentedControlOption<T extends string> {
   label: string;
   /** Optional trailing chip, e.g. a "Save 20%" badge. */
   badge?: ReactNode;
-  // Omar note: TEMP - added so the "Annual" billing option can be shown locked
-  // until the backend supports annual plans. Remove it (and the disabled
-  // handling below) once annual checkout works.
-  disabled?: boolean;
 }
 
 interface SegmentedControlProps<T extends string> {
@@ -43,16 +39,11 @@ export default function SegmentedControl<T extends string>({
             type="button"
             role="tab"
             aria-selected={isSelected}
-            // Omar note: TEMP - disabled handling for the locked "Annual" option, remove with it.
-            disabled={option.disabled}
-            aria-disabled={option.disabled}
-            onClick={() => !option.disabled && onChange(option.value)}
+            onClick={() => onChange(option.value)}
             className={`flex items-center gap-2 rounded-xl border-2 px-8 py-3 text-sm transition-colors ${
-              option.disabled
-                ? "cursor-not-allowed border-transparent text-gray-400 font-semibold"
-                : isSelected
-                  ? "border-light bg-primary/5 text-primary font-bold"
-                  : "border-transparent text-gray-900 font-semibold hover:bg-gray-50"
+              isSelected
+                ? "border-light bg-primary/5 text-primary font-bold"
+                : "border-transparent text-gray-900 font-semibold hover:bg-gray-50"
             }`}
           >
             {option.label}

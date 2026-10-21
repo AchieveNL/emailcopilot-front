@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import type { Plan, Subscription } from "@/lib/useBilling";
-import { formatBillingDate, handlePlanNameChange } from "@/lib/helpers";
+import { formatBillingDate, handlePlanNameChange, planAnnualPrice } from "@/lib/helpers";
 
 interface BillingSummaryCardProps {
   plan: Plan | null;
@@ -17,8 +17,17 @@ export default function BillingSummaryCard({
   onUpdatePaymentMethod,
   isUpdatingPaymentMethod,
 }: BillingSummaryCardProps) {
-  const price = plan ? `€${plan.price.toFixed(2)}` : "—";
-  const billingPeriod = plan?.interval === "year" ? "Annual" : "Monthly";
+  const rawInterval = subscription?.billingInterval ?? plan?.interval;
+  const billingPeriod =
+    rawInterval === "year" || rawInterval === "annual"
+      ? "Annual"
+      : "Monthly";
+  const price =
+    plan == null
+      ? "—"
+      : billingPeriod === "Annual"
+        ? `€${Math.floor(planAnnualPrice(plan))}`
+        : `€${plan.price.toFixed(2)}`;
 
   const rows: { label: string; value: string }[] = [
     { label: "Plan", value: handlePlanNameChange(plan?.name ?? "") },
