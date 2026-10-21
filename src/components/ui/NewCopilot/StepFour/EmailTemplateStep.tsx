@@ -18,10 +18,10 @@ import {
   ArrowRight,
 } from "lucide-react";
 import StepsActions from "../StepsActions";
-import { templatesApi } from "@/lib/api";
+import { templatesApi, copilotsApi } from "@/lib/api";
 import { useWizardTemplates } from "@/lib/useWizardOptions";
 import { useCopilotStore } from "@/store/copilotStore";
-import { toEditorContent } from "@/lib/helpers";
+import { apiErrorMessage, toEditorContent } from "@/lib/helpers";
 import { toast } from "sonner";
 
 const initialEmailBody = `
@@ -69,6 +69,8 @@ export default function EmailTemplateStep() {
 
   const { copilotData, updateCopilotData, setStep, persistDraft } =
     useCopilotStore();
+
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
 
   const [templateName, setTemplateName] = useState(
     copilotData?.name || "Intro - Book More Appointments",
@@ -247,6 +249,65 @@ export default function EmailTemplateStep() {
     };
   }, [editor, subjectInput]);
 
+  /**
+   * Writes the current editor state to the templates API and returns the
+   * template id. Existing templates are updated in place; brand-new ones are
+   * created and attached to the copilot. Shared by "Save & Continue" and
+   * "Send test email" so both always act on the same content.
+   */
+  const persistTemplate = async (): Promise<number> => {
+    if (!editor) throw new Error("Editor not ready");
+
+    const currentBody = editor.getHTML();
+
+    const templatePayload = {
+      name: templateName || "initial template",
+      subject: subjectInput,
+      body: currentBody,
+      variables: variableInput,
+    };
+
+    const existingId = originalTemplate
+      ? Number(originalTemplate.id)
+      : NaN;
+
+    if (originalTemplate && !Number.isNaN(existingId)) {
+      // Editing an existing template: update it in place. The copilot
+      // already points at this id, so nothing on the copilot changes.
+      await templatesApi.update(existingId, templatePayload);
+
+      // Refresh the snapshot so re-save without edits is "unchanged".
+      setOriginalTemplate({
+        id: originalTemplate.id,
+        body: currentBody,
+        subject: subjectInput,
+        name: templateName,
+        variables: variableInput,
+      });
+
+      updateCopilotData({ templateId: existingId });
+
+      return existingId;
+    }
+
+    // Brand-new template: create it and attach only its id to the copilot.
+    const response = await templatesApi.create(templatePayload);
+    const createdId = Number(response.data.id);
+
+    updateCopilotData({ templateId: createdId });
+
+    // Update the snapshot so re-saving without further edits is recognized as "unchanged" too.
+    setOriginalTemplate({
+      id: String(createdId),
+      body: currentBody,
+      subject: subjectInput,
+      name: templateName,
+      variables: variableInput,
+    });
+
+    return createdId;
+  };
+
   const handleSave = async () => {
     if (!editor) return;
     setLoading(true);
@@ -274,55 +335,14 @@ export default function EmailTemplateStep() {
         return;
       }
 
-      const templatePayload = {
-        name: templateName || "initial template",
-        subject: subjectInput,
-        body: currentBody,
-        variables: variableInput,
-      };
-
-      const existingId = originalTemplate
-        ? Number(originalTemplate.id)
-        : NaN;
-
-      if (originalTemplate && !Number.isNaN(existingId)) {
-        // Editing an existing template: update it in place. The copilot
-        // already points at this id, so nothing on the copilot changes.
-        await templatesApi.update(existingId, templatePayload);
-
-        // Refresh the snapshot so a re-save without edits is "unchanged".
-        setOriginalTemplate({
-          id: originalTemplate.id,
-          body: currentBody,
-          subject: subjectInput,
-          name: templateName,
-          variables: variableInput,
-        });
-
-        setStep(5);
-        return;
-      }
-
-      // Brand-new template: create it and attach only its id to the copilot.
-      const response = await templatesApi.create(templatePayload);
-
-      updateCopilotData({ templateId: response.data.id });
+      const templateId = await persistTemplate();
 
       try {
-        await persistDraft({ templateId: response.data.id });
+        await persistDraft({ templateId });
       } catch {
         toast.error("Failed to save draft. Please try again.");
         return;
       }
-
-      // Update the snapshot so re-saving without further edits is recognized as "unchanged" too.
-      setOriginalTemplate({
-        id: String(response.data.id),
-        body: currentBody,
-        subject: subjectInput,
-        name: templateName,
-        variables: variableInput,
-      });
 
       setStep(5);
     } catch (error) {
@@ -330,6 +350,37 @@ export default function EmailTemplateStep() {
       toast.error("Failed to save template. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTestEmail = async () => {
+    if (!editor) return;
+
+    if (!copilotData.emailAccountId) {
+      toast.error("Select an email account before sending a test email.");
+      return;
+    }
+
+    setSendingTestEmail(true);
+
+    try {
+      // Save first: the backend sends the template linked to the copilot,
+      // so an unsaved edit would otherwise be tested in its previous state.
+      const templateId = await persistTemplate();
+
+      // Makes sure the copilot exists server-side and points at that template.
+      const copilotId = await persistDraft({ templateId });
+
+      await copilotsApi.testEmail(copilotId);
+
+      toast.success("A test email has been sent to your email account.");
+    } catch (error) {
+      console.error("Failed to send test email:", error);
+      toast.error(
+        apiErrorMessage(error, "Failed to send test email. Please try again."),
+      );
+    } finally {
+      setSendingTestEmail(false);
     }
   };
 
@@ -345,6 +396,16 @@ export default function EmailTemplateStep() {
             Write the email your copilot will send to your target audience.
           </p>
         </div>
+        <button
+          type="button"
+          onClick={handleTestEmail}
+          disabled={sendingTestEmail}
+          title="Send a test email to your connected account"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <Mail size={14} />{" "}
+          {sendingTestEmail ? "Sending..." : "Send test email"}
+        </button>
       </div>
 
       {/* Template Name Input */}

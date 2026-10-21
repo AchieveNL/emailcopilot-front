@@ -16,6 +16,9 @@ import { useCopilotStore } from "@/store/copilotStore";
 import { useTakeoffCopilot } from "@/lib/useTakeoffCopilot";
 import { estimateAudienceSize } from "@/lib/estimates";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { copilotsApi } from "@/lib/api";
+import { apiErrorMessage } from "@/lib/helpers";
 
 function ReadinessItem({ done, label }: { done: boolean; label: string }) {
   return (
@@ -45,8 +48,9 @@ export default function Step4Launch({
   launching,
   onSaveDraft,
 }: Step4LaunchProps) {
-  const { copilotData, setStep } = useCopilotStore();
+  const { copilotData, setStep, draftId } = useCopilotStore();
   const [saving, setSaving] = useState(false);
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
   const { data: takeoff, isLoading: loadingTakeoff } = useTakeoffCopilot();
 
   const selectedEmailProfile = takeoff?.emailAccount ?? null;
@@ -117,9 +121,7 @@ export default function Step4Launch({
       : "Unlimited";
   const scheduleDays = !readySchedule
     ? "—"
-    : formatActiveDays(
-        sched?.activeDays?.map((day) => Days[day - 1]),
-      );
+    : formatActiveDays(sched?.activeDays?.map((day) => Days[day - 1]));
   const scheduleTimezone = !readySchedule
     ? "—"
     : (sched?.timezone || "").replace("Timezone: ", "") || "—";
@@ -379,14 +381,8 @@ export default function Step4Launch({
                 <ReadinessItem done={readySetup} label="Setup" />
                 <ReadinessItem done={readyTemplate} label="Email Template" />
                 <ReadinessItem done={readyAccount} label="Email Account" />
-                <ReadinessItem
-                  done={readySchedule}
-                  label="Flight Schedule"
-                />
-                <ReadinessItem
-                  done={readyAudience}
-                  label="Target Audience"
-                />
+                <ReadinessItem done={readySchedule} label="Flight Schedule" />
+                <ReadinessItem done={readyAudience} label="Target Audience" />
                 <ReadinessItem
                   done={readyAll}
                   label={
@@ -414,14 +410,47 @@ export default function Step4Launch({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setStep(5)}
           className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft size={15} /> Back
         </button>
-        <div className="flex items-center gap-2 flex-wrap">
+
+        <div className="flex items-center gap-2 flex-wrap ml-auto">
+          <button
+            type="button"
+            onClick={async () => {
+              if (!draftId) {
+                toast.error("Save a draft first, then send a test email.");
+                return;
+              }
+              setSendingTestEmail(true);
+              try {
+                await copilotsApi.testEmail(draftId);
+                toast.success(
+                  "A test email has been sent to your email account.",
+                );
+              } catch (error) {
+                console.error("Failed to send test email:", error);
+                toast.error(
+                  apiErrorMessage(
+                    error,
+                    "Failed to send test email. Please try again.",
+                  ),
+                );
+              } finally {
+                setSendingTestEmail(false);
+              }
+            }}
+            disabled={sendingTestEmail || !draftId}
+            title="Send a test email to your connected account"
+            className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <Mail size={14} />{" "}
+            {sendingTestEmail ? "Sending..." : "Send test email"}
+          </button>
           <button
             onClick={async () => {
               setSaving(true);

@@ -1,4 +1,23 @@
 import { ChartSpline, Rocket, Send, type LucideIcon } from "lucide-react";
+import { isAxiosError } from "axios";
+
+/**
+ * Extracts a human-readable message from a failed API call so the UI can show
+ * the backend's own reason (e.g. "OAuth token needs reconnecting") instead of
+ * a generic failure string. Falls back to `fallback` when nothing usable is
+ * present.
+ */
+export function apiErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as
+      | { message?: string; error?: string }
+      | undefined;
+    const message = data?.message || data?.error;
+    if (typeof message === "string" && message.trim()) return message.trim();
+  }
+  if (error instanceof Error && error.message.trim()) return error.message;
+  return fallback;
+}
 
 export const handlePlanNameChange = (planName: string): string => {
   switch (planName.toLocaleLowerCase()) {
