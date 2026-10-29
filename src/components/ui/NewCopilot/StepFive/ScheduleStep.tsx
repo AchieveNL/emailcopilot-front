@@ -6,6 +6,7 @@ import { useCopilotStore } from "@/store/copilotStore";
 import { Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
 import ct from "countries-and-timezones";
 import { flightSchedulesApi } from "@/lib/api";
+import { baseScheduleName, nextScheduleCopyName } from "@/lib/helpers";
 import { toast } from "sonner";
 import ScheduleList from "./ScheduleList";
 
@@ -102,6 +103,10 @@ export default function ScheduleStep() {
   const dirty =
     baseline !== null &&
     JSON.stringify(pickFields(schedule)) !== JSON.stringify(baseline.data);
+  // Renaming a linked schedule is an explicit "save as new": the typed name
+  // is kept verbatim instead of getting a v2/v3 suffix.
+  const nameEdited =
+    baseline !== null && schedule.name !== baseline.data.name;
 
   // Only warn about unsaved changes when the form actually differs from the
   // linked schedule (or is a filled-in custom schedule).
@@ -149,12 +154,24 @@ export default function ScheduleStep() {
 
     setLoading(true);
     try {
-      const baseName = schedule.name || "Custom Copilot Schedule";
-      // Forked copies are marked so they stay distinguishable from the
-      // original (and repeated forks don't stack the suffix).
-      const name = selectedId
-        ? `${baseName.replace(/\s*\(edited\)$/i, "")} (edited)`
-        : baseName;
+      const baseName = schedule.name.trim() || "Custom Copilot Schedule";
+      // A name the user typed is kept verbatim: renaming is an explicit
+      // "save as new". Otherwise an edited copy is numbered (workdays →
+      // workdays v2 → v3) so repeated edits stay distinguishable instead of
+      // stacking identical "(edited)" names. Falls back to the old suffix if
+      // the list can't be loaded.
+      let name = baseName;
+      if (selectedId && !nameEdited) {
+        try {
+          const list = await flightSchedulesApi.getAll();
+          const existingNames = (list.data ?? []).map(
+            (item: { name?: string | null }) => item.name ?? "",
+          );
+          name = nextScheduleCopyName(baseName, existingNames);
+        } catch {
+          name = `${baseScheduleName(baseName)} (edited)`;
+        }
+      }
       const payload = {
         name,
         sendLimit: schedule.sendLimitActive ? schedule.sendLimit : null,
@@ -511,6 +528,15 @@ export default function ScheduleStep() {
           <p className="text-xs font-medium text-gray-700 leading-relaxed">
             Custom schedule — a new schedule will be created and linked when
             you continue.
+          </p>
+        </div>
+      ) : dirty && nameEdited ? (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50/60 mt-8">
+          <CircleAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs font-medium text-amber-800 leading-relaxed">
+            A new schedule named “
+            {schedule.name.trim() || "Custom Copilot Schedule"}” will be
+            created and linked. The original schedule stays unchanged.
           </p>
         </div>
       ) : dirty ? (

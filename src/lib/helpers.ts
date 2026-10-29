@@ -271,6 +271,40 @@ export const escapeHtml = (value: string) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
+// ─── Flight schedule naming ────────────────────────────────────────────────────
+
+/** Strips fork/copy suffixes so "workdays v3" and "workdays (edited)" → "workdays". */
+export function baseScheduleName(name: string): string {
+  return name
+    .replace(/\s*\(edited\)\s*$/i, "")
+    .replace(/\s*v\d+\s*$/i, "")
+    .replace(/\s*\(copy(?:\s*\d+)?\)\s*$/i, "")
+    .trim();
+}
+
+/**
+ * Numbered fork name: "workdays" (v1) → "workdays v2" → "workdays v3".
+ * Takes the highest existing version of the same base so deleted versions
+ * are never reused while copies of that base still exist.
+ */
+export function nextScheduleCopyName(
+  name: string,
+  existingNames: string[],
+): string {
+  const base = baseScheduleName(name) || "Schedule";
+  const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`^${escaped}(?:\\s+v(\\d+))?$`, "i");
+
+  let highest = 1;
+  for (const existing of existingNames) {
+    const match = pattern.exec(existing.trim());
+    if (!match) continue;
+    highest = Math.max(highest, match[1] ? Number(match[1]) : 1);
+  }
+
+  return `${base} v${highest + 1}`;
+}
+
 /**
  * Converts a plain-text or already-HTML body string into TipTap-ready HTML.
  * - If the value already starts with `<` it is returned as-is.
