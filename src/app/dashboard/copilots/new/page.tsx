@@ -21,10 +21,10 @@ import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTempla
 import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
+import { getBrowserTimeZone } from "@/lib/helpers";
 import { toast } from "sonner";
 
 function NewCopilotPageContent() {
-  const defaultTimezone = "Europe/Brussels";
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -137,7 +137,7 @@ function NewCopilotPageContent() {
                 activeDays: [1, 2, 3, 4, 5],
                 sendingHours: { start: "08:00", end: "17:00" },
                 sendingHoursActive: false,
-                timezone: defaultTimezone,
+                timezone: getBrowserTimeZone(),
               },
             },
             id,
@@ -190,7 +190,7 @@ function NewCopilotPageContent() {
                 activeDays: [1, 2, 3, 4, 5],
                 sendingHours: { start: "08:00", end: "17:00" },
                 sendingHoursActive: false,
-                timezone: defaultTimezone,
+                timezone: getBrowserTimeZone(),
               },
             },
             undefined,

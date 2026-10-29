@@ -384,6 +384,9 @@ export default function EmailTemplateStep() {
     }
   };
 
+  // Shared by the inline button (under the body) and the footer action.
+  const canContinue = !!(editor && editor.getText().trim().length > 0);
+
   return (
     <div className="w-full  mx-auto  bg-transparent min-h-150 text-slate-800">
       {/* Header Area */}
@@ -716,6 +719,13 @@ export default function EmailTemplateStep() {
               </div>
             </div>
           </div>
+
+          <StepsActions
+            inline
+            onPress={() => handleSave()}
+            isLoading={loading}
+            canContinue={canContinue}
+          />
         </div>
       </div>
       {/* Divider */}
@@ -850,7 +860,7 @@ export default function EmailTemplateStep() {
       <StepsActions
         onPress={() => handleSave()}
         isLoading={loading}
-        canContinue={!!(editor && editor.getText().trim().length > 0)}
+        canContinue={canContinue}
       />
     </div>
   );

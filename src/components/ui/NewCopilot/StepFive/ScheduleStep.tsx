@@ -4,9 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import StepsActions from "../StepsActions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
-import ct from "countries-and-timezones";
 import { flightSchedulesApi } from "@/lib/api";
+import {
+  baseScheduleName,
+  getBrowserTimeZone,
+  isValidTimeZone,
+  nextScheduleCopyName,
+} from "@/lib/helpers";
 import { toast } from "sonner";
+import TimeZoneSelect from "@/components/ui/TimeZoneSelect";
 import ScheduleList from "./ScheduleList";
 
 const DAYS = [
@@ -25,11 +31,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
   const hour = i.toString().padStart(2, "0");
   return `${hour}:00`;
 });
-
-const TIMEZONES = Object.values(ct.getAllTimezones()).map((tz) => ({
-  name: tz.name,
-  utcOffset: tz.utcOffset,
-}));
 
 /** The schedule fields that determine whether the form was modified. */
 type ScheduleFields = {
@@ -72,6 +73,20 @@ export default function ScheduleStep() {
     if (copilotData.flightScheduleId) setListOpen(false);
   }, [copilotData.flightScheduleId]);
 
+  // A brand-new (unlinked) schedule starts on the visitor's own zone instead
+  // of the hardcoded default, so the picker opens where the user actually is.
+  const preselectedTimeZone = useRef(false);
+  useEffect(() => {
+    if (preselectedTimeZone.current) return;
+    preselectedTimeZone.current = true;
+    if (selectedId) return;
+
+    const current = schedule.timezone;
+    if (current === DEFAULT_TIMEZONE || !isValidTimeZone(current)) {
+      updateFlightSchedule({ timezone: getBrowserTimeZone() });
+    }
+  }, [selectedId, schedule.timezone, updateFlightSchedule]);
+
   // Local text for the daily limit so the field can be cleared/typed freely.
   const [limitText, setLimitText] = useState(
     String(schedule.sendLimit ?? 30),
@@ -102,6 +117,10 @@ export default function ScheduleStep() {
   const dirty =
     baseline !== null &&
     JSON.stringify(pickFields(schedule)) !== JSON.stringify(baseline.data);
+  // Renaming a linked schedule is an explicit "save as new": the typed name
+  // is kept verbatim instead of getting a v2/v3 suffix.
+  const nameEdited =
+    baseline !== null && schedule.name !== baseline.data.name;
 
   // Only warn about unsaved changes when the form actually differs from the
   // linked schedule (or is a filled-in custom schedule).
@@ -149,12 +168,24 @@ export default function ScheduleStep() {
 
     setLoading(true);
     try {
-      const baseName = schedule.name || "Custom Copilot Schedule";
-      // Forked copies are marked so they stay distinguishable from the
-      // original (and repeated forks don't stack the suffix).
-      const name = selectedId
-        ? `${baseName.replace(/\s*\(edited\)$/i, "")} (edited)`
-        : baseName;
+      const baseName = schedule.name.trim() || "Custom Copilot Schedule";
+      // A name the user typed is kept verbatim: renaming is an explicit
+      // "save as new". Otherwise an edited copy is numbered (workdays →
+      // workdays v2 → v3) so repeated edits stay distinguishable instead of
+      // stacking identical "(edited)" names. Falls back to the old suffix if
+      // the list can't be loaded.
+      let name = baseName;
+      if (selectedId && !nameEdited) {
+        try {
+          const list = await flightSchedulesApi.getAll();
+          const existingNames = (list.data ?? []).map(
+            (item: { name?: string | null }) => item.name ?? "",
+          );
+          name = nextScheduleCopyName(baseName, existingNames);
+        } catch {
+          name = `${baseScheduleName(baseName)} (edited)`;
+        }
+      }
       const payload = {
         name,
         sendLimit: schedule.sendLimitActive ? schedule.sendLimit : null,
@@ -482,24 +513,11 @@ export default function ScheduleStep() {
           </div>
 
           <div className="col-span-4 flex-1 pt-1 justify-between flex">
-            <div className="relative w-full max-w-md">
-              <select
-                value={schedule.timezone}
-                onChange={(e) =>
-                  updateFlightSchedule({ timezone: e.target.value })
-                }
-                className="appearance-none w-full px-4 pr-10 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-800 text-ellipsis"
-              >
-                {TIMEZONES.map((tz) => (
-                  <option key={tz.name} value={tz.name}>
-                    {tz.name.replace("/", " - ")} (GMT
-                    {tz.utcOffset >= 0 ? "+" : ""}
-                    {tz.utcOffset / 60}:00)
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+            <TimeZoneSelect
+              value={schedule.timezone}
+              onChange={(timezone) => updateFlightSchedule({ timezone })}
+              className="w-full max-w-md"
+            />
           </div>
         </div>
       </div>
@@ -511,6 +529,15 @@ export default function ScheduleStep() {
           <p className="text-xs font-medium text-gray-700 leading-relaxed">
             Custom schedule — a new schedule will be created and linked when
             you continue.
+          </p>
+        </div>
+      ) : dirty && nameEdited ? (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50/60 mt-8">
+          <CircleAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs font-medium text-amber-800 leading-relaxed">
+            A new schedule named “
+            {schedule.name.trim() || "Custom Copilot Schedule"}” will be
+            created and linked. The original schedule stays unchanged.
           </p>
         </div>
       ) : dirty ? (

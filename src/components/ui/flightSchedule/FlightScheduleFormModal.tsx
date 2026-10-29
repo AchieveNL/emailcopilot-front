@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { X, Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
-import ct from "countries-and-timezones";
+import { getBrowserTimeZone } from "@/lib/helpers";
+import TimeZoneSelect from "@/components/ui/TimeZoneSelect";
 import type { Schedule } from "./FlightScheduleCard";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -17,17 +18,10 @@ const DAYS = [
   { value: 7, label: "Sun" },
 ] as const;
 
-const DEFAULT_TIMEZONE = "Europe/Brussels";
-
 const HOURS = Array.from({ length: 24 }, (_, i) => {
   const hour = i.toString().padStart(2, "0");
   return `${hour}:00`;
 });
-
-const TIMEZONES = Object.values(ct.getAllTimezones()).map((tz) => ({
-  name: tz.name,
-  utcOffset: tz.utcOffset,
-}));
 
 // ─── Payload type (what we send to the API — no id) ──────────────────────────
 
@@ -70,9 +64,7 @@ export default function FlightScheduleFormModal({
     schedule?.sendingHoursActive ?? false,
   );
   const [timezone, setTimezone] = useState(
-    schedule?.timezone ??
-      TIMEZONES.find((tz) => tz.name === DEFAULT_TIMEZONE)?.name ??
-      DEFAULT_TIMEZONE,
+    schedule?.timezone || getBrowserTimeZone(),
   );
 
   const [saving, setSaving] = useState(false);
@@ -357,22 +349,11 @@ export default function FlightScheduleFormModal({
               <p className="text-xs text-slate-500 mb-3">
                 Timezone for sending and scheduling.
               </p>
-              <div className="relative w-full max-w-md">
-                <select
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  className="appearance-none w-full px-4 pr-10 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-800 text-ellipsis"
-                >
-                  {TIMEZONES.map((tz) => (
-                    <option key={tz.name} value={tz.name}>
-                      {tz.name.replace("/", " - ")} (GMT
-                      {tz.utcOffset >= 0 ? "+" : ""}
-                      {tz.utcOffset / 60}:00)
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <TimeZoneSelect
+                value={timezone}
+                onChange={setTimezone}
+                className="w-full max-w-md"
+              />
             </div>
 
             {/* ── Error ─────────────────────────────────────────────────── */}

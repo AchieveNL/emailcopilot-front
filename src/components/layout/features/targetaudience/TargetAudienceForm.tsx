@@ -245,9 +245,10 @@ export default function TargetAudienceForm({
   onCancel,
   onSuccess,
 }: TargetAudienceFormProps) {
-  const parseArray = (val: any): string[] => {
+  const parseArray = (val: unknown): string[] => {
     if (!val) return [];
-    if (Array.isArray(val)) return val;
+    if (Array.isArray(val))
+      return val.filter((item): item is string => typeof item === "string");
     if (typeof val === "string")
       return val
         .split(",")
@@ -337,7 +338,7 @@ export default function TargetAudienceForm({
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6">
       <h2 className="text-lg font-bold mb-1">Define your Target Audience</h2>
       <p className="text-sm text-gray-500 mb-8">
-        Tell your copilot who you want to reach and we`&apos;`ll find the best
+        Tell your copilot who you want to reach and we’ll find the best
         matches.
       </p>
       <div className="space-y-4">
