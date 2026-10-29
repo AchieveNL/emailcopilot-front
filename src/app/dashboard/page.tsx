@@ -1,10 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
 import { BarChart3, Bot, Send, Users } from "lucide-react";
-
-import { settingsApi } from "@/lib/api";
 
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { useRouter } from "next/navigation";
@@ -27,24 +23,7 @@ export default function OverviewPage() {
   const { leads, getAllLeads } = useLeadStore();
   const { copilots, getAllCopilots } = useCopilotStore();
 
-  const { user } = useUser();
   const router = useRouter();
-
-  // The first name saved in Settings lives on the user profile (GET /settings),
-  // so prefer it; Clerk is only a fallback for accounts that never set one.
-  const { data: profile } = useQuery({
-    queryKey: ["app-settings"],
-    queryFn: () =>
-      settingsApi
-        .get()
-        .then((res) => res.data as { firstName?: string | null }),
-  });
-
-  const firstName =
-    profile?.firstName?.trim() ||
-    user?.firstName?.trim() ||
-    user?.fullName?.trim()?.split(/\s+/)[0] ||
-    "there";
 
   const [period, setPeriod] = useState<DateRange>("Last 7 days");
 
@@ -122,7 +101,7 @@ export default function OverviewPage() {
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <DashboardHeader
-        title={`Welcome back, ${firstName}!👋`}
+        title="Welcome back!👋"
         description={`Here's what's happening with your outreach today`}
         actionLabel="Create New Copilot"
         onAction={() => router.push("/dashboard/copilots/new")}

@@ -305,6 +305,74 @@ export function nextScheduleCopyName(
   return `${base} v${highest + 1}`;
 }
 
+// ─── Timezones ─────────────────────────────────────────────────────────────────
+
+/** The visitor's own IANA zone, resolved by the browser. */
+export function getBrowserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
+}
+
+/** True when the runtime's timezone data recognises this IANA name. */
+export function isValidTimeZone(timeZone?: string | null): boolean {
+  if (!timeZone) return false;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Offset in minutes for a zone at a given instant, using the browser's own
+ * timezone database — so DST is applied instead of a frozen winter offset.
+ */
+export function getTimeZoneOffsetMinutes(
+  timeZone: string,
+  date: Date = new Date(),
+): number {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }).formatToParts(date);
+    const valueOf = (type: string) =>
+      Number(parts.find((part) => part.type === type)?.value);
+
+    const asUTC = Date.UTC(
+      valueOf("year"),
+      valueOf("month") - 1,
+      valueOf("day"),
+      valueOf("hour") % 24,
+      valueOf("minute"),
+      valueOf("second"),
+    );
+
+    return Math.round((asUTC - date.getTime()) / 60000);
+  } catch {
+    return 0;
+  }
+}
+
+/** 120 → "GMT+2:00", -210 → "GMT-3:30", 345 → "GMT+5:45". */
+export function formatGmtOffset(minutes: number): string {
+  const sign = minutes < 0 ? "-" : "+";
+  const absolute = Math.abs(minutes);
+  const hours = Math.floor(absolute / 60);
+  const rest = absolute % 60;
+  return `GMT${sign}${hours}:${String(rest).padStart(2, "0")}`;
+}
+
 /**
  * Converts a plain-text or already-HTML body string into TipTap-ready HTML.
  * - If the value already starts with `<` it is returned as-is.

@@ -4,10 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import StepsActions from "../StepsActions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
-import ct from "countries-and-timezones";
 import { flightSchedulesApi } from "@/lib/api";
-import { baseScheduleName, nextScheduleCopyName } from "@/lib/helpers";
+import {
+  baseScheduleName,
+  getBrowserTimeZone,
+  isValidTimeZone,
+  nextScheduleCopyName,
+} from "@/lib/helpers";
 import { toast } from "sonner";
+import TimeZoneSelect from "@/components/ui/TimeZoneSelect";
 import ScheduleList from "./ScheduleList";
 
 const DAYS = [
@@ -26,11 +31,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
   const hour = i.toString().padStart(2, "0");
   return `${hour}:00`;
 });
-
-const TIMEZONES = Object.values(ct.getAllTimezones()).map((tz) => ({
-  name: tz.name,
-  utcOffset: tz.utcOffset,
-}));
 
 /** The schedule fields that determine whether the form was modified. */
 type ScheduleFields = {
@@ -72,6 +72,20 @@ export default function ScheduleStep() {
   useEffect(() => {
     if (copilotData.flightScheduleId) setListOpen(false);
   }, [copilotData.flightScheduleId]);
+
+  // A brand-new (unlinked) schedule starts on the visitor's own zone instead
+  // of the hardcoded default, so the picker opens where the user actually is.
+  const preselectedTimeZone = useRef(false);
+  useEffect(() => {
+    if (preselectedTimeZone.current) return;
+    preselectedTimeZone.current = true;
+    if (selectedId) return;
+
+    const current = schedule.timezone;
+    if (current === DEFAULT_TIMEZONE || !isValidTimeZone(current)) {
+      updateFlightSchedule({ timezone: getBrowserTimeZone() });
+    }
+  }, [selectedId, schedule.timezone, updateFlightSchedule]);
 
   // Local text for the daily limit so the field can be cleared/typed freely.
   const [limitText, setLimitText] = useState(
@@ -499,24 +513,11 @@ export default function ScheduleStep() {
           </div>
 
           <div className="col-span-4 flex-1 pt-1 justify-between flex">
-            <div className="relative w-full max-w-md">
-              <select
-                value={schedule.timezone}
-                onChange={(e) =>
-                  updateFlightSchedule({ timezone: e.target.value })
-                }
-                className="appearance-none w-full px-4 pr-10 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-800 text-ellipsis"
-              >
-                {TIMEZONES.map((tz) => (
-                  <option key={tz.name} value={tz.name}>
-                    {tz.name.replace("/", " - ")} (GMT
-                    {tz.utcOffset >= 0 ? "+" : ""}
-                    {tz.utcOffset / 60}:00)
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+            <TimeZoneSelect
+              value={schedule.timezone}
+              onChange={(timezone) => updateFlightSchedule({ timezone })}
+              className="w-full max-w-md"
+            />
           </div>
         </div>
       </div>
