@@ -10,7 +10,7 @@ import { useEmailAccountStore } from "@/store/emailAccountStore";
 import { toast } from "sonner";
 
 export default function Step2EmailProfile() {
-  const { copilotData, setStep, persistDraft } = useCopilotStore();
+  const { copilotData, setStep, persistDraft, draftId } = useCopilotStore();
   const { fetchAccounts, showModal, setShowModal, currentAccount, setEditingAccount } = useEmailAccountStore();
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(
     null,
@@ -40,7 +40,7 @@ export default function Step2EmailProfile() {
         }}
         setSelectedProfileName={setSelectedProfileName}
         selectedProfileName={selectedProfileName || ""}
-        returnTo={`/dashboard/copilots/new?edit=${copilotData.id}`}
+        returnTo={`/dashboard/copilots/new?edit=${draftId ?? copilotData.id}`}
       />
 
       <EmailAccountList setSelectedProfileName={setSelectedProfileName} />

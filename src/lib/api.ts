@@ -98,6 +98,7 @@ export const copilotsApi = {
   ) => api.patch(`/copilots/${id}/status`, { status }),
   run: (id: number) => api.post(`/copilots/${id}/run`),
   duplicate: (id: number) => api.post(`/copilots/${id}/duplicate`),
+  testEmail: (id: number) => api.post(`/copilots/${id}/test-email`),
 };
 
 //____ flight-schedules ________________________________________________________
