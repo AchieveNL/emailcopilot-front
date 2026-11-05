@@ -99,7 +99,13 @@ export const copilotsApi = {
   run: (id: number) => api.post(`/copilots/${id}/run`),
   duplicate: (id: number) => api.post(`/copilots/${id}/duplicate`),
   testEmail: (id: number) => api.post(`/copilots/${id}/test-email`),
+  testEmailStatus: (id: number) => api.get(`/copilots/${id}/test-email`),
 };
+
+export interface CopilotTestEmailStatus {
+  latestTest: Record<string, unknown> | null;
+  testedCurrentConfiguration: boolean;
+}
 
 //____ flight-schedules ________________________________________________________
 export const flightSchedulesApi = {

@@ -21,7 +21,7 @@ import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTempla
 import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
-import { getBrowserTimeZone } from "@/lib/helpers";
+import { apiErrorMessage, getBrowserTimeZone } from "@/lib/helpers";
 import { toast } from "sonner";
 
 function NewCopilotPageContent() {
@@ -252,8 +252,8 @@ function NewCopilotPageContent() {
 
       resetStore();
       router.push("/dashboard/copilots");
-    } catch {
-      toast.error("Failed to launch copilot. Please try again.");
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "Failed to launch copilot. Please try again."));
     } finally {
       setLaunching(false);
     }

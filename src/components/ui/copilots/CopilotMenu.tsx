@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { copilotsApi } from "@/lib/api";
+import { apiErrorMessage } from "@/lib/helpers";
 
 export default function CopilotMenu({
   copilot,
@@ -41,8 +42,8 @@ export default function CopilotMenu({
       await copilotsApi.updateStatus(copilot.id, next);
       onRefresh();
       onClose?.();
-    } catch {
-      toast.error("Failed to update status.");
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "Failed to update status."));
     }
   }
 
@@ -53,8 +54,8 @@ export default function CopilotMenu({
       await copilotsApi.run(copilot.id);
       onRefresh();
       onClose?.();
-    } catch {
-      toast.error("Failed to run scrape.");
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "Failed to run scrape."));
     } finally {
       setRunningScrape(false);
     }
