@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { BarChart3, Bot, Send, Users } from "lucide-react";
 
 import DashboardHeader from "@/components/layout/DashboardHeader";
@@ -24,7 +23,6 @@ export default function OverviewPage() {
   const { leads, getAllLeads } = useLeadStore();
   const { copilots, getAllCopilots } = useCopilotStore();
 
-  const { user } = useUser();
   const router = useRouter();
 
   const [period, setPeriod] = useState<DateRange>("Last 7 days");
@@ -103,7 +101,7 @@ export default function OverviewPage() {
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5">
       <DashboardHeader
-        title={`Welcome back, ${user?.firstName || user?.fullName || "there"}!👋`}
+        title="Welcome back!👋"
         description={`Here's what's happening with your outreach today`}
         actionLabel="Create New Copilot"
         onAction={() => router.push("/dashboard/copilots/new")}

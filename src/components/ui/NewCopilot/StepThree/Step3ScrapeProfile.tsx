@@ -353,7 +353,7 @@ export default function Step3ScrapeProfile() {
     <>
       <h2 className="text-lg font-bold mb-1">Define your Target Audience</h2>
       <p className="text-sm text-gray-500 mb-12">
-        Tell your copilot who you want to reach and we`&apos;`ll find the best
+        Tell your copilot who you want to reach and we’ll find the best
         matches.
       </p>
 

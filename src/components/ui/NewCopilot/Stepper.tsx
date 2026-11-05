@@ -34,7 +34,7 @@ const steps = [
   {
     id: 4,
     label: "Email Template",
-    sub: "Create you message",
+    sub: "Create your message",
     icon: <FileText size={16} />,
   },
   {
