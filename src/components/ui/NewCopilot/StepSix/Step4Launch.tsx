@@ -55,6 +55,7 @@ export default function Step4Launch({
   const [saving, setSaving] = useState(false);
   const [sendingTestEmail, setSendingTestEmail] = useState(false);
   const [showTestGate, setShowTestGate] = useState(false);
+  const [gateSent, setGateSent] = useState(false);
   // A test sent during this session counts immediately, without waiting for
   // the status endpoint to reflect it.
   const [testEmailSentNow, setTestEmailSentNow] = useState(false);
@@ -192,7 +193,7 @@ export default function Step4Launch({
             testStatus.testedCurrentConfiguration === true
           : false);
 
-  const sendTestEmail = async (thenLaunch = false) => {
+  const sendTestEmail = async (fromGate = false) => {
     setSendingTestEmail(true);
     try {
       // The wizard may not be persisted yet — create the draft so the
@@ -203,9 +204,13 @@ export default function Step4Launch({
       queryClient.invalidateQueries({
         queryKey: ["copilot-test-email-status"],
       });
-      setShowTestGate(false);
-      toast.success("A test email has been sent to your email account.");
-      if (thenLaunch) onLaunch();
+      // From the gate: stay open on the success view so the user checks the
+      // email, then launches explicitly. Launching is never automatic.
+      if (fromGate) {
+        setGateSent(true);
+      } else {
+        toast.success("A test email has been sent to your email account.");
+      }
     } catch (error) {
       console.error("Failed to send test email:", error);
       toast.error(
@@ -218,6 +223,7 @@ export default function Step4Launch({
 
   const handleLaunch = () => {
     if (!testEmailSent) {
+      setGateSent(false);
       setShowTestGate(true);
       return;
     }
@@ -543,7 +549,13 @@ export default function Step4Launch({
       <TestEmailGateModal
         open={showTestGate}
         sending={sendingTestEmail}
+        sent={gateSent}
+        sentTo={selectedEmailProfile?.email}
         onSend={() => sendTestEmail(true)}
+        onLaunch={() => {
+          setShowTestGate(false);
+          onLaunch();
+        }}
         onCancel={() => setShowTestGate(false)}
       />
     </div>
