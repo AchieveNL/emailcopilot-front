@@ -6,40 +6,9 @@ import { useUser } from "@clerk/nextjs";
 import UserCard from "../ui/UserCard";
 import { usePathname } from "next/navigation";
 import Logo from "../homepage/Logo";
-import {
-  Menu,
-  X,
-  Send,
-  LayoutDashboard,
-  Mail,
-  FileText,
-  Users,
-  Target,
-  CreditCard,
-  Calendar,
-} from "lucide-react";
+import { Menu, X } from "lucide-react";
 import clsx from "clsx";
-
-const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/copilots", label: "Copilots", icon: Send },
-  { href: "/dashboard/email-accounts", label: "Email Accounts", icon: Mail },
-  {
-    href: "/dashboard/target-audiences",
-    label: "Target Audiences",
-    icon: Target,
-  },
-  { href: "/dashboard/templates", label: "Email Templates", icon: FileText },
-  {
-    href: "/dashboard/flight-schedule",
-    label: "Flight Schedule",
-    icon: Calendar,
-  },
-  { href: "/dashboard/departure", label: "Departure", icon: Users },
-  /* { href: "/dashboard/settings", label: "Settings", icon: Settings }, */
-  /* { href: "/dashboard/integrations", label: "Integrations", icon: Plug }, */
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-];
+import { isNavActive, navGroups } from "@/lib/nav-items";
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,34 +52,62 @@ export default function MobileMenu() {
         <div>
           {/* Logo */}
           <Logo />
-          <hr className="w-full border-gray-200 mb-6" />
+          <hr className="w-full border-gray-200 mb-2" />
 
           {/* Nav */}
-          <nav className="px-3 space-y-0.5">
-            {navItems.map(({ href, label, icon: Icon }) => {
-              const isActive =
-                pathname === href ||
-                (href !== "/dashboard" && pathname.startsWith(`${href}/`));
+          <nav>
+            {navGroups.map((group, index) => {
+              const nextGroup = navGroups[index + 1];
+              const gapBelow =
+                !nextGroup || nextGroup.divider || Boolean(nextGroup.label);
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={closeMenu}
-                  className={clsx(
-                    "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
-                    isActive
-                      ? "bg-primary/5 text-primary font-semibold"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                <div key={group.label ?? index}>
+                  {group.divider && (
+                    <hr className="mx-3 border-t-[0.5px] border-gray-200" />
                   )}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon
-                      size={16}
-                      className={isActive ? "text-primary" : "text-gray-400"}
-                    />
-                    <span className="font-medium">{label}</span>
+                  <div
+                    className={clsx(
+                      "px-3",
+                      group.divider || group.label ? "pt-3" : "pt-1",
+                      gapBelow && "pb-3",
+                    )}
+                  >
+                    {group.label && (
+                      <div className="px-3 pb-2 text-xs font-medium uppercase tracking-wider text-gray-400">
+                        {group.label}
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      {group.items.map(({ href, label, icon: Icon }) => {
+                        const isActive = isNavActive(pathname, href);
+                        return (
+                          <Link
+                            key={href}
+                            href={href}
+                            onClick={closeMenu}
+                            className={clsx(
+                              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                              group.bold ? "font-semibold" : "font-medium",
+                              isActive
+                                ? "bg-primary/5 text-primary"
+                                : group.bold
+                                  ? "text-gray-900 hover:bg-gray-50"
+                                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                            )}
+                          >
+                            <Icon
+                              size={18}
+                              className={
+                                isActive ? "text-primary" : "text-gray-400"
+                              }
+                            />
+                            <span>{label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </nav>
