@@ -13,7 +13,7 @@ import { CopilotsPopup } from "@/components/ui/CopilotsPopup";
 import { templatesApi } from "@/lib/api";
 import axios from "axios";
 import { formatDateTime } from "@/lib/helpers";
-import { useRowsPerPage } from "@/lib/hooks";
+import { useDebounce, useRowsPerPage } from "@/lib/hooks";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -148,6 +148,7 @@ function LeadsPageContent() {
     body?: string;
   } | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const requestSeqRef = useRef(0);
 
   const handleShowPreview = async (lead: Lead) => {
     setActiveLeadId(lead.id);
@@ -192,32 +193,14 @@ function LeadsPageContent() {
     }
   };
 
-  async function fetchLeads(
-    targetPage: number,
-    targetLimit: number,
-    targetCopilotId: number | null,
-  ) {
-    try {
-      setLoading(true);
-      const res = await leadsApi.getAll({
-        page: targetPage,
-        limit: targetLimit,
-        ...(targetCopilotId != null ? { copilotId: targetCopilotId } : {}),
-      });
-      console.log("Fetched leads:", res.data);
-      setLeads(res.data.data);
-      setMeta(res.data.meta);
-    } catch {
-      console.error("Failed to fetch leads");
-    } finally {
-      setLoading(false);
-    }
-  }
-
+  const debouncedSearchTerm = useDebounce(search, 300);
   useEffect(() => {
     const paramId = searchParams.get("copilotId");
     const paramName = searchParams.get("name");
-    console.log("Search params:", { copilotId: paramId, copilotName: paramName });
+    console.log("Search params:", {
+      copilotId: paramId,
+      copilotName: paramName,
+    });
 
     if (paramId && paramName) {
       setCopilotId(Number(paramId));
@@ -228,9 +211,40 @@ function LeadsPageContent() {
     setPage(1);
   }, [searchParams]);
 
+  async function fetchLeads(
+    targetPage: number,
+    targetLimit: number,
+    targetCopilotId: number | null,
+    targetSearch: string,
+  ) {
+    // Sequence guard: as-you-type search fires overlapping requests and only
+    // the newest response may update the table.
+    const seq = ++requestSeqRef.current;
+    try {
+      setLoading(true);
+
+      const trimmedSearch = targetSearch.trim();
+      const res = await leadsApi.getAll({
+        page: targetPage,
+        limit: targetLimit,
+        ...(trimmedSearch ? { search: trimmedSearch } : {}),
+        ...(targetCopilotId != null ? { copilotId: targetCopilotId } : {}),
+      });
+      if (seq !== requestSeqRef.current) return;
+      setLeads(res.data.data);
+      setMeta(res.data.meta);
+    } catch {
+      if (seq === requestSeqRef.current) {
+        console.error("Failed to fetch leads");
+      }
+    } finally {
+      if (seq === requestSeqRef.current) setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    fetchLeads(page, effectiveLimit, copilotId);
-  }, [page, effectiveLimit, copilotId]);
+    fetchLeads(page, effectiveLimit, copilotId, debouncedSearchTerm);
+  }, [page, effectiveLimit, copilotId, debouncedSearchTerm]);
 
   // When the viewport-derived size changes and the user hasn't picked a
   // manual size, restart from page 1 so the new size applies from the top.
@@ -268,24 +282,6 @@ function LeadsPageContent() {
     );
   };
 
-  // Client-side search over the loaded page (the leads API exposes no
-  // search param). Matches copilot, company, email, website, phone,
-  // address, and target audience.
-  const query = search.trim().toLowerCase();
-  const visibleLeads = query
-    ? leads.filter((lead) =>
-        [
-          lead.copilotName,
-          lead.companyName,
-          lead.email,
-          lead.website,
-          lead.phone,
-          lead.address,
-          lead.sourceQuery,
-        ].some((field) => field?.toLowerCase().includes(query)),
-      )
-    : leads;
-
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
@@ -300,9 +296,46 @@ function LeadsPageContent() {
         onAction={() => setIsSidebarOpen(true)}
       />
 
+      {/* Search stays mounted through loading and empty states so typing
+          keeps focus and a no-results query can always be cleared. */}
+      <div className="bg-white border border-[#E2E8F0] rounded-lg px-4 sm:px-5 py-4 mb-4 flex items-center">
+        <div className="relative w-full sm:w-[378px]">
+          <Search
+            size={20}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#59637C]"
+          />
+          <input
+            value={search}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search company, email, website or phone..."
+            className="w-full h-11 border border-[#E2E8F0] rounded-lg pl-10 pr-4 text-[15px] font-light bg-white focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+            style={{ color: "#59637C" }}
+          />
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex items-center justify-center h-48 text-gray-400">
           Loading...
+        </div>
+      ) : leads.length === 0 && search.trim() ? (
+        <div className="bg-white border border-[#E2E8F0] rounded-lg flex flex-col items-center justify-center py-12 px-6 text-center">
+          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Search size={18} className="text-gray-400" />
+          </div>
+          <h2 className="font-semibold text-sm text-gray-900 mb-1">
+            No results found
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">
+            No leads match &quot;{search.trim()}&quot;. Try a different search
+            term.
+          </p>
+          <button
+            onClick={() => handleSearchChange("")}
+            className="px-4 py-2 border border-[#E2E8F0] rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Clear search
+          </button>
         </div>
       ) : leads.length === 0 ? (
         <div className=" min-h-120 flex flex-col items-center justify-center p-12 text-center ">
@@ -316,43 +349,7 @@ function LeadsPageContent() {
         </div>
       ) : (
         <>
-          <div className="bg-white border border-[#E2E8F0] rounded-lg px-4 sm:px-5 py-4 mb-4 flex items-center">
-            <div className="relative w-full sm:w-[378px]">
-              <Search
-                size={20}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#59637C]"
-              />
-              <input
-                value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search leads..."
-                className="w-full h-11 border border-[#E2E8F0] rounded-lg pl-10 pr-4 text-[15px] font-light bg-white focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-                style={{ color: "#59637C" }}
-              />
-            </div>
-          </div>
-          {visibleLeads.length === 0 ? (
-            <div className="bg-white border border-[#E2E8F0] rounded-lg flex flex-col items-center justify-center py-12 px-6 text-center">
-              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Search size={18} className="text-gray-400" />
-              </div>
-              <h2 className="font-semibold text-sm text-gray-900 mb-1">
-                No results found
-              </h2>
-              <p className="text-sm text-gray-500 mb-4">
-                No leads match &quot;{search.trim()}&quot;. Try a different
-                search term.
-              </p>
-              <button
-                onClick={() => handleSearchChange("")}
-                className="px-4 py-2 border border-[#E2E8F0] rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Clear search
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden mb-6 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col">
+          <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden mb-6 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col">
             <div className="overflow-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-320px)]">
               <table className="w-full text-sm min-w-225">
                 <thead>
@@ -384,7 +381,7 @@ function LeadsPageContent() {
                     <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Template
                     </th>
-                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="font-normal text-left text-xs leading-5  text-[#94A3B8] px-6 py-3">
                       Status
                     </th>
                     <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white">
@@ -393,7 +390,7 @@ function LeadsPageContent() {
                   </tr>
                 </thead>
                 <tbody className="max-h-75 overflow-y-auto">
-                  {visibleLeads.map((lead, index) => (
+                  {leads.map((lead, index) => (
                     <tr
                       key={lead.id + index}
                       className=" border-b text-sm border-[#E2E8F0] hover:bg-gray-50 transition-colors"
@@ -441,7 +438,6 @@ function LeadsPageContent() {
                       </td>
                       <td className="px-6 py-5 ">
                         <div className="flex items-center gap-3">
-
                           <Tooltip text={lead?.website}>
                             <a
                               target="_blank"
@@ -483,7 +479,7 @@ function LeadsPageContent() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   href={`https://wa.me/${lead.phone.replace("+", "")}`}
-                                className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
+                                  className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                                 >
                                   {lead.phone}
                                 </a>
@@ -501,7 +497,7 @@ function LeadsPageContent() {
                               <Tooltip text={lead.sourceQuery}>
                                 <a
                                   href={`/dashboard/target-audiences#${lead.sourceQuery.replace(" ", "-")}`}
-                                className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
+                                  className="font-semibold whitespace-nowrap text-sm text-[#0F172A]"
                                 >
                                   {lead.sourceQuery}
                                 </a>
@@ -566,7 +562,7 @@ function LeadsPageContent() {
                           </Tooltip>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white transition-colors">
+                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 transition-colors">
                         <div className="flex items-center justify-center">
                           <LeadMenu
                             lead={lead}
@@ -589,8 +585,6 @@ function LeadsPageContent() {
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
             />
-          )}
-            </>
           )}
         </>
       )}
