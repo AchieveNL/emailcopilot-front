@@ -381,7 +381,7 @@ function LeadsPageContent() {
                     <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Template
                     </th>
-                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="font-normal text-left text-xs leading-5  text-[#94A3B8] px-6 py-3">
                       Status
                     </th>
                     <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white">
@@ -397,9 +397,7 @@ function LeadsPageContent() {
                     >
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <Tooltip
-                            text={lead.copilotName || "Unknown Copilot"}
-                          >
+                          <Tooltip text={lead.copilotName || "Unknown Copilot"}>
                             <a
                               target="_blank"
                               rel="noopener noreferrer"
@@ -564,7 +562,7 @@ function LeadsPageContent() {
                           </Tooltip>
                         </div>
                       </td>
-                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 bg-white transition-colors">
+                      <td className="px-6 py-5 sticky w-16 align-middle right-0 z-30 transition-colors">
                         <div className="flex items-center justify-center">
                           <LeadMenu
                             lead={lead}
