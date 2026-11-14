@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Copy, Play, Pause, Archive, Trash2 } from "lucide-react";
+import { Pencil, Copy, Play, Pause, Archive, Trash2, Mail } from "lucide-react";
 import { Copilot } from "@/components/layout/features/copilots/CopilotTable";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ export default function CopilotMenu({
   onClose?: () => void;
 }) {
   const [runningScrape, setRunningScrape] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
   const showLaunchButton =
     copilot.status !== "running" &&
     copilot.status !== "paused" &&
@@ -35,6 +36,37 @@ export default function CopilotMenu({
     copilot.targetAudienceId != null &&
     copilot.templateId != null &&
     copilot.flightScheduleId != null;
+
+  const missingForTestEmail = [
+    copilot.emailAccountId == null && "an email account",
+    copilot.templateId == null && "an email template",
+  ].filter(Boolean) as string[];
+
+  const canTestEmail = missingForTestEmail.length === 0;
+  const testEmailTooltip = canTestEmail
+    ? "Send a test email to your connected account"
+    : `Add ${missingForTestEmail.join(" and ")} before sending a test email`;
+
+  async function handleTestEmail() {
+    if (sendingTest) return;
+    if (!canTestEmail) {
+      toast.error(
+        `Add ${missingForTestEmail.join(" and ")} before sending a test email.`,
+      );
+      return;
+    }
+    try {
+      setSendingTest(true);
+      await copilotsApi.testEmail(copilot.id);
+      toast.success("A test email has been sent to your email account.");
+    } catch (error) {
+      toast.error(
+        apiErrorMessage(error, "Failed to send test email. Please try again."),
+      );
+    } finally {
+      setSendingTest(false);
+    }
+  }
 
   async function toggleStatus(next: "active" | "paused") {
     if (next === "active" && !isComplete) return;
@@ -122,6 +154,16 @@ export default function CopilotMenu({
         >
           <Copy size={13} /> Duplicate
         </button>
+        <span className="block" title={testEmailTooltip}>
+          <button
+            onClick={handleTestEmail}
+            aria-disabled={!canTestEmail || sendingTest}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+          >
+            <Mail size={13} className={sendingTest ? "animate-pulse" : ""} />
+            {sendingTest ? "Sending..." : "Send Test Email"}
+          </button>
+        </span>
         {showLaunchButton && (
           <span
             className="block"

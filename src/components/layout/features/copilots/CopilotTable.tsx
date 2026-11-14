@@ -278,6 +278,7 @@ function CopilotTable({
     top: number;
     right: number;
   } | null>(null);
+  const router = useRouter();
 
   React.useEffect(() => {
     if (!menuCopilotId) return;
@@ -318,7 +319,7 @@ function CopilotTable({
                 Workflow status
               </th>
               <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
-                Send
+                Sent
               </th>
               <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-[#FAFAFE] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Status
@@ -337,7 +338,16 @@ function CopilotTable({
               return (
                 <tr
                   key={copilot.id}
-                  className="group/row border-b border-[#E2E8F0] align-top last:border-b-0 hover:bg-gray-50 transition-colors"
+                  onClick={() =>
+                    router.push(`/dashboard/copilots/new?edit=${copilot.id}`)
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.target === e.currentTarget) {
+                      router.push(`/dashboard/copilots/new?edit=${copilot.id}`);
+                    }
+                  }}
+                  tabIndex={0}
+                  className="group/row cursor-pointer border-b border-[#E2E8F0] align-top last:border-b-0 hover:bg-gray-50 transition-colors focus-visible:outline-2 focus-visible:outline-primary/40"
                 >
                   <td className="px-5 py-4 align-middle">
                     <div className="max-w-55">
@@ -356,7 +366,10 @@ function CopilotTable({
                       )}
                     </div>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td
+                    className="px-5 py-4 align-middle"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <WorkflowStepper steps={steps} copilotId={copilot.id} />
                   </td>
                   <td className="whitespace-nowrap px-5 py-4 text-sm align-middle text-[#0F172A]">
@@ -366,7 +379,10 @@ function CopilotTable({
                     {/* <StatusBadge status={copilot.status} /> */}
                     <CopilotStatus status={copilot.status} />
                   </td>
-                  <td className="px-5 py-4 text-right align-middle">
+                  <td
+                    className="px-5 py-4 text-right align-middle"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       type="button"
                       onClick={(e) => {
