@@ -54,3 +54,17 @@ export function useRowsPerPage(base = 20, mobileMax = 10): number {
 
   return perPage;
 }
+
+// ─── Debounced value ───────────────────────────────────────────────────────
+// Returns `value` after it has stayed unchanged for `delay` ms. Used to avoid
+// firing a network request per keystroke in search inputs.
+export function useDebounce<T>(value: T, delay = 300): T {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}

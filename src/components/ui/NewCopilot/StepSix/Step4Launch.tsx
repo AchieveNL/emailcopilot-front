@@ -20,6 +20,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { copilotsApi, type CopilotTestEmailStatus } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
+import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
+import { useBilling } from "@/lib/useBilling";
+import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
 import TestEmailGateModal from "./TestEmailGateModal";
 
 function ReadinessItem({ done, label }: { done: boolean; label: string }) {
@@ -59,6 +62,11 @@ export default function Step4Launch({
   // A test sent during this session counts immediately, without waiting for
   // the status endpoint to reflect it.
   const [testEmailSentNow, setTestEmailSentNow] = useState(false);
+  const [showEmailLimit, setShowEmailLimit] = useState(false);
+
+  const { limits, plans } = useBilling();
+  const mailQuota = emailQuota(limits);
+  const mailTiers = higherTiers(plans, currentPlanId(limits));
 
   const {
     data: testStatus,
@@ -222,6 +230,11 @@ export default function Step4Launch({
   };
 
   const handleLaunch = () => {
+    // No allowance left: launching would only park a copilot that cannot send.
+    if (mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     if (!testEmailSent) {
       setGateSent(false);
       setShowTestGate(true);
@@ -554,9 +567,23 @@ export default function Step4Launch({
         onSend={() => sendTestEmail(true)}
         onLaunch={() => {
           setShowTestGate(false);
+          if (mailQuota?.atLimit) {
+            setShowEmailLimit(true);
+            return;
+          }
           onLaunch();
         }}
         onCancel={() => setShowTestGate(false)}
+      />
+
+      <EmailLimitDialog
+        open={showEmailLimit}
+        currentPlanId={currentPlanId(limits)}
+        used={mailQuota?.used ?? 0}
+        max={mailQuota?.max ?? 0}
+        resetAt={mailQuota?.resetAt ?? null}
+        tiers={mailTiers}
+        onClose={() => setShowEmailLimit(false)}
       />
     </div>
   );

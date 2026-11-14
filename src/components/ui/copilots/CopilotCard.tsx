@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import {
   Building2,
   Send,
@@ -16,6 +17,9 @@ import {
   OverallStatus,
 } from "../../layout/features/copilots/CopilotTable";
 import CopilotMenu from "./CopilotMenu";
+import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
+import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
+import { useBilling } from "@/lib/useBilling";
 import { useRouter } from "next/navigation";
 import { copilotsApi } from "@/lib/api";
 import { toast } from "sonner";
@@ -145,8 +149,16 @@ function CopilotCard({
 }: CopilotCardProps) {
   const { percent, total } = computeProgress(copilot);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showEmailLimit, setShowEmailLimit] = React.useState(false);
+  const { limits, plans } = useBilling();
+  const mailQuota = emailQuota(limits);
+  const mailTiers = higherTiers(plans, currentPlanId(limits));
   const router = useRouter();
   const handleResume = async () => {
+    if (mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     setIsLoading(true);
     try {
       await copilotsApi.run(copilot.id);
@@ -188,7 +200,14 @@ function CopilotCard({
 
   return (
     <div
-      className={`flex   w-full flex-col gap-3 rounded-md border border-gray-200 bg-white p-4 relative ${className}`}
+      onClick={() => router.push(`/dashboard/copilots/new?edit=${copilot.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && e.target === e.currentTarget) {
+          router.push(`/dashboard/copilots/new?edit=${copilot.id}`);
+        }
+      }}
+      tabIndex={0}
+      className={`flex w-full flex-col gap-3 rounded-md border border-gray-200 bg-white p-4 relative cursor-pointer focus-visible:outline-2 focus-visible:outline-primary/40 ${className}`}
     >
       <div className="flex items-start justify-between">
         <h3 className="text-[15px] font-semibold text-gray-900">
@@ -196,7 +215,10 @@ function CopilotCard({
         </h3>
         <button
           type="button"
-          onClick={onActionsClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            onActionsClick?.();
+          }}
           aria-label="Copilot actions"
           className="text-gray-300 transition-colors hover:text-gray-500"
         >
@@ -236,7 +258,10 @@ function CopilotCard({
       <button
         type="button"
         // disabled={!handleCardProp(copilot.status).buttonEnabled}
-        onClick={action}
+        onClick={(e) => {
+          e.stopPropagation();
+          action();
+        }}
         className={`mt-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-[14px] font-medium transition-colors border ${"cursor-pointer border-primary text-primary bg-white hover:bg-primary hover:text-white"}`}
       >
         {!isLoading && handleCardProp(copilot.status).icon}
@@ -244,7 +269,10 @@ function CopilotCard({
         <span>{isLoading ? "Loading..." : label}</span>
       </button>
       {showMenu && (
-        <div className="absolute right-4 top-12 z-20">
+        <div
+          className="absolute right-4 top-12 z-20"
+          onClick={(e) => e.stopPropagation()}
+        >
           <CopilotMenu
             copilot={copilot}
             onRefresh={onRefresh || (() => {})}
@@ -252,6 +280,22 @@ function CopilotCard({
           />
         </div>
       )}
+
+      {showEmailLimit &&
+        createPortal(
+          <div onClick={(e) => e.stopPropagation()}>
+            <EmailLimitDialog
+              open
+              currentPlanId={currentPlanId(limits)}
+              used={mailQuota?.used ?? 0}
+              max={mailQuota?.max ?? 0}
+              resetAt={mailQuota?.resetAt ?? null}
+              tiers={mailTiers}
+              onClose={() => setShowEmailLimit(false)}
+            />
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

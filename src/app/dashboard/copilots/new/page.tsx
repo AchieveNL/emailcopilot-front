@@ -22,6 +22,8 @@ import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
 import { apiErrorMessage, getBrowserTimeZone } from "@/lib/helpers";
+import { copilotQuota } from "@/lib/limits";
+import { useBilling } from "@/lib/useBilling";
 import { toast } from "sonner";
 
 function NewCopilotPageContent() {
@@ -41,6 +43,9 @@ function NewCopilotPageContent() {
 
   const [launching, setLaunching] = useState(false);
   const [loadingCopilot, setLoadingCopilot] = useState(false);
+
+  const { limits } = useBilling();
+  const quota = copilotQuota(limits);
 
   const { user } = useUser();
 
@@ -209,6 +214,17 @@ function NewCopilotPageContent() {
       resetStore();
     }
   }, [searchParams, router, loadCopilot, setDraftId, setStep, resetStore]);
+
+  // Creating is gated by the plan's copilot allowance. Editing or duplicating
+  // an existing copilot is not. Send blocked users back to the list, which
+  // opens the upgrade dialog instead of letting them fill the whole wizard
+  // only to hit the backend's "Plan limit reached" error at save time.
+  useEffect(() => {
+    if (!quota?.atLimit) return;
+    if (searchParams.get("edit") || searchParams.get("duplicate")) return;
+
+    router.replace("/dashboard/copilots?limit=copilots");
+  }, [quota?.atLimit, searchParams, router]);
 
   const getPageTitle = () => {
     if (mode === "edit") return "Edit Copilot";

@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Copy, Play, Pause, Archive, Trash2 } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Pencil, Copy, Play, Pause, Archive, Trash2, Mail } from "lucide-react";
 import { Copilot } from "@/components/layout/features/copilots/CopilotTable";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { copilotsApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
+import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
+import { useBilling } from "@/lib/useBilling";
+import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
 
 export default function CopilotMenu({
   copilot,
@@ -19,6 +23,11 @@ export default function CopilotMenu({
   onClose?: () => void;
 }) {
   const [runningScrape, setRunningScrape] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
+  const [showEmailLimit, setShowEmailLimit] = useState(false);
+  const { limits, plans } = useBilling();
+  const mailQuota = emailQuota(limits);
+  const mailTiers = higherTiers(plans, currentPlanId(limits));
   const showLaunchButton =
     copilot.status !== "running" &&
     copilot.status !== "paused" &&
@@ -36,8 +45,43 @@ export default function CopilotMenu({
     copilot.templateId != null &&
     copilot.flightScheduleId != null;
 
+  const missingForTestEmail = [
+    copilot.emailAccountId == null && "an email account",
+    copilot.templateId == null && "an email template",
+  ].filter(Boolean) as string[];
+
+  const canTestEmail = missingForTestEmail.length === 0;
+  const testEmailTooltip = canTestEmail
+    ? "Send a test email to your connected account"
+    : `Add ${missingForTestEmail.join(" and ")} before sending a test email`;
+
+  async function handleTestEmail() {
+    if (sendingTest) return;
+    if (!canTestEmail) {
+      toast.error(
+        `Add ${missingForTestEmail.join(" and ")} before sending a test email.`,
+      );
+      return;
+    }
+    try {
+      setSendingTest(true);
+      await copilotsApi.testEmail(copilot.id);
+      toast.success("A test email has been sent to your email account.");
+    } catch (error) {
+      toast.error(
+        apiErrorMessage(error, "Failed to send test email. Please try again."),
+      );
+    } finally {
+      setSendingTest(false);
+    }
+  }
+
   async function toggleStatus(next: "active" | "paused") {
     if (next === "active" && !isComplete) return;
+    if (next === "active" && mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     try {
       await copilotsApi.updateStatus(copilot.id, next);
       onRefresh();
@@ -49,6 +93,10 @@ export default function CopilotMenu({
 
   async function handleRunScrape() {
     if (!isComplete) return;
+    if (mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     try {
       setRunningScrape(true);
       await copilotsApi.run(copilot.id);
@@ -97,8 +145,8 @@ export default function CopilotMenu({
         onRefresh();
         toast.success("Copilot duplicated.");
       })
-      .catch(() => {
-        toast.error("Failed to duplicate.");
+      .catch((error) => {
+        toast.error(apiErrorMessage(error, "Failed to duplicate."));
       })
       .finally(() => {
         onClose?.();
@@ -122,6 +170,16 @@ export default function CopilotMenu({
         >
           <Copy size={13} /> Duplicate
         </button>
+        <span className="block" title={testEmailTooltip}>
+          <button
+            onClick={handleTestEmail}
+            aria-disabled={!canTestEmail || sendingTest}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+          >
+            <Mail size={13} className={sendingTest ? "animate-pulse" : ""} />
+            {sendingTest ? "Sending..." : "Send Test Email"}
+          </button>
+        </span>
         {showLaunchButton && (
           <span
             className="block"
@@ -185,6 +243,20 @@ export default function CopilotMenu({
           <Trash2 size={13} /> Delete
         </button>
       </div>
+
+      {showEmailLimit &&
+        createPortal(
+          <EmailLimitDialog
+            open
+            currentPlanId={currentPlanId(limits)}
+            used={mailQuota?.used ?? 0}
+            max={mailQuota?.max ?? 0}
+            resetAt={mailQuota?.resetAt ?? null}
+            tiers={mailTiers}
+            onClose={() => setShowEmailLimit(false)}
+          />,
+          document.body,
+        )}
     </>
   );
 }

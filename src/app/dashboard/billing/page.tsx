@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CircleHelp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,6 +38,13 @@ export default function BillingPage() {
   const [subscribingPlanId, setSubscribingPlanId] = useState<PlanId | null>(
     null,
   );
+
+  // Upgrade CTAs elsewhere in the app link here with ?upgrade=<reason> so the
+  // plan selector opens straight away instead of the current-plan overview.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upgrade")) setShowPlans(true);
+  }, []);
 
   async function handleSubscribe(planId: PlanId, interval: BillingInterval) {
     setSubscribingPlanId(planId);

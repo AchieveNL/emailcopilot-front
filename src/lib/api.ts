@@ -181,6 +181,7 @@ export const leadsApi = {
     page?: number;
     limit?: number;
     copilotId?: number;
+    search?: string;
   }) => api.get("/leads", { params }),
 
   getById: (id: number) => api.get(`/leads/${id}`),
