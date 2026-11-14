@@ -184,6 +184,9 @@ export function useBilling() {
                 queryClient.invalidateQueries({ queryKey: billingKeys.invoices() }),
             ]),
 
+        // Re-read plan usage, e.g. right before gating a create action.
+        refetchLimits: () => limitsQuery.refetch(),
+
         // Mutation loading states — useful for disabling buttons
         isSubscribing: subscribeMutation.isPending,
         isCanceling: cancelMutation.isPending,

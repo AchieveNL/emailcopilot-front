@@ -1,4 +1,5 @@
 import { useBilling } from "@/lib/useBilling";
+import { emailQuota } from "@/lib/limits";
 import { useClerk } from "@clerk/nextjs";
 import { ChevronUp, Crown, User, LogOut } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,14 @@ export default function UserCard({
   onpress?: () => void;
 }) {
   const { limits } = useBilling();
+  const quota = emailQuota(limits);
+  const emailPercent = Math.min(100, quota?.percent ?? 0);
+  const usageBarClass =
+    emailPercent >= 100
+      ? "bg-red-500"
+      : emailPercent >= 90
+        ? "bg-amber-500"
+        : "bg-gray-900";
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { openUserProfile, signOut } = useClerk();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -53,11 +62,16 @@ export default function UserCard({
                   {limits?.usage?.emailsSent ?? 0}
                 </span>{" "}
                 / {limits?.limits?.emailsPerMonth ?? 0} emails used
+                {quota?.atLimit && (
+                  <span className="ml-1 font-medium text-red-600">
+                    · Limit reached
+                  </span>
+                )}
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
                 <div
-                  className="bg-gray-900 h-1.5 rounded-full"
-                  style={{ width: `${limits?.usage?.emailsPercent ?? 0}%` }}
+                  className={`${usageBarClass} h-1.5 rounded-full`}
+                  style={{ width: `${emailPercent}%` }}
                 />
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import {
   Building2,
   Send,
@@ -16,6 +17,9 @@ import {
   OverallStatus,
 } from "../../layout/features/copilots/CopilotTable";
 import CopilotMenu from "./CopilotMenu";
+import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
+import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
+import { useBilling } from "@/lib/useBilling";
 import { useRouter } from "next/navigation";
 import { copilotsApi } from "@/lib/api";
 import { toast } from "sonner";
@@ -145,8 +149,16 @@ function CopilotCard({
 }: CopilotCardProps) {
   const { percent, total } = computeProgress(copilot);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showEmailLimit, setShowEmailLimit] = React.useState(false);
+  const { limits, plans } = useBilling();
+  const mailQuota = emailQuota(limits);
+  const mailTiers = higherTiers(plans, currentPlanId(limits));
   const router = useRouter();
   const handleResume = async () => {
+    if (mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     setIsLoading(true);
     try {
       await copilotsApi.run(copilot.id);
@@ -268,6 +280,22 @@ function CopilotCard({
           />
         </div>
       )}
+
+      {showEmailLimit &&
+        createPortal(
+          <div onClick={(e) => e.stopPropagation()}>
+            <EmailLimitDialog
+              open
+              currentPlanId={currentPlanId(limits)}
+              used={mailQuota?.used ?? 0}
+              max={mailQuota?.max ?? 0}
+              resetAt={mailQuota?.resetAt ?? null}
+              tiers={mailTiers}
+              onClose={() => setShowEmailLimit(false)}
+            />
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

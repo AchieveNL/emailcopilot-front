@@ -12,10 +12,17 @@ import CopilotToolbar from "@/components/ui/copilots/CopilotToolBar";
 import TemplatesPagination from "@/components/ui/templates/Pagination";
 import { useRowsPerPage } from "@/lib/hooks";
 import DashboardHeader from "@/components/layout/DashboardHeader";
-import Link from "next/link";
+import CopilotLimitDialog from "@/components/ui/limits/CopilotLimitDialog";
+import { copilotQuota, currentPlanId, higherTiers } from "@/lib/limits";
+import { useBilling, billingKeys } from "@/lib/useBilling";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CopilotsPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { limits, plans, refetchLimits } = useBilling();
+  const quota = copilotQuota(limits);
+  const [limitDialogOpen, setLimitDialogOpen] = useState(false);
   const [copilots, setCopilots] = useState<Copilot[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -30,12 +37,22 @@ export default function CopilotsPage() {
     fetchCopilots();
   }, []);
 
+  // Deep link from the wizard's own guard (/dashboard/copilots?limit=copilots).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("limit") !== "copilots") return;
+    setLimitDialogOpen(true);
+    window.history.replaceState(null, "", "/dashboard/copilots");
+  }, []);
+
   async function fetchCopilots() {
     try {
       setLoading(true);
       const res = await copilotsApi.getAll();
       console.log("Fetched copilots from copilot page :", res.data);
       setCopilots(res.data);
+      // Creating, deleting or archiving a copilot changes the plan usage.
+      queryClient.invalidateQueries({ queryKey: billingKeys.limits() });
       if (res.data.length === 0) {
         router.push("/dashboard/copilots/new");
       }
@@ -44,6 +61,31 @@ export default function CopilotsPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  const planId = currentPlanId(limits);
+  const tiers = higherTiers(plans, planId);
+
+  async function handleCreate() {
+    if (quota?.atLimit) {
+      setLimitDialogOpen(true);
+      return;
+    }
+
+    // Re-check right before entering the wizard so a stale cached count (e.g.
+    // right after creating the last allowed copilot) never lets the user fill
+    // the whole wizard only to fail on save. Fail open if the check fails.
+    try {
+      const fresh = await refetchLimits();
+      if (copilotQuota(fresh.data)?.atLimit) {
+        setLimitDialogOpen(true);
+        return;
+      }
+    } catch {
+      // Ignore and continue — the backend still enforces the limit.
+    }
+
+    router.push("/dashboard/copilots/new");
   }
 
   // Filter copilots based on status and search
@@ -80,7 +122,7 @@ export default function CopilotsPage() {
         title="Copilots"
         description="Manage your automated outreach campaigns."
         actionLabel="Create New Copilot"
-        onAction={() => router.push("/dashboard/copilots/new")}
+        onAction={handleCreate}
       />
 
 
@@ -112,12 +154,13 @@ export default function CopilotsPage() {
               Build your first copilot to start sending personalized emails at
               scale.
             </p>
-            <Link
-              href="/dashboard/copilots/new"
+            <button
+              type="button"
+              onClick={handleCreate}
               className="inline-flex items-center gap-2 btn-cta text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
             >
               <Plus size={15} /> Create New Copilot
-            </Link>
+            </button>
           </div>
         ) : paginatedData.length === 0 ? (
           <div className="  p-10 text-center ">
@@ -147,6 +190,15 @@ export default function CopilotsPage() {
           />
         </div>
       )}
+
+      <CopilotLimitDialog
+        open={limitDialogOpen}
+        currentPlanId={planId}
+        used={quota?.used ?? 0}
+        max={quota?.max ?? 0}
+        tiers={tiers}
+        onClose={() => setLimitDialogOpen(false)}
+      />
     </div>
   );
 }

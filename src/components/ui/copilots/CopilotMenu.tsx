@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Pencil, Copy, Play, Pause, Archive, Trash2, Mail } from "lucide-react";
 import { Copilot } from "@/components/layout/features/copilots/CopilotTable";
 import Link from "next/link";
@@ -8,6 +9,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { copilotsApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
+import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
+import { useBilling } from "@/lib/useBilling";
+import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
 
 export default function CopilotMenu({
   copilot,
@@ -20,6 +24,10 @@ export default function CopilotMenu({
 }) {
   const [runningScrape, setRunningScrape] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
+  const [showEmailLimit, setShowEmailLimit] = useState(false);
+  const { limits, plans } = useBilling();
+  const mailQuota = emailQuota(limits);
+  const mailTiers = higherTiers(plans, currentPlanId(limits));
   const showLaunchButton =
     copilot.status !== "running" &&
     copilot.status !== "paused" &&
@@ -70,6 +78,10 @@ export default function CopilotMenu({
 
   async function toggleStatus(next: "active" | "paused") {
     if (next === "active" && !isComplete) return;
+    if (next === "active" && mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     try {
       await copilotsApi.updateStatus(copilot.id, next);
       onRefresh();
@@ -81,6 +93,10 @@ export default function CopilotMenu({
 
   async function handleRunScrape() {
     if (!isComplete) return;
+    if (mailQuota?.atLimit) {
+      setShowEmailLimit(true);
+      return;
+    }
     try {
       setRunningScrape(true);
       await copilotsApi.run(copilot.id);
@@ -129,8 +145,8 @@ export default function CopilotMenu({
         onRefresh();
         toast.success("Copilot duplicated.");
       })
-      .catch(() => {
-        toast.error("Failed to duplicate.");
+      .catch((error) => {
+        toast.error(apiErrorMessage(error, "Failed to duplicate."));
       })
       .finally(() => {
         onClose?.();
@@ -227,6 +243,20 @@ export default function CopilotMenu({
           <Trash2 size={13} /> Delete
         </button>
       </div>
+
+      {showEmailLimit &&
+        createPortal(
+          <EmailLimitDialog
+            open
+            currentPlanId={currentPlanId(limits)}
+            used={mailQuota?.used ?? 0}
+            max={mailQuota?.max ?? 0}
+            resetAt={mailQuota?.resetAt ?? null}
+            tiers={mailTiers}
+            onClose={() => setShowEmailLimit(false)}
+          />,
+          document.body,
+        )}
     </>
   );
 }

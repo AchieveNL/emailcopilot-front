@@ -1,5 +1,6 @@
 import Sidebar from "@/components/layout/Sidebar";
 import MobileMenu from "@/components/layout/MobileMenu";
+import EmailLimitBanner from "@/components/ui/limits/EmailLimitBanner";
 import { DashboardProviders } from "@/lib/providers";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Mobile Menu */}
         <MobileMenu />
         {/* Main Content */}
-        <main id="dashboard-main" className="flex-1 overflow-y-auto bg-gray-50 w-full md:w-auto">{children}</main>
+        <main id="dashboard-main" className="flex-1 overflow-y-auto bg-gray-50 w-full md:w-auto">
+          <EmailLimitBanner />
+          {children}
+        </main>
       </div>
     </DashboardProviders>
   );

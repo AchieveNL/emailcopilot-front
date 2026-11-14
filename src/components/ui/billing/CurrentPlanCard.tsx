@@ -12,6 +12,7 @@ import {
 } from "@/lib/helpers";
 import ActionMenu from "../ActionMenu";
 import ProgressBar from "../ProgressBar";
+import { emailQuota } from "@/lib/limits";
 
 interface CurrentPlanCardProps {
   plan: Plan | null;
@@ -33,9 +34,10 @@ export default function CurrentPlanCard({
   isUpdatingPaymentMethod,
 }: CurrentPlanCardProps) {
   const PlanIcon = PLAN_ICONS[plan?.id ?? "starter"] ?? PLAN_ICONS.starter;
-  const emailsSent = limits?.usage?.emailsSent ?? 0;
-  const emailsLimit = limits?.limits?.emailsPerMonth ?? 0;
-  const emailsPercent = limits?.usage?.emailsPercent ?? 0;
+  const quota = emailQuota(limits);
+  const emailsSent = quota?.used ?? 0;
+  const emailsLimit = quota?.max ?? 0;
+  const emailsPercent = quota?.percent ?? 0;
   const isCanceling = Boolean(subscription?.cancelAtPeriodEnd);
   const rawInterval = subscription?.billingInterval ?? plan?.interval;
   const billingPeriod =
@@ -124,6 +126,15 @@ export default function CurrentPlanCard({
             <p className="mt-2 text-right text-xs text-gray-500">
               {Math.round(emailsPercent)} % used
             </p>
+            {quota?.atLimit && (
+              <p className="mt-2 text-xs font-medium text-red-600">
+                Monthly allowance reached. Sending resumes
+                {quota.resetAt
+                  ? ` on ${formatBillingDate(quota.resetAt)}`
+                  : " when your allowance renews"}
+                .
+              </p>
+            )}
           </div>
 
           <hr className="my-4 border-gray-100" />
