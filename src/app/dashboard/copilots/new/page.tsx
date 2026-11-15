@@ -24,9 +24,11 @@ import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
 import { apiErrorMessage, getBrowserTimeZone } from "@/lib/helpers";
 import { copilotQuota } from "@/lib/limits";
 import { useBilling } from "@/lib/useBilling";
+import { useSetupFeedbackActions } from "@/lib/SetupFeedbackProvider";
 import { toast } from "sonner";
 
 function NewCopilotPageContent() {
+  const feedback = useSetupFeedbackActions();
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -104,6 +106,7 @@ function NewCopilotPageContent() {
   ];
 
   useEffect(() => {
+    let cancelled = false;
     const editId = searchParams.get("edit");
     const duplicateId = searchParams.get("duplicate");
     const EmailAccountId = searchParams.get("accountId");
@@ -116,6 +119,7 @@ function NewCopilotPageContent() {
       copilotsApi
         .getById(id)
         .then((res) => {
+          if (cancelled) return;
           const copilot = res.data;
           loadCopilot(
             {
@@ -162,16 +166,18 @@ function NewCopilotPageContent() {
           }
         })
         .catch(() => {
+          if (cancelled) return;
           toast.error("Failed to load copilot. Please try again.");
           router.push("/dashboard/copilots");
         })
-        .finally(() => setLoadingCopilot(false));
+        .finally(() => { if (!cancelled) setLoadingCopilot(false); });
     } else if (duplicateId) {
       const id = parseInt(duplicateId, 10);
       setLoadingCopilot(true);
       copilotsApi
         .getById(id)
         .then((res) => {
+          if (cancelled) return;
           const copilot = res.data;
           loadCopilot(
             {
@@ -203,16 +209,19 @@ function NewCopilotPageContent() {
           );
         })
         .catch(() => {
+          if (cancelled) return;
           toast.error("Failed to load copilot. Please try again.");
           router.push("/dashboard/copilots");
         })
-        .finally(() => setLoadingCopilot(false));
+        .finally(() => { if (!cancelled) setLoadingCopilot(false); });
     } else {
       // Pure create mode (no ?edit= or ?duplicate=): wipe any leftover state
       // from an abandoned wizard so every Create starts blank at step 1.
       // Idempotent, so StrictMode double-fire is harmless.
+      setLoadingCopilot(false);
       resetStore();
     }
+    return () => { cancelled = true; };
   }, [searchParams, router, loadCopilot, setDraftId, setStep, resetStore]);
 
   // Creating is gated by the plan's copilot allowance. Editing or duplicating
@@ -243,6 +252,7 @@ function NewCopilotPageContent() {
   }, [persistDraft, router]);
 
   const handleLaunch = useCallback(async () => {
+    if (feedback.isBusy()) return;
     try {
       setLaunching(true);
       const payload = {
@@ -259,21 +269,27 @@ function NewCopilotPageContent() {
         status: "active" as const,
       };
 
-      if (draftId) {
-        await copilotsApi.update(draftId, payload);
-        await copilotsApi.updateStatus(draftId, "active");
-      } else {
-        await copilotsApi.create(payload);
-      }
-
-      resetStore();
-      router.push("/dashboard/copilots");
+      await feedback.launch(async () => {
+        if (draftId) {
+          await copilotsApi.update(draftId, payload);
+          await copilotsApi.updateStatus(draftId, "active");
+          return draftId;
+        }
+        const response = await copilotsApi.create(payload);
+        const id = Number(response.data?.id);
+        if (!Number.isSafeInteger(id) || id < 1) throw new Error("The launch response did not include a valid copilot ID.");
+        return id;
+      }, () => {
+        toast.success("Copilot launch accepted.");
+        resetStore();
+        router.push("/dashboard/copilots");
+      });
     } catch (error) {
       toast.error(apiErrorMessage(error, "Failed to launch copilot. Please try again."));
     } finally {
       setLaunching(false);
     }
-  }, [copilotData, draftId, router, resetStore, user]);
+  }, [copilotData, draftId, router, resetStore, user, feedback]);
 
   if (loadingCopilot) {
     return (

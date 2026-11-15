@@ -60,7 +60,7 @@ export default function TestEmailGateModal({
                   id="test-email-gate-title"
                   className="text-lg font-bold text-gray-900"
                 >
-                  Test email sent
+                  Test email request accepted
                 </h2>
               </div>
 
@@ -108,7 +108,8 @@ export default function TestEmailGateModal({
 
               <p className="mt-3 text-sm text-gray-500">
                 Send one to yourself so you know the template and your sending
-                account actually work. Once it lands, you can launch.
+                account work. Check your inbox after the request is accepted,
+                then launch when you&apos;re ready.
               </p>
 
               <div className="mt-4 flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5">
@@ -135,7 +136,7 @@ export default function TestEmailGateModal({
               </button>
               <button
                 type="button"
-                onClick={onSend}
+                onClick={(event) => { if (event.detail <= 1) onSend(); }}
                 disabled={sending}
                 className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
               >

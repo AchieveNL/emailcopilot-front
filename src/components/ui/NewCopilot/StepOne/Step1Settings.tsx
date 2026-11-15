@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useCopilotStore } from "@/store/copilotStore";
 import { useRouter } from "next/navigation";
 import StepsActions from "../StepsActions";
@@ -9,8 +9,11 @@ import { copilotsApi } from "@/lib/api";
 export default function Step1Settings() {
   const { copilotData, updateCopilotData, setStep, mode } = useCopilotStore();
   const [isLoading, setIsLoading] = useState(false);
+  const submittingRef = useRef(false);
   const router = useRouter();
   const handleSubmit = async () => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setIsLoading(true);
 
     try {
@@ -34,6 +37,7 @@ export default function Step1Settings() {
       
       router.push(`/dashboard/copilots/new?edit=${response.data.id}`);
     } finally {
+      submittingRef.current = false;
       setIsLoading(false);
     }
   };

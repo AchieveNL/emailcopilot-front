@@ -22,6 +22,7 @@ import { copilotsApi, type CopilotTestEmailStatus } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
 import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
 import { useBilling } from "@/lib/useBilling";
+import { useSetupFeedbackActions } from "@/lib/SetupFeedbackProvider";
 import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
 import TestEmailGateModal from "./TestEmailGateModal";
 
@@ -53,6 +54,7 @@ export default function Step4Launch({
   launching,
   onSaveDraft,
 }: Step4LaunchProps) {
+  const feedback = useSetupFeedbackActions();
   const { copilotData, setStep, draftId, persistDraft } = useCopilotStore();
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
@@ -202,23 +204,18 @@ export default function Step4Launch({
           : false);
 
   const sendTestEmail = async (fromGate = false) => {
+    if (feedback.isBusy()) return;
     setSendingTestEmail(true);
     try {
       // The wizard may not be persisted yet — create the draft so the
       // endpoint has a copilot id to test against.
-      const id = draftId ?? (await persistDraft());
-      await copilotsApi.testEmail(id);
-      setTestEmailSentNow(true);
-      queryClient.invalidateQueries({
-        queryKey: ["copilot-test-email-status"],
+      await feedback.testEmail(() => draftId ?? persistDraft(), () => {
+        setTestEmailSentNow(true);
+        queryClient.invalidateQueries({ queryKey: ["copilot-test-email-status"] });
+        // Keep the gate's success view until the user closes or launches.
+        if (fromGate) setGateSent(true);
+        else toast.success("Test email request accepted. Check your connected inbox.");
       });
-      // From the gate: stay open on the success view so the user checks the
-      // email, then launches explicitly. Launching is never automatic.
-      if (fromGate) {
-        setGateSent(true);
-      } else {
-        toast.success("A test email has been sent to your email account.");
-      }
     } catch (error) {
       console.error("Failed to send test email:", error);
       toast.error(
@@ -243,7 +240,8 @@ export default function Step4Launch({
     onLaunch();
   };
   return (
-    <div className="w-full">
+    <div className="w-full" data-setup-feedback-final-step={draftId ?? copilotData.id ?? ""}
+      aria-busy={loadingTakeoff || loadingTestStatus || sendingTestEmail || launching}>
       <h2 className="text-xl font-bold text-gray-900 mb-1">
         Review your copilot
       </h2>
@@ -508,7 +506,7 @@ export default function Step4Launch({
         <div className="flex items-center gap-2 flex-wrap ml-auto">
           <button
             type="button"
-            onClick={() => sendTestEmail()}
+            onClick={(event) => { if (event.detail <= 1) void sendTestEmail(); }}
             disabled={sendingTestEmail}
             title="Send a test email to your connected account"
             className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"

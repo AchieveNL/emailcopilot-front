@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { Pencil, Copy, Play, Pause, Archive, Trash2, Mail } from "lucide-react";
 import { Copilot } from "@/components/layout/features/copilots/CopilotTable";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { copilotsApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
 import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
 import { useBilling } from "@/lib/useBilling";
+import { useSetupFeedbackActions } from "@/lib/SetupFeedbackProvider";
 import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
 
 export default function CopilotMenu({
@@ -22,6 +22,7 @@ export default function CopilotMenu({
   onRefresh: () => void;
   onClose?: () => void;
 }) {
+  const feedback = useSetupFeedbackActions();
   const [runningScrape, setRunningScrape] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
   const [showEmailLimit, setShowEmailLimit] = useState(false);
@@ -55,8 +56,8 @@ export default function CopilotMenu({
     ? "Send a test email to your connected account"
     : `Add ${missingForTestEmail.join(" and ")} before sending a test email`;
 
-  async function handleTestEmail() {
-    if (sendingTest) return;
+  async function handleTestEmail(event?: MouseEvent<HTMLButtonElement>) {
+    if (sendingTest || feedback.isBusy() || (event?.detail ?? 0) > 1) return;
     if (!canTestEmail) {
       toast.error(
         `Add ${missingForTestEmail.join(" and ")} before sending a test email.`,
@@ -65,8 +66,9 @@ export default function CopilotMenu({
     }
     try {
       setSendingTest(true);
-      await copilotsApi.testEmail(copilot.id);
-      toast.success("A test email has been sent to your email account.");
+      await feedback.testEmail(() => copilot.id, () => {
+        toast.success("Test email request accepted. Check your connected inbox.");
+      });
     } catch (error) {
       toast.error(
         apiErrorMessage(error, "Failed to send test email. Please try again."),
@@ -92,16 +94,21 @@ export default function CopilotMenu({
   }
 
   async function handleRunScrape() {
-    if (!isComplete) return;
+    if (!isComplete || feedback.isBusy()) return;
     if (mailQuota?.atLimit) {
       setShowEmailLimit(true);
       return;
     }
     try {
       setRunningScrape(true);
-      await copilotsApi.run(copilot.id);
-      onRefresh();
-      onClose?.();
+      await feedback.launch(async () => {
+        await copilotsApi.run(copilot.id);
+        return copilot.id;
+      }, () => {
+        toast.success("Copilot launch request accepted.");
+        onRefresh();
+        onClose?.();
+      });
     } catch (error) {
       toast.error(apiErrorMessage(error, "Failed to run scrape."));
     } finally {

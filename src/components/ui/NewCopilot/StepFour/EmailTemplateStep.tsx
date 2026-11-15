@@ -18,7 +18,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import StepsActions from "../StepsActions";
-import { templatesApi, copilotsApi } from "@/lib/api";
+import { templatesApi } from "@/lib/api";
+import { useSetupFeedbackActions } from "@/lib/SetupFeedbackProvider";
 import { useWizardTemplates } from "@/lib/useWizardOptions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { apiErrorMessage, toEditorContent } from "@/lib/helpers";
@@ -38,6 +39,7 @@ const initialEmailBody = `
 `;
 
 export default function EmailTemplateStep() {
+  const feedback = useSetupFeedbackActions();
   const [activeTab, setActiveTab] = useState<"steps" | "variables">("steps");
   const [activeStep, setActiveStep] = useState(1);
   // const [smartSending, setSmartSending] = useState(true);
@@ -353,8 +355,8 @@ export default function EmailTemplateStep() {
     }
   };
 
-  const handleTestEmail = async () => {
-    if (!editor) return;
+  const handleTestEmail = async (event?: React.MouseEvent<HTMLButtonElement>) => {
+    if (!editor || feedback.isBusy() || (event?.detail ?? 0) > 1) return;
 
     if (!copilotData.emailAccountId) {
       toast.error("Select an email account before sending a test email.");
@@ -366,14 +368,11 @@ export default function EmailTemplateStep() {
     try {
       // Save first: the backend sends the template linked to the copilot,
       // so an unsaved edit would otherwise be tested in its previous state.
-      const templateId = await persistTemplate();
-
-      // Makes sure the copilot exists server-side and points at that template.
-      const copilotId = await persistDraft({ templateId });
-
-      await copilotsApi.testEmail(copilotId);
-
-      toast.success("A test email has been sent to your email account.");
+      await feedback.testEmail(async () => {
+        const templateId = await persistTemplate();
+        // The test must use the newly persisted template.
+        return persistDraft({ templateId });
+      }, () => toast.success("Test email request accepted. Check your connected inbox."));
     } catch (error) {
       console.error("Failed to send test email:", error);
       toast.error(

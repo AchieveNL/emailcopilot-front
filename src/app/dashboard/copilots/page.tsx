@@ -116,7 +116,7 @@ export default function CopilotsPage() {
   }, [status, search, perPage]);
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:min-h-full [@media(min-height:1081px)]:flex-col">
+    <div data-setup-feedback-copilots aria-busy={loading} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-5 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:min-h-full [@media(min-height:1081px)]:flex-col">
       {/* Header */}
       <DashboardHeader
         title="Copilots"
