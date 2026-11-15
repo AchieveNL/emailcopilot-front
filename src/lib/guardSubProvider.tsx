@@ -1,8 +1,5 @@
 "use client";
 import { useEffect } from "react";
-import Sidebar from "@/components/layout/Sidebar";
-import MobileMenu from "@/components/layout/MobileMenu";
-import { DashboardProviders } from "@/lib/providers";
 import { useBilling } from "@/lib/useBilling";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -20,18 +17,42 @@ export default function GuardSubscriptionProvider({ children }: { children: Reac
 
     const router = useRouter();
     const pathname = usePathname();
-    const { loading, hasSubscription } = useBilling();
+    const { subscriptionLoading, subscriptionFetching, subscriptionError, retrySubscription, hasSubscription } = useBilling();
     useEffect(() => {
-        if (loading) return;
+        if (subscriptionLoading || subscriptionError) return;
         if (isBillingExempt(pathname)) return;
 
         if (!hasSubscription) {
             router.replace("/dashboard/billing");
         }
-    }, [loading, hasSubscription, pathname, router]);
+    }, [subscriptionLoading, subscriptionError, hasSubscription, pathname, router]);
+
+    // Keep billing (including its FAQ) mounted even if the API is unavailable.
+    // Unmounting a failed query's consumer can trigger another fetch on remount.
+    if (isBillingExempt(pathname)) return <>{children}</>;
+
+    if (subscriptionError) {
+        return (
+            <div className="flex h-screen items-center justify-center p-6">
+                <div role="alert" className="text-center">
+                    <p className="text-sm text-gray-700">
+                        We couldn&apos;t check your subscription. Please try again.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => void retrySubscription()}
+                        disabled={subscriptionFetching}
+                        className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+                    >
+                        {subscriptionFetching ? "Retrying…" : "Try again"}
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     // Avoid flashing protected content while checking
-    if (loading || (!hasSubscription && !isBillingExempt(pathname))) {
+    if (subscriptionLoading || !hasSubscription) {
         return (
             <div className="flex h-screen items-center justify-center">
                 <span className="text-muted-foreground text-sm">Loading…</span>

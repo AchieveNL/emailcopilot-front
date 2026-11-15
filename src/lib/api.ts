@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
 
-import { getToken } from "@clerk/nextjs";
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
   withCredentials: true,
@@ -9,22 +8,6 @@ const api = axios.create({
   },
   timeout: 10000,
 });
-
-api.interceptors.response.use(
-  async (response) => {
-    const token = await getToken();
-
-    if (token) {
-      response.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return response;
-  },
-  (error) => {
-    console.error("API Error:", error);
-    return Promise.reject(error);
-  },
-);
 
 export default api;
 

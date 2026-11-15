@@ -1,33 +1,46 @@
-// /lib/api/provider.tsx
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
-import { useEffect, useRef } from "react";
+import { RedirectToSignIn, useAuth } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
 import api from "./api";
 
 export function ApiProvider({ children }: { children: React.ReactNode }) {
-    const { getToken, isLoaded, isSignedIn } = useAuth();
-    console.log("Auth loaded:", isLoaded, "Signed in:", isSignedIn); // Debugging line to check auth state
-    const interceptorRef = useRef<number | null>(null);
+    const { getToken, isLoaded, isSignedIn, sessionId } = useAuth();
+    const [authentication, setAuthentication] = useState<{
+        getToken: typeof getToken;
+        sessionId: string;
+    } | null>(null);
 
     useEffect(() => {
-        interceptorRef.current = api.interceptors.request.use(
+        if (!isLoaded || !isSignedIn) return;
+
+        const id = api.interceptors.request.use(
             async (config) => {
                 const token = await getToken();
-                console.log("Attaching token to request:", token); // Debugging line to check token value
-                if (token) config.headers.Authorization = `Bearer ${token}`;
+                if (!token) {
+                    throw new Error("Your session has expired. Please sign in again.");
+                }
+                config.headers.Authorization = `Bearer ${token}`;
                 return config;
             },
-            (error) => Promise.reject(error)
         );
+        setAuthentication({ getToken, sessionId });
 
         return () => {
-            if (interceptorRef.current !== null) {
-                api.interceptors.request.eject(interceptorRef.current);
-                interceptorRef.current = null; // ← reset so it re-registers next mount
-            }
+            api.interceptors.request.eject(id);
         };
-    }, [getToken]); // ← also re-run if getToken identity changes
+    }, [getToken, isLoaded, isSignedIn, sessionId]);
+
+    if (isLoaded && !isSignedIn) return <RedirectToSignIn />;
+
+    // Descendants can fetch on mount, so install authentication first.
+    if (!isLoaded || authentication?.getToken !== getToken || authentication?.sessionId !== sessionId) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <span className="text-sm text-gray-500">Loading…</span>
+            </div>
+        );
+    }
 
     return <>{children}</>;
 }

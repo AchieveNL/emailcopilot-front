@@ -4,6 +4,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
+Create `.env.local` in the project root (including the leading dot). Next.js
+does not load a file named `env.local`. Set `NEXT_PUBLIC_API_URL` to the backend
+URL and configure `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, and
+your Clerk redirect URLs there. Restart the development server after changing
+environment variables. Without `NEXT_PUBLIC_API_URL`, the client uses
+`http://localhost:3001`.
+
 ```bash
 npm run dev
 # or

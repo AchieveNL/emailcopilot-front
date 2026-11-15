@@ -86,6 +86,9 @@ export function useBilling() {
                 throw err;
             }
         },
+        staleTime: 30 * 1000,
+        retry: false,
+        retryOnMount: false,
     });
 
     const invoicesQuery = useQuery<Invoice[]>({
@@ -170,6 +173,10 @@ export function useBilling() {
         // ── State ─────────────────────────────────────────────────────────────────
         loading,
         error,
+        subscriptionLoading: subscriptionQuery.isLoading,
+        subscriptionFetching: subscriptionQuery.isFetching,
+        subscriptionError: subscriptionQuery.error,
+        retrySubscription: () => subscriptionQuery.refetch(),
 
         // ── Actions ───────────────────────────────────────────────────────────────
         subscribe: (planId: PlanId, interval: "month" | "year") =>
