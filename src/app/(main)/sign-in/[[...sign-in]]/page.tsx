@@ -54,7 +54,7 @@ export default function SignInPage() {
       >
         {/* Logo */}
         <Logo />
-        <SignIn  />
+        <SignIn forceRedirectUrl="/dashboard" />
       </div>
     </div>
   );

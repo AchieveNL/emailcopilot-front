@@ -24,6 +24,7 @@ import { useWizardTemplates } from "@/lib/useWizardOptions";
 import { useCopilotStore } from "@/store/copilotStore";
 import { apiErrorMessage, toEditorContent } from "@/lib/helpers";
 import { toast } from "sonner";
+import SubjectLineInput from "@/components/ui/SubjectLineInput";
 
 const initialEmailBody = `
 <p>Hi,</p>
@@ -372,7 +373,8 @@ export default function EmailTemplateStep() {
         const templateId = await persistTemplate();
         // The test must use the newly persisted template.
         return persistDraft({ templateId });
-      }, () => toast.success("Test email request accepted. Check your connected inbox."));
+      }, () => toast.success("Test email request accepted. Check your connected inbox."),
+      () => useCopilotStore.getState().copilotData.flightSchedule);
     } catch (error) {
       console.error("Failed to send test email:", error);
       toast.error(
@@ -567,14 +569,14 @@ export default function EmailTemplateStep() {
 
           {/* Subject Line */}
           <div className="mb-6">
-            <label className="block text-sm font-bold text-slate-900 mb-2">
+            <label htmlFor="copilot-subject-line" className="block text-sm font-bold text-slate-900 mb-2">
               Subject line
             </label>
-            <input
-              type="text"
+            <SubjectLineInput
+              id="copilot-subject-line"
               value={subjectInput}
-              onChange={(e) => {
-                setSubjectInput(e.target.value);
+              onValueChange={(value) => {
+                setSubjectInput(value);
                 removeVariable();
               }}
               onFocus={() => setLastFocusedField("subject")}

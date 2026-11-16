@@ -1,5 +1,6 @@
 "use client";
 import { Trash2, Pen } from "lucide-react";
+import { formatAllDayAvailability } from "@/lib/sending-schedule";
 // ─── Types matching backend schema ────────────────────────────────────────────
 
 export interface Schedule {
@@ -72,7 +73,7 @@ function FlightScheduleCard({
       label: "Sending hours",
       value: sendingHoursActive
         ? `From ${sendingHours.start} to ${sendingHours.end}`
-        : "24/7",
+        : formatAllDayAvailability(activeDays),
     },
     { label: "Active days", value: formatActiveDays(activeDays) },
     { label: "Default timezone", value: timezone },

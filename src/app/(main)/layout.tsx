@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import Nav from "@/components/homepage/Nav";
 import Footer from "@/components/homepage/Footer";
 import FloatingWhatsApp from "@/components/layout/FloatingWhatsApp";
@@ -16,16 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body>
-          <Nav />
-          {/* <AnimatedBackground /> */}
-          {children}
-          <Footer />
-          <FloatingWhatsApp />
-        </body>
-      </html>
-    </ClerkProvider>
+    <>
+      <Nav />
+      {/* <AnimatedBackground /> */}
+      {children}
+      <Footer />
+      <FloatingWhatsApp />
+    </>
   );
 }

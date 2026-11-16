@@ -19,8 +19,9 @@ const campaign = {
   emailAccount: { id: 1, email: "test@example.invalid" },
   targetAudience: { id: 2, name: "Mock audience", resultsCount: 10 },
   template: { id: 3, name: "Mock template", body: "<p>Mock only</p>" },
-  flightSchedule: { name: "Weekdays", activeDays: [1, 2, 3, 4, 5], sendLimitActive: true, sendLimit: 10,
-    sendingHoursActive: true, sendingHours: { start: "09:00", end: "17:00" }, timezone: "UTC" },
+  // Feedback scenarios must not depend on the real clock; schedule boundaries have their own tests.
+  flightSchedule: { name: "Mock all days", activeDays: [1, 2, 3, 4, 5, 6, 7], sendLimitActive: true, sendLimit: 10,
+    sendingHoursActive: false, sendingHours: { start: "09:00", end: "17:00" }, timezone: "UTC" },
   targetProfile: { industries: [], countries: [], cities: [] },
 };
 
@@ -63,6 +64,8 @@ api.defaults.adapter = async (config) => {
       data = campaign;
     } else if (/^\/copilots\/\d+$/.test(url)) {
       data = { ...campaign, id: Number(url.split("/").pop()) };
+    } else if (url === "/flight-schedules/4") {
+      data = campaign.flightSchedule;
     } else if (url === "/templates/3") {
       data = campaign.template;
     } else if (url === "/templates") {

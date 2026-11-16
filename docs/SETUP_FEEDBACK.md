@@ -1,5 +1,19 @@
 # Automatic copilot setup feedback
 
+## Current popup-only preview
+
+The dashboard uses session-only feedback progress instead of `/api/feedback`.
+The same second-test/first-launch placement rules apply. Clicking **Send feedback**
+after choosing a rating shows `Feedback submission is not implemented yet.` in a
+browser alert and closes the dialog. No rating or comment is submitted or saved,
+and no success/thanks screen is shown. Reloading the dashboard starts fresh.
+Dismissal only suppresses prompts in the current dashboard session.
+
+The storage/API behavior described below remains available for later integration
+and existing injected test fixtures, but the deployed dashboard does not call it.
+Two preview regression checks were prepared, not run under the user's commands-only
+preference. Browser alert and deployment verification remain pending.
+
 Survey version: `copilot-setup-v3`. This replaces the earlier creation-based
 preview. Creating copilots alone does not trigger this version.
 

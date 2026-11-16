@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider signInForceRedirectUrl="/dashboard">
       <html lang="en" suppressHydrationWarning>
         <body>
           {children}

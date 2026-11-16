@@ -73,6 +73,7 @@ function AudienceRow({
   onDelete?: (audience: TargetAudience) => void;
   onDuplicate?: (audience: TargetAudience) => void;
 }) {
+  const cityLabel = audience.city?.trim() || "All";
   const menu = (
     <>
       <button
@@ -129,7 +130,7 @@ function AudienceRow({
 
         <span className="text-sm text-[#0F172A]">{audience.country || "—"}</span>
 
-        <span className="text-sm text-[#0F172A]">{audience.city || "—"}</span>
+        <span className="text-sm text-[#0F172A]">{cityLabel}</span>
 
         <span className="text-sm text-[#0F172A]">
           {formatCount(audience.resultsCount)}
@@ -155,8 +156,7 @@ function AudienceRow({
               {audience.searchQuery || "—"}
             </div>
             <div className="mt-0.5 text-xs text-[#59637C]">
-              {[audience.country, audience.city].filter(Boolean).join(" · ") ||
-                "—"}{" "}
+              {[audience.country, cityLabel].filter(Boolean).join(" · ")}{" "}
               · {formatCount(audience.resultsCount)} leads
             </div>
             <div className="mt-0.5 text-xs text-[#59637C]">

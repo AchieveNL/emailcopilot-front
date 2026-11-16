@@ -4,10 +4,12 @@ import CopilotStatus from "../CopilotStatus";
 import { useCopilotStore } from "@/store/copilotStore";
 import NoData from "./NoData";
 import { useRouter } from "next/navigation";
+import { sortCopilotsArchivedLast } from "@/lib/sort-copilots";
 
 export default function CopilotsCard() {
   const { copilots } = useCopilotStore();
   const router = useRouter();
+  const visibleCopilots = sortCopilotsArchivedLast(copilots).slice(0, 3);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5  w-full ">
@@ -28,7 +30,7 @@ export default function CopilotsCard() {
       ) : (
         <table className="w-full">
           <tbody>
-            {copilots.slice(0, 3).map((copilot) => (
+            {visibleCopilots.map((copilot) => (
               <tr
                 key={copilot.id}
                 onClick={() =>

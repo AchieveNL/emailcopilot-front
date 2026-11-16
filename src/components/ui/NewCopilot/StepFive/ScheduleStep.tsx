@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import TimeZoneSelect from "@/components/ui/TimeZoneSelect";
 import ScheduleList from "./ScheduleList";
+import { formatAllDayAvailability } from "@/lib/sending-schedule";
 
 const DAYS = [
   { value: 1, label: "Mon" },
@@ -468,10 +469,10 @@ export default function ScheduleStep() {
                 <CircleAlert className="w-6 h-6 text-blue-500 shrink-0" />
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 mb-1">
-                    Sending hours is off
+                    Sending hours are off
                   </h3>
                   <p className="text-xs text-slate-700 font-medium leading-relaxed">
-                    Your copilot can send emails at any time, 24/7.
+                    Availability: {formatAllDayAvailability(schedule.activeDays)} (selected active days only).
                   </p>
                 </div>
               </div>

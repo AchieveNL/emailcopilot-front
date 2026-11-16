@@ -1,11 +1,12 @@
 "use client";
-type LeadStatusType = "new" | "sent" | "replied" | "failed" | "suppressed";
+type LeadStatusType = "new" | "sent" | "replied" | "failed" | "suppressed" | "skipped";
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   new: { bg: "#F5F7FF", text: "#2563EB" },
   sent: { bg: "#E3FCEF", text: "#1D8A68" },
   failed: { bg: "#FFF6F7", text: "#D9485F" },
   suppressed: { bg: "#FFF4E9", text: "#E97A1C" },
+  skipped: { bg: "#F5F7FF", text: "#64748B" },
 };
 
 const DEFAULT_STYLE = { bg: "#F1F5F9", text: "#64748B" };

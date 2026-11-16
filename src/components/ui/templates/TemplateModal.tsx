@@ -24,6 +24,7 @@ import { toEditorContent } from "@/lib/helpers";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
+import SubjectLineInput from "@/components/ui/SubjectLineInput";
 
 const INITIAL_STEPS: TemplateStep[] = [
   {
@@ -347,17 +348,17 @@ export default function TemplateModal({
 
           {/* Subject line */}
           <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label htmlFor="template-field-subject" className="block text-sm font-medium text-gray-900 mb-2">
               Subject line
             </label>
-            <input
+            <SubjectLineInput
               id="template-field-subject"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               placeholder="Type your subject line"
               value={form.subject}
               onFocus={() => setLastFocusedField("subject")}
-              onChange={(e) =>
-                onFormChange({ ...form, subject: e.target.value })
+              onValueChange={(subject) =>
+                onFormChange({ ...form, subject })
               }
             />
           </div>

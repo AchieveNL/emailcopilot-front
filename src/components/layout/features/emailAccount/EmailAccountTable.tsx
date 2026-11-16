@@ -125,7 +125,7 @@ function SearchInput({
 const EMAIL_ACCOUNT_STATUS_OPTIONS: StatusOption[] = [
   { value: "all", label: "All statuses", dotClassName: "bg-blue-500" },
   { value: "active", label: "Verified", dotClassName: "bg-success" },
-  { value: "inactive", label: "Unverified", dotClassName: "bg-orange-500" },
+  { value: "inactive", label: "Unverified", dotClassName: "bg-warning" },
   { value: "error", label: "Error", dotClassName: "bg-error" },
 ];
 

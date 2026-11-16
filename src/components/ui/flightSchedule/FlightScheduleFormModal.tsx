@@ -5,6 +5,7 @@ import { X, Clock, Minus, Plus, ChevronDown, CircleAlert } from "lucide-react";
 import { getBrowserTimeZone } from "@/lib/helpers";
 import TimeZoneSelect from "@/components/ui/TimeZoneSelect";
 import type { Schedule } from "./FlightScheduleCard";
+import { formatAllDayAvailability } from "@/lib/sending-schedule";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -331,10 +332,10 @@ export default function FlightScheduleFormModal({
                   <CircleAlert className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 mb-0.5">
-                      Sending hours is off
+                      Sending hours are off
                     </h4>
                     <p className="text-xs text-slate-700 font-medium leading-relaxed">
-                      Your copilot can send emails at any time, 24/7.
+                      Availability: {formatAllDayAvailability(activeDays)} (selected active days only).
                     </p>
                   </div>
                 </div>

@@ -12,9 +12,10 @@ interface SetupFeedbackDialogProps {
   onSubmitted: (state: FeedbackState) => void;
   closing: boolean;
   dismissError: string | null;
+  preview?: boolean;
 }
 
-export default function SetupFeedbackDialog({ submit, onDismiss, onSubmitted, closing, dismissError }: SetupFeedbackDialogProps) {
+export default function SetupFeedbackDialog({ submit, onDismiss, onSubmitted, closing, dismissError, preview = false }: SetupFeedbackDialogProps) {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,11 @@ export default function SetupFeedbackDialog({ submit, onDismiss, onSubmitted, cl
   const send = async (event: FormEvent) => {
     event.preventDefault();
     if (rating === null || sendingRef.current || accepted || closing) return;
+    if (preview) {
+      window.alert("Feedback submission is not implemented yet.");
+      onDismiss();
+      return;
+    }
     sendingRef.current = true;
     setSending(true);
     setError(null);
@@ -83,7 +89,7 @@ export default function SetupFeedbackDialog({ submit, onDismiss, onSubmitted, cl
       title="How easy was it to set up your copilot?"
       description="Tell us what worked and what we can improve."
       confirmLabel={sending ? "Sending…" : "Send feedback"}
-      cancelLabel={closing ? "Saving reminder…" : "Not now"}
+      cancelLabel={closing ? (preview ? "Closing…" : "Saving reminder…") : "Not now"}
       loading={sending || closing}
       confirmDisabled={rating === null}
       onConfirm={() => formRef.current?.requestSubmit()}

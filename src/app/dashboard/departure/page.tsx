@@ -390,9 +390,9 @@ function LeadsPageContent() {
                   </tr>
                 </thead>
                 <tbody className="max-h-75 overflow-y-auto">
-                  {leads.map((lead, index) => (
+                  {leads.map((lead) => (
                     <tr
-                      key={lead.id + index}
+                      key={lead.id}
                       className=" border-b text-sm border-[#E2E8F0] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-5">

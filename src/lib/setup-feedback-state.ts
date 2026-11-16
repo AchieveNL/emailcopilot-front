@@ -1,4 +1,4 @@
-import type { FeedbackReply, FeedbackState, FeedbackSuccessEvent } from "./setup-feedback";
+import type { FeedbackReply, FeedbackState, FeedbackSuccessEvent, FeedbackTransport } from "./setup-feedback";
 
 export const FEEDBACK_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
 export interface FeedbackRecord {
@@ -28,6 +28,23 @@ export function feedbackState(record: FeedbackRecord, now: number): FeedbackStat
     hasLaunched: record.hasLaunched, snoozedUntil: record.snoozedUntil,
     snoozed: record.snoozedUntil !== null && now < record.snoozedUntil,
     submittedAt: record.submission?.submittedAt ?? null };
+}
+
+/** Popup preview only: progress lives in this dashboard session and is never saved. */
+export function createPreviewFeedbackTransport(owner: string, version: string): FeedbackTransport {
+  let record = createFeedbackRecord(owner, version);
+  const change = async (command: FeedbackCommand) => {
+    const result = applyFeedbackCommand(record, command, Date.now());
+    record = result.record;
+    return result.reply;
+  };
+  return {
+    load: async () => feedbackState(record, Date.now()),
+    record: (event) => change({ operation: "success", event }),
+    claim: (offerId) => change({ operation: "claim", offerId }),
+    snooze: (offerId) => change({ operation: "snooze", offerId }),
+    submit: async () => { throw new Error("Feedback submission is not implemented yet."); },
+  };
 }
 
 /** Pure transition; only the server supplies `now`. Duplicate events never increment counts. */

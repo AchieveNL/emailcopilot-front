@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { scrollToHowItWorks } from "@/lib/how-it-works-navigation";
+import HowItWorksButton from "./HowItWorksButton";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import Link from "next/dist/client/link";
 import Logo from "./Logo";
@@ -10,9 +12,35 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+      if (window.location.hash === "#how-it-works") {
+        const url = new URL(window.location.href);
+        url.hash = "";
+        window.history.replaceState(window.history.state, "", url);
+      }
+    };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.pathname !== "/" || (
+      url.searchParams.get("scrollTo") !== "how-it-works" &&
+      url.hash !== "#how-it-works"
+    )) return;
+
+    let cancelled = false;
+    // Wait for fonts so the section position is measured after text has settled.
+    void document.fonts.ready.then(() => {
+      if (cancelled) return;
+      url.searchParams.delete("scrollTo");
+      if (url.hash === "#how-it-works") url.hash = "";
+      window.history.replaceState(window.history.state, "", url);
+      scrollToHowItWorks();
+    });
+    return () => { cancelled = true; };
   }, []);
 
   return (
@@ -49,8 +77,13 @@ function Nav() {
             style={{ gap: 28, alignItems: "center" }}
             className="nav-links hidden lg:flex"
           >
+            <HowItWorksButton
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ fontSize: "0.875rem", color: "#52525e", fontWeight: 500, cursor: "pointer" }}
+            >
+              How it works
+            </HowItWorksButton>
             {[
-              { label: "How it works", href: "#how-it-works" },
               { label: "Testimonials", href: "#testimonials" },
               { label: "Pricing", href: "#pricing" },
               { label: "FAQs", href: "#faqs" },
@@ -156,8 +189,13 @@ function Nav() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <HowItWorksButton
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ fontSize: "0.875rem", color: "#52525e", fontWeight: 500, padding: "10px 0", textAlign: "left", cursor: "pointer" }}
+            >
+              How it works
+            </HowItWorksButton>
             {[
-              { label: "How it works", href: "#how-it-works" },
               { label: "Testimonials", href: "#testimonials" },
               { label: "Pricing", href: "#pricing" },
               { label: "FAQs", href: "#faqs" },

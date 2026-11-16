@@ -2,7 +2,29 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { SETUP_FEEDBACK_VERSION, SetupFeedbackController } from "../src/lib/setup-feedback.ts";
-import { applyFeedbackCommand, createFeedbackRecord, feedbackState, FEEDBACK_SNOOZE_MS } from "../src/lib/setup-feedback-state.ts";
+import { applyFeedbackCommand, createFeedbackRecord, createPreviewFeedbackTransport, feedbackState, FEEDBACK_SNOOZE_MS } from "../src/lib/setup-feedback-state.ts";
+
+test("popup preview qualifies after two tests and resets with a fresh dashboard session", async () => {
+  const transport = createPreviewFeedbackTransport("preview-user", SETUP_FEEDBACK_VERSION);
+  const event = (eventId) => ({ kind: "test-email", eventId, campaignId: "42" });
+  assert.equal((await transport.record(event("one"))).offerId, null);
+  const { offerId } = await transport.record(event("two"));
+  assert.ok(offerId);
+  assert.equal((await transport.claim(offerId)).claimed, true);
+  await transport.snooze(offerId);
+  assert.equal((await transport.load()).snoozed, true);
+  const fresh = createPreviewFeedbackTransport("preview-user", SETUP_FEEDBACK_VERSION);
+  assert.equal((await fresh.load()).successfulTests, 0);
+  assert.equal((await fresh.load()).snoozed, false);
+});
+
+test("popup preview qualifies after launch and never pretends to save feedback", async () => {
+  const transport = createPreviewFeedbackTransport("preview-user", SETUP_FEEDBACK_VERSION);
+  assert.ok((await transport.record({ kind: "launch", eventId: "one", campaignId: "42" })).offerId);
+  await assert.rejects(transport.submit({ version: SETUP_FEEDBACK_VERSION, rating: 5 }, "preview"),
+    /Feedback submission is not implemented yet/);
+  assert.equal((await transport.load()).submittedAt, null);
+});
 
 function account(owner = "user-a") {
   let record = createFeedbackRecord(owner, SETUP_FEEDBACK_VERSION);

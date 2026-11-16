@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { getCopilotStatusAppearance } from "@/lib/copilot-status-appearance";
 import {
   Search,
   ChevronDown,
@@ -21,12 +22,12 @@ export interface StatusOption {
 
 export const DEFAULT_STATUS_OPTIONS: StatusOption[] = [
   { value: "all", label: "All status", dotClassName: "bg-blue-500" },
-  { value: "active", label: "Scheduled", dotClassName: "bg-primary" },
-  { value: "draft", label: "Draft", dotClassName: "bg-gray-200" },
-  { value: "running", label: "In Flight", dotClassName: "bg-sky-200" },
-  { value: "paused", label: "Paused", dotClassName: "bg-error" },
-  { value: "archived", label: "Archived", dotClassName: "bg-gray-400" },
-  { value: "completed", label: "Completed", dotClassName: "bg-success" },
+  { value: "active", label: "Scheduled", dotClassName: getCopilotStatusAppearance("active").dotClassName },
+  { value: "draft", label: "Draft", dotClassName: getCopilotStatusAppearance("draft").dotClassName },
+  { value: "running", label: "In Flight", dotClassName: getCopilotStatusAppearance("running").dotClassName },
+  { value: "paused", label: "Paused", dotClassName: getCopilotStatusAppearance("paused").dotClassName },
+  { value: "archived", label: "Archived", dotClassName: getCopilotStatusAppearance("archived").dotClassName },
+  { value: "completed", label: "Completed", dotClassName: getCopilotStatusAppearance("completed").dotClassName },
 ];
 
 /* ------------------------------------------------------------------ */

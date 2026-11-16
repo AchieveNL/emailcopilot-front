@@ -1,6 +1,7 @@
 import { ArrowRight, Check, CheckCircle, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import HowItWorksButton from "./HowItWorksButton";
 
 const TRUST_ITEMS = [
   {
@@ -99,13 +100,12 @@ function HeroCopy() {
           Start Flying
           <ArrowRight size={16} />
         </Link>
-        <Link
-          href="#how-it-works"
+        <HowItWorksButton
           className="btn-main btn-outline"
           style={{ padding: "9px 20px", fontSize: "0.85rem" }}
         >
           How it works
-        </Link>
+        </HowItWorksButton>
       </div>
 
       {/* Trust row */}

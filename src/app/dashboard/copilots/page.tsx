@@ -16,6 +16,7 @@ import CopilotLimitDialog from "@/components/ui/limits/CopilotLimitDialog";
 import { copilotQuota, currentPlanId, higherTiers } from "@/lib/limits";
 import { useBilling, billingKeys } from "@/lib/useBilling";
 import { useQueryClient } from "@tanstack/react-query";
+import { sortCopilotsArchivedLast } from "@/lib/sort-copilots";
 
 export default function CopilotsPage() {
   const router = useRouter();
@@ -96,10 +97,10 @@ export default function CopilotsPage() {
     return matchesStatus && matchesSearch;
   });
 
-  // Sort filtered copilots
-  const sorted = [...filtered].sort((a, b) => {
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-  });
+  // Archive priority applies before pagination; keep newest-updated order within each group.
+  const sorted = sortCopilotsArchivedLast(filtered, (a, b) =>
+    new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
 
   // Calculate pagination
   const totalItems = sorted.length;

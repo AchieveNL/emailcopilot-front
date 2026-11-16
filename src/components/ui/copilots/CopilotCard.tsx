@@ -23,6 +23,7 @@ import { useBilling } from "@/lib/useBilling";
 import { useRouter } from "next/navigation";
 import { copilotsApi } from "@/lib/api";
 import { toast } from "sonner";
+import { getCopilotStatusAppearance } from "@/lib/copilot-status-appearance";
 
 export interface CardContent {
   badgeLabel: string;
@@ -34,11 +35,12 @@ export interface CardContent {
 }
 
 export const handleCardProp = (status: string) => {
+  const { badgeClass } = getCopilotStatusAppearance(status);
   switch (status.toLocaleLowerCase()) {
     case "draft":
       return {
         badgeLabel: "Ready for Take-off",
-        badgeClass: "bg-gray-100 text-gray-500",
+        badgeClass,
         subtitle: "Fully configured and ready to launch",
         progressBarColor: "bg-gray-200",
         buttonLabel: "Take-off",
@@ -48,7 +50,7 @@ export const handleCardProp = (status: string) => {
     case "running":
       return {
         badgeLabel: "In Flight",
-        badgeClass: "bg-sky-50 text-sky-600",
+        badgeClass,
         progressBarColor: "bg-sky-200",
         subtitle: "Campaign is currently running",
         buttonLabel: "Running",
@@ -58,7 +60,7 @@ export const handleCardProp = (status: string) => {
     case "completed":
       return {
         badgeLabel: "Completed",
-        badgeClass: "bg-success/5 text-success",
+        badgeClass,
         progressBarColor: "bg-success",
         subtitle: "Campaign has finished running",
         buttonLabel: "View Details",
@@ -68,7 +70,7 @@ export const handleCardProp = (status: string) => {
     case "active":
       return {
         badgeLabel: "Scheduled",
-        badgeClass: "bg-primary/5 text-primary",
+        badgeClass,
         progressBarColor: "bg-primary",
         subtitle: "Campaign is currently active",
         buttonLabel: "View Details",
@@ -78,7 +80,7 @@ export const handleCardProp = (status: string) => {
     case "paused":
       return {
         badgeLabel: "Paused",
-        badgeClass: "bg-error/5 text-error",
+        badgeClass,
         progressBarColor: "bg-error",
         subtitle: "Campaign is currently paused",
         buttonLabel: "Resume",
@@ -88,7 +90,7 @@ export const handleCardProp = (status: string) => {
     case "archived":
       return {
         badgeLabel: "Archived",
-        badgeClass: "bg-gray-100 text-gray-400",
+        badgeClass,
         progressBarColor: "bg-gray-200",
         subtitle: "Campaign is archived",
         buttonLabel: "View Details",
@@ -98,7 +100,7 @@ export const handleCardProp = (status: string) => {
     default:
       return {
         badgeLabel: status,
-        badgeClass: "bg-gray-100 text-gray-400",
+        badgeClass,
         progressBarColor: "bg-gray-200",
         subtitle: "No further action available right now",
         buttonLabel: status,

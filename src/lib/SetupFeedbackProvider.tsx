@@ -4,21 +4,26 @@ import { useAuth } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { copilotsApi } from "./api";
-import { setupFeedbackApi } from "./setup-feedback-api";
 import { canPlaceFeedback, hasFeedbackBlocker } from "./setup-feedback-dialogs";
-import { SetupFeedbackController, type FeedbackState, type FeedbackTransport } from "./setup-feedback";
+import { SETUP_FEEDBACK_VERSION, SetupFeedbackController, type FeedbackState, type FeedbackTransport } from "./setup-feedback";
+import { createPreviewFeedbackTransport } from "./setup-feedback-state";
+import { sendTestEmailWithinSchedule } from "./sending-schedule";
 import SetupFeedbackDialog from "@/components/ui/feedback/SetupFeedbackDialog";
 
 const FeedbackContext = createContext<SetupFeedbackController | null>(null);
 
-export function SetupFeedbackHost({ userId, pathname, children, enabled = true, transport = setupFeedbackApi }: {
+export function SetupFeedbackHost({ userId, pathname, children, enabled = true, transport }: {
   userId: string;
   pathname: string;
   children: ReactNode;
   enabled?: boolean;
   transport?: FeedbackTransport;
 }) {
-  const [controller] = useState(() => new SetupFeedbackController(transport));
+  const [session] = useState(() => {
+    const activeTransport = transport ?? createPreviewFeedbackTransport(userId, SETUP_FEEDBACK_VERSION);
+    return { controller: new SetupFeedbackController(activeTransport), transport: activeTransport, preview: !transport };
+  });
+  const { controller } = session;
   const snapshot = useSyncExternalStore(controller.subscribe, controller.snapshot, controller.snapshot);
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -106,7 +111,8 @@ export function SetupFeedbackHost({ userId, pathname, children, enabled = true, 
       {enabled && open && (
         <div key={userId} data-setup-feedback-root className="fixed inset-0 z-[200]">
           <SetupFeedbackDialog
-            submit={transport.submit}
+            submit={session.transport.submit}
+            preview={session.preview}
             closing={closing}
             dismissError={dismissError}
             onDismiss={() => { void dismiss(); }}
@@ -129,7 +135,9 @@ export function useSetupFeedbackActions() {
   const controller = useContext(FeedbackContext);
   const actions = useMemo(() => controller ? {
     isBusy: controller.isBusy,
-    testEmail: (prepare: () => Promise<number> | number, onAccepted: () => void) => controller.testEmail(prepare, copilotsApi.testEmail, onAccepted),
+    testEmail: (prepare: () => Promise<number> | number, onAccepted: () => void,
+      resolveSchedule: () => unknown | Promise<unknown>) => controller.testEmail(prepare,
+      (id) => sendTestEmailWithinSchedule(resolveSchedule, () => copilotsApi.testEmail(id)), onAccepted),
     launch: (operation: () => Promise<number | string>, onAccepted: (id: number | string) => void) => controller.launch(operation, onAccepted),
   } : null, [controller]);
   if (!actions) throw new Error("Setup feedback actions require the authenticated dashboard provider");

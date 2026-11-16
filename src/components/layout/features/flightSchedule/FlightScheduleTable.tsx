@@ -4,6 +4,7 @@ import { Search, Plus, Calendar } from "lucide-react";
 import FlightScheduleMenu from "@/components/ui/flightSchedule/FlightScheduleMenu";
 import CopilotStatus from "@/components/ui/CopilotStatus";
 import type { Schedule } from "@/components/ui/flightSchedule/FlightScheduleCard";
+import { formatAllDayAvailability } from "@/lib/sending-schedule";
 
 export interface FlightScheduleRow extends Schedule {
   usedBy: number;
@@ -66,7 +67,8 @@ function formatDays(days: number[]): string {
 }
 
 function formatTime(schedule: Schedule): string {
-  if (!schedule.sendingHoursActive || !schedule.sendingHours) return "24/7";
+  if (!schedule.sendingHoursActive) return formatAllDayAvailability(schedule.activeDays);
+  if (!schedule.sendingHours) return "—";
   return `${schedule.sendingHours.start} - ${schedule.sendingHours.end}`;
 }
 

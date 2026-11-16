@@ -6,7 +6,7 @@ import { Pencil, Copy, Play, Pause, Archive, Trash2, Mail } from "lucide-react";
 import { Copilot } from "@/components/layout/features/copilots/CopilotTable";
 import Link from "next/link";
 import { toast } from "sonner";
-import { copilotsApi } from "@/lib/api";
+import { copilotsApi, flightSchedulesApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
 import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
 import { useBilling } from "@/lib/useBilling";
@@ -68,6 +68,15 @@ export default function CopilotMenu({
       setSendingTest(true);
       await feedback.testEmail(() => copilot.id, () => {
         toast.success("Test email request accepted. Check your connected inbox.");
+      }, async () => {
+        if (copilot.flightScheduleId == null) return null;
+        // Read the saved schedule through the existing API; no backend changes.
+        try {
+          const { data } = await flightSchedulesApi.getById(copilot.flightScheduleId);
+          if (!data) throw new Error("Missing schedule");
+          return data;
+        }
+        catch { throw new Error("Unable to check sending hours. Please try again before sending a test email."); }
       });
     } catch (error) {
       toast.error(

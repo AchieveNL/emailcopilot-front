@@ -3,6 +3,7 @@
 import React from "react";
 import { Mail, Calendar, Clock, ShieldCheck, Globe } from "lucide-react";
 import { useCopilotStore } from "../../../../store/copilotStore";
+import { formatAllDayAvailability } from "@/lib/sending-schedule";
 
 const DEFAULT_TIMEZONE = "Europe/Brussels";
 
@@ -94,7 +95,7 @@ export default function ScheduleSideBar() {
             <p className="text-xs text-slate-500">
               {sendingHoursActive
                 ? `${fromTime} - ${toTime}`
-                : "24/7 (Any time)"}
+                : formatAllDayAvailability(activeDays)}
             </p>
           </div>
         </div>
