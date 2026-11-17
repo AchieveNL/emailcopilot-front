@@ -15,10 +15,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import ScrollFloat from "./ScrollFloat";
-import {
-  ANNUAL_DISCOUNT_PERCENT,
-  annualPriceFromMonthly,
-} from "@/lib/helpers";
 import { BILLING_SUPPORT_EMAIL } from "@/lib/billingFaq";
 
 type Billing = "monthly" | "annual";
@@ -43,6 +39,8 @@ type HomepagePlan = {
   icon: LucideIcon;
   /** Monthly price in euros. `null` = custom pricing. */
   price: number | null;
+  /** Price for 12 months when billed yearly, in euros. */
+  annualPrice?: number;
   customNote?: string;
   emails: string;
   features: string[];
@@ -58,6 +56,7 @@ const PLANS: HomepagePlan[] = [
     description: "Perfect for individuals.",
     icon: Send,
     price: 19,
+    annualPrice: 179,
     emails: "500 emails / month",
     features: [
       "1 Copilot",
@@ -86,6 +85,7 @@ const PLANS: HomepagePlan[] = [
     description: "Perfect for growing businesses.",
     icon: ChartSpline,
     price: 39,
+    annualPrice: 359,
     emails: "1,200 emails / month",
     features: [
       "3 Copilots",
@@ -115,6 +115,7 @@ const PLANS: HomepagePlan[] = [
     description: "For power users and teams",
     icon: Rocket,
     price: 79,
+    annualPrice: 719,
     emails: "3000 emails / month",
     features: [
       "8 Copilots",
@@ -198,7 +199,7 @@ const TRUST_ITEMS: { icon: LucideIcon; title: string; description: string }[] =
   ];
 
 function formatEuro(value: number) {
-  return `€${Number.isInteger(value) ? value : Math.floor(value)}`;
+  return `€${Math.round(value)}`;
 }
 
 function Pricing() {
@@ -258,7 +259,7 @@ function Pricing() {
           >
             Annual
             <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
-              Save {ANNUAL_DISCOUNT_PERCENT}%
+              Save over 20%
             </span>
           </button>
         </div>
@@ -269,12 +270,16 @@ function Pricing() {
         {PLANS.map((plan) => {
           const Icon = plan.icon;
           const t = plan.theme;
-          const price =
-            plan.price === null
-              ? null
-              : isAnnual
-                ? annualPriceFromMonthly(plan.price)
-                : plan.price;
+          const yearly =
+            isAnnual && plan.price !== null && plan.annualPrice !== undefined
+              ? {
+                  full: plan.price * 12,
+                  price: plan.annualPrice,
+                  perMonth: plan.annualPrice / 12,
+                  saved: plan.price * 12 - plan.annualPrice,
+                }
+              : null;
+          const price = yearly ? yearly.price : plan.price;
 
           return (
             <div
@@ -315,15 +320,29 @@ function Pricing() {
                   )}
                 </div>
               ) : (
-                <div className="flex items-baseline gap-1.5">
-                  <span
-                    className={`text-5xl font-bold tracking-tight ${t.price}`}
-                  >
-                    {formatEuro(price)}
-                  </span>
-                  <span className={`text-sm ${t.period}`}>
-                    {isAnnual ? "/ year" : "/ month"}
-                  </span>
+                <div>
+                  {yearly && (
+                    <p className={`text-xs line-through ${t.period}`}>
+                      {formatEuro(yearly.full)}
+                    </p>
+                  )}
+                  <div className="flex items-baseline gap-1.5">
+                    <span
+                      className={`text-5xl font-bold tracking-tight ${t.price}`}
+                    >
+                      {formatEuro(price)}
+                    </span>
+                    <span className={`text-sm ${t.period}`}>
+                      {yearly ? "/ year" : "/ month"}
+                    </span>
+                  </div>
+                  {yearly && (
+                    <p className={`mt-1 text-xs ${t.subtitle}`}>
+                      Billed once for 12 months. About{" "}
+                      {formatEuro(yearly.perMonth)} a month, you save{" "}
+                      {formatEuro(yearly.saved)}.
+                    </p>
+                  )}
                 </div>
               )}
 
