@@ -311,20 +311,20 @@ function CopilotTable({
       <div className="overflow-x-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-270px)]">
         <table className="w-full min-w-225 border-collapse ">
           <thead>
-            <tr className="sticky top-0 z-50 border-b border-[#E2E8F0] bg-[#FAFAFE]">
-              <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+            <tr className="border-b border-[#E2E8F0] bg-[#FAFAFE]">
+              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Copilots
               </th>
-              <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Workflow status
               </th>
-              <th className="whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Sent
               </th>
-              <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-[#FAFAFE] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Status
               </th>
-              <th className="w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Actions
               </th>
             </tr>
