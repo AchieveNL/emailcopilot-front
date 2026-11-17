@@ -16,7 +16,7 @@ const TEAM_LOGOS = [
 
 function TrustedTeams() {
     return (
-        <section className='flex flex-col z-0 max-w-315 w-full gap-5 my-2 overflow-hidden'>
+        <section className='flex flex-col z-0 max-w-315 w-full gap-5 my-2 overflow-hidden max-sm:pt-6!'>
             {/* make the h2 element vertically centered between the two sections */}
             <ScrollFloat
               as="h2"
