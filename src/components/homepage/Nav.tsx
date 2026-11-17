@@ -58,9 +58,9 @@ function Nav() {
               <a
                 key={l.label}
                 href={l.href}
+                className="text-[#52525e] hover:text-primary transition-colors"
                 style={{
                   fontSize: "0.875rem",
-                  color: "#52525e",
                   textDecoration: "none",
                   fontWeight: 500,
                 }}
@@ -166,9 +166,9 @@ function Nav() {
                 key={l.label}
                 href={l.href}
                 onClick={() => setMobileMenuOpen(false)}
+                className="text-[#52525e] hover:text-primary transition-colors"
                 style={{
                   fontSize: "0.875rem",
-                  color: "#52525e",
                   textDecoration: "none",
                   fontWeight: 500,
                   padding: "10px 0",
