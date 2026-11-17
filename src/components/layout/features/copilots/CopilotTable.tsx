@@ -306,13 +306,15 @@ function CopilotTable({
 
   return (
     <div
-      className={`w-full overflow-hidden rounded-lg bg-white border border-[#E2E8F0] [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col ${className}`}
+      className={`w-full overflow-hidden lg:overflow-visible rounded-lg bg-white border border-[#E2E8F0] [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col ${className}`}
     >
-      <div className="overflow-x-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-270px)]">
+      {/* On desktop the page itself scrolls, so the header row can stick to the top of the screen.
+          On smaller screens the table keeps its own scroll area (needed for horizontal scrolling). */}
+      <div className="overflow-x-auto max-lg:max-h-[calc(100dvh-270px)] lg:overflow-visible">
         <table className="w-full min-w-225 border-collapse ">
           <thead>
             <tr className="border-b border-[#E2E8F0] bg-[#FAFAFE]">
-              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 rounded-tl-lg bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Copilots
               </th>
               <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
@@ -324,7 +326,7 @@ function CopilotTable({
               <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Status
               </th>
-              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 rounded-tr-lg bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Actions
               </th>
             </tr>
