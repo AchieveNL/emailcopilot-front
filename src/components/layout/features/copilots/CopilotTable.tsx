@@ -313,20 +313,20 @@ function CopilotTable({
       <div className="overflow-x-auto max-lg:max-h-[calc(100dvh-270px)] lg:overflow-visible">
         <table className="w-full min-w-225 border-collapse ">
           <thead>
-            <tr className="border-b border-[#E2E8F0] bg-[#FAFAFE]">
-              <th className="sticky top-0 z-40 rounded-tl-lg bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+            <tr className="border-b border-[#E2E8F0] bg-white">
+              <th className="sticky top-0 z-40 rounded-tl-lg bg-white shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Copilots
               </th>
-              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 bg-white shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Workflow status
               </th>
-              <th className="sticky top-0 z-40 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 bg-white shadow-[inset_0_-1px_0_#E2E8F0] whitespace-nowrap px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Sent
               </th>
-              <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="whitespace-nowrap sticky right-0 top-0 z-50 bg-white shadow-[inset_0_-1px_0_#E2E8F0] px-5 py-2.5 text-left uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Status
               </th>
-              <th className="sticky top-0 z-40 rounded-tr-lg bg-[#FAFAFE] shadow-[inset_0_-1px_0_#E2E8F0] w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
+              <th className="sticky top-0 z-40 rounded-tr-lg bg-white shadow-[inset_0_-1px_0_#E2E8F0] w-16 px-5 py-2.5 text-right uppercase font-normal text-xs leading-5 text-[#94A3B8]">
                 Actions
               </th>
             </tr>
