@@ -21,7 +21,7 @@ const TRUST_ITEMS = [
         strokeWidth={2.5}
       />
     ),
-    label: "Free trial available",
+    label: "Cancel anytime",
   },
   {
     icon: (
