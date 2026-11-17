@@ -23,7 +23,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right — centred on mobile, allow overflow for floating elements */}
-        <div className="flex  justify-center lg:justify-end overflow-visible">
+        <div className="flex justify-center lg:justify-end overflow-visible lg:mt-20">
           <div className="w-full relative max-w-[420px] sm:max-w-[500px] lg:max-w-[560px]">
             {/* Decorative floating orb */}
             {/* <div className="absolute top-1/4 -right-16 lg:top-1/4 w-90 h-90 md:w-100 md:h-100 -translate-y-1/2  pointer-events-none z-0">
