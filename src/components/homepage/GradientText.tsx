@@ -146,6 +146,8 @@ export default function GradientText({
           ...gradientStyle,
           backgroundPosition,
           WebkitBackgroundClip: "text",
+          // Extra room so descenders (g, y, p) are not cut off by background-clip.
+          paddingBottom: "0.15em",
         }}
       >
         {children}
