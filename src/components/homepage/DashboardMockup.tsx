@@ -194,7 +194,10 @@ export default function DashboardMockup() {
       role="img"
       aria-label="EmailCopilot dashboard"
     >
+      {/* Absolutely positioned so the unscaled 1110×690 box doesn't stretch the
+          wrapper's layout height — the wrapper's aspect-ratio sets the real height. */}
       <div
+        className="absolute left-0 top-0"
         style={{
           width: BASE_WIDTH,
           height: BASE_HEIGHT,

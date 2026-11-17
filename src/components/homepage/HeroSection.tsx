@@ -36,7 +36,7 @@ export default function HeroSection() {
               />
             </div> */}
             <HeroVisuals />
-            <div className="w-full relative h-54 sm:h-62 opacity-10 ">
+            <div className="w-full relative h-28 sm:h-62 opacity-10 ">
               <div className="absolute z-9999999999 right-0 h-full w-1/2 bg-linear-to-l from-primary-light to-transparent" />
               <Threads
                 amplitude={2.7}

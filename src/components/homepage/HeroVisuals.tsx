@@ -3,7 +3,7 @@ import DashboardMockup from "./DashboardMockup";
 
 function HeroVisuals() {
   return (
-    <div className="relative w-full animate-[fadeUp_0.7s_0.15s_ease_both] aspect-square sm:aspect-[4/3] lg:aspect-auto lg:h-[560px]">
+    <div className="relative w-full animate-[fadeUp_0.7s_0.15s_ease_both] aspect-[8/7] sm:aspect-[4/3] lg:aspect-auto lg:h-[560px]">
       {/* Subtle glow blob — neutral, not blue */}
       <div
         className="
