@@ -12,7 +12,7 @@ export default function HeroSection() {
         px-5 sm:px-6 lg:px-4
         pt-10 pb-0 mt-6
         sm:pt-16 sm:pb-14 sm:mt-10
-        lg:pt-20 lg:pb-15
+        lg:pt-20 lg:pb-4
         min-h-[calc(100vh-73px)] lg:min-h-auto
         
       "
