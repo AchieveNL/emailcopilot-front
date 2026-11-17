@@ -130,6 +130,10 @@ select:focus {
 .btn-cta {
   background: var(--btn-gradient);
   background-size: 200% 200%;
+  /* Start the gradient under the (transparent) border and never tile it,
+     otherwise a turquoise sliver of the repeated gradient shows on the left edge. */
+  background-origin: border-box;
+  background-repeat: no-repeat;
   color: var(--btn-text-color);
 }
 .btn-cta:hover {
@@ -143,6 +147,8 @@ select:focus {
     var(--color-primary)
   );
   background-size: 300% 300%;
+  background-origin: border-box;
+  background-repeat: no-repeat;
   border: 1px solid transparent;
   color: var(--btn-text-color);
 }
