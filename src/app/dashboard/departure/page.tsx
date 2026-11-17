@@ -350,41 +350,41 @@ function LeadsPageContent() {
       ) : (
         <>
           <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden mb-6 [@media(min-height:1081px)]:flex [@media(min-height:1081px)]:flex-1 [@media(min-height:1081px)]:flex-col">
-            <div className="overflow-auto [@media(min-height:1081px)]:flex-1 [@media(max-height:1080px)]:max-h-[calc(100dvh-320px)]">
+            <div className="overflow-auto max-h-[calc(100dvh-320px)]">
               <table className="w-full text-sm min-w-225">
                 <thead>
-                  <tr className="border-b sticky top-0 z-40 border-[#E2E8F0] bg-white">
-                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                  <tr className="border-b border-[#E2E8F0] bg-white">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Copilot
                     </th>
-                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Company
                     </th>
-                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Address
                     </th>
-                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Website
                     </th>
-                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Email
                     </th>
-                    <th className=" font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Phone
                     </th>
-                    <th className="font-normal text-left text-xs leading-5 bg-white text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 bg-white text-[#94A3B8] px-6 py-3">
                       Target Audience
                     </th>
-                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Departured at
                     </th>
-                    <th className="font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5 text-[#94A3B8] px-6 py-3">
                       Template
                     </th>
-                    <th className="font-normal text-left text-xs leading-5  text-[#94A3B8] px-6 py-3">
+                    <th className="sticky top-0 z-30 bg-white shadow-[inset_0_-1px_0_#E2E8F0] font-normal text-left text-xs leading-5  text-[#94A3B8] px-6 py-3">
                       Status
                     </th>
-                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white">
+                    <th className="font-semibold text-gray-900 px-6 py-5 z-40 sticky top-0 right-0 bg-white shadow-[inset_0_-1px_0_#E2E8F0]">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
