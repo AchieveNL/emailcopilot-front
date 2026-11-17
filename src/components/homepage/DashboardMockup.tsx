@@ -208,7 +208,7 @@ export default function DashboardMockup() {
           style={{
             transform: "rotateY(-9deg) rotateX(5deg) rotateZ(-1deg)",
             // Stacked hard shadows give the card a visible edge (slab look),
-            // matching the 3D inbox card; the last two are the soft drop shadow.
+            // matching the 3D inbox card. No soft drop shadow behind it.
             boxShadow: [
               "1px 1px 0 #eceef4",
               "2px 2px 0 #e8ebf2",
@@ -218,8 +218,6 @@ export default function DashboardMockup() {
               "6px 6px 0 #dce0ea",
               "7px 7px 0 #d9dde8",
               "8px 8px 0 #d6dae6",
-              "0 30px 60px -20px rgba(15,23,42,.30)",
-              "14px 18px 40px rgba(15,23,42,.10)",
             ].join(", "),
             fontFamily: "'DM Sans', system-ui, sans-serif",
           }}
