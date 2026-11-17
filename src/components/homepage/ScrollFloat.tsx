@@ -76,6 +76,9 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
             style={{
               display: "inline-flex",
               verticalAlign: "baseline",
+              // Highlighted words use the display serif, like "autopilot" in the hero.
+              fontFamily: "'DM Serif Display', serif",
+              fontWeight: 400,
             }}
             colors={["#4f46e5", "#2563eb", "#06b6d4"]}
             animationSpeed={3}
