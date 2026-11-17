@@ -11,7 +11,7 @@ const TRUST_ITEMS = [
         strokeWidth={2.5}
       />
     ),
-    label: "No credit card",
+    label: "Your own inbox",
   },
   {
     icon: (
