@@ -18,9 +18,11 @@ function TrustedTeams() {
     return (
         <section className='flex flex-col z-0 max-w-315 w-full gap-5 my-2 overflow-hidden'>
             {/* make the h2 element vertically centered between the two sections */}
-            <ScrollFloat 
-              containerClassName="text-2xl font-bold text-center mb-10 flex justify-center" 
-              textClassName="text-2xl font-bold"
+            <ScrollFloat
+              as="h2"
+              containerClassName="text-6xl text-gray-900 leading-tight text-center mb-10 flex justify-center w-full"
+              textClassName="text-6xl leading-tight text-gray-900"
+              style={{ fontFamily: "DM Serif Display", fontWeight: "normal" }}
             >
               Trusted by growth-focused teams worldwide
             </ScrollFloat>
