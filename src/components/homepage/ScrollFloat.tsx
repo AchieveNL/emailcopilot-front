@@ -79,6 +79,8 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
               // Highlighted words use the display serif, like "autopilot" in the hero.
               fontFamily: "'DM Serif Display', serif",
               fontWeight: 400,
+              // Cancels the descender padding inside GradientText so line spacing stays the same.
+              marginBottom: "-0.15em",
             }}
             colors={["#4f46e5", "#2563eb", "#06b6d4"]}
             animationSpeed={3}
@@ -187,7 +189,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
       `}</style>
       <Tag
         ref={containerRef as any}
-        className={`my-5 overflow-hidden ${containerClassName}`}
+        className={`my-5 overflow-hidden pb-[0.2em] ${containerClassName}`}
         style={style}
       >
         <span
