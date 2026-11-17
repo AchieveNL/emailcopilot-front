@@ -392,7 +392,7 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative py-16 px-4 max-w-315 w-full overflow-hidden"
+      className="relative py-16 lg:pt-[132px] px-4 max-w-315 w-full overflow-hidden"
     >
       {/* Decorative dot grid (top-left) */}
       <div
