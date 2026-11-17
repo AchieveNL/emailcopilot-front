@@ -44,7 +44,7 @@ function PricingCard() {
         <div className="flex items-center gap-2">
           <StepBadge number={1} color="primary" />
           <span className="text-[13.5px] font-bold text-primary">
-            Starting at €9/month
+            Starting at €19/month
           </span>
         </div>
 
@@ -54,7 +54,7 @@ function PricingCard() {
               <sup className="text-xl font-semibold align-top mt-2 inline-block">
                 €
               </sup>
-              9
+              19
             </span>
             <span className="text-sm text-gray-500 font-normal">/ month</span>
           </div>
