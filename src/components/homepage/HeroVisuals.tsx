@@ -1,4 +1,5 @@
 import { TrendingUp } from "lucide-react";
+import DashboardMockup from "./DashboardMockup";
 
 function HeroVisuals() {
   return (
@@ -26,11 +27,9 @@ function HeroVisuals() {
 
       {/* Dashboard card */}
       <div className="w-full relative z-[1]">
-        <img
-          src="/dashboard.png"
-          alt="EmailCopilot Dashboard"
-          className="w-full h-auto rounded-xl sm:rounded-[20px]  animate-[floatA_5s_ease-in-out_infinite] block object-contain"
-        />
+        <div className="w-full animate-[floatA_5s_ease-in-out_infinite]">
+          <DashboardMockup />
+        </div>
       </div>
 
       {/* Inbox card */}
