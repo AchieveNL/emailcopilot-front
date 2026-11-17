@@ -42,18 +42,19 @@ function Testimonials() {
         </div>
 
         {/* Active testimonial */}
-        <div style={{ position: "relative", minHeight: 200 }}>
+        {/* All cards share one grid cell, so the box is as tall as the longest
+            quote and the page doesn't jump when the testimonial rotates. */}
+        <div className="grid">
           {TESTIMONIALS.map((t, i) => (
             <BorderGlow
               key={t.name}
-              className="testimonial-card top-0 left-0 right-0"
+              className="testimonial-card [grid-area:1/1]"
               borderRadius={16}
               showShadow={false}
               backgroundColor="#ffffff"
               colors={["#4f46e5", "#2563eb", "#06b6d4"]}
               glowColor="#2563eb"
               style={{
-                position: i === activeTestimonial ? "relative" : "absolute",
                 opacity: i === activeTestimonial ? 1 : 0,
                 transform:
                   i === activeTestimonial
@@ -63,7 +64,7 @@ function Testimonials() {
                 pointerEvents: i === activeTestimonial ? "auto" : "none",
               }}
             >
-              <div className="relative z-10 flex items-center flex-col gap-5 p-10 flex-1">
+              <div className="relative z-10 flex items-center flex-col gap-5 p-2 sm:p-10 flex-1 h-full justify-center">
                 <div className="flex gap-1.5">
                   <Star size={20} className="text-yellow-400 fill-yellow-400" />
                   <Star size={20} className="text-yellow-400 fill-yellow-400" />
@@ -83,7 +84,7 @@ function Testimonials() {
                 ></div>
                 <div style={{ flex: 1 }}>
                   <p
-                    className="text-xl text-gray-900 mb-6 italic text-center"
+                    className="text-lg sm:text-xl text-gray-900 mb-6 italic text-center"
                     style={{ lineHeight: 1.7 }}
                   >
                     {t.quote}

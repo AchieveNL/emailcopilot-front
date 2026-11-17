@@ -90,13 +90,13 @@ export default function TermsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className='max-w-315 w-full m-auto mt-32'
+            className='max-w-315 w-full m-auto mt-24 sm:mt-32 px-5 sm:px-6 lg:px-4 pb-16'
         >
             <div className="mb-12">
                 <div className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-bold tracking-wider uppercase rounded-full mb-4">
                     Agreement Terms
                 </div>
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
                     General Terms & Conditions
                 </h1>
                 <p className="text-gray-500 text-lg leading-relaxed max-w-2xl">
@@ -106,7 +106,7 @@ export default function TermsPage() {
 
             <div className="grid gap-8">
                 {sections.map((section, idx) => (
-                    <section key={idx} className="p-6 border border-gray-100 rounded-2xl hover:border-blue-100 transition-colors">
+                    <section key={idx} className="p-5 sm:p-6 max-md:p-5! border border-gray-100 rounded-2xl hover:border-blue-100 transition-colors">
                         <h2 className="text-lg font-bold mb-3">
                             {section.title}
                         </h2>

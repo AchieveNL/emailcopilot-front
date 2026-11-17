@@ -66,13 +66,13 @@ export default function PrivacyPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className='max-w-315 w-full m-auto mt-32'
+            className='max-w-315 w-full m-auto mt-24 sm:mt-32 px-5 sm:px-6 lg:px-4 pb-16'
         >
             <div className="mb-12">
                 <div className="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold tracking-wider uppercase rounded-full mb-4">
                     Legal Statement
                 </div>
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
                     Privacy Policy
                 </h1>
                 <p className="text-gray-500 text-lg leading-relaxed max-w-2xl">
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
 
             <div className="space-y-12">
                 {sections.map((section, idx) => (
-                    <section key={idx} className="group">
+                    <section key={idx} className="group max-md:p-0!">
                         <h2 className="text-xl font-bold mb-3 flex items-center gap-3">
                             <span className="text-blue-200 group-hover:text-blue-500 transition-colors">
                                 {section.title.split('.')[0]}.
