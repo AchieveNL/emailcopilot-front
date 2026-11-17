@@ -246,7 +246,7 @@ function Pricing() {
   return (
     <section
       id="pricing"
-      className="py-20 px-4 z-0 max-w-315 w-full mx-auto"
+      className="pt-20 pb-4 px-4 z-0 max-w-315 w-full mx-auto"
     >
       <div className="text-center mb-8 flex flex-col items-center justify-center">
         <ScrollFloat
