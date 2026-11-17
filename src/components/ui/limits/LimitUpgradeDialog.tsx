@@ -168,7 +168,7 @@ export default function LimitUpgradeDialog({
               <Link
                 href={`/dashboard/billing?upgrade=${reason}`}
                 onClick={onClose}
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+                className="btn-cta inline-flex items-center gap-2 rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold text-white"
               >
                 Go to Billing <ArrowRight size={15} />
               </Link>
@@ -177,7 +177,7 @@ export default function LimitUpgradeDialog({
             <button
               type="button"
               onClick={onClose}
-              className="ml-auto rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="btn-cta ml-auto rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold text-white"
             >
               Got it
             </button>
