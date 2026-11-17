@@ -20,8 +20,7 @@ function Footer() {
               href="https://www.achieve.nl"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "#a0a0b0" }}
-              className="hover:text-gray-700 transition"
+              className="text-[#a0a0b0] hover:text-primary transition-colors"
             >
               Achieve.nl
             </a>{" "}
@@ -33,24 +32,24 @@ function Footer() {
             <div className="flex flex-col md:flex-row items-start lg:items-center gap-3 lg:gap-6">
               <Link href="/terms">
                 <span
-                  className=" hover:text-gray-700 transition"
-                  style={{ fontSize: "0.8rem", color: "#a0a0b0" }}
+                  className="text-[#a0a0b0] hover:text-primary transition-colors"
+                  style={{ fontSize: "0.8rem" }}
                 >
                   General terms
                 </span>
               </Link>
               <Link href="/disclaimer">
                 <span
-                  className=" hover:text-gray-700 transition"
-                  style={{ fontSize: "0.8rem", color: "#a0a0b0" }}
+                  className="text-[#a0a0b0] hover:text-primary transition-colors"
+                  style={{ fontSize: "0.8rem" }}
                 >
                   Disclaimer
                 </span>
               </Link>
               <Link href="/privacy">
                 <span
-                  className=" hover:text-gray-700 transition"
-                  style={{ fontSize: "0.8rem", color: "#a0a0b0" }}
+                  className="text-[#a0a0b0] hover:text-primary transition-colors"
+                  style={{ fontSize: "0.8rem" }}
                 >
                   Privacy Statement
                 </span>
