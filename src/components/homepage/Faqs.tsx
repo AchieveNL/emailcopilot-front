@@ -25,10 +25,9 @@ function Faqs() {
         <div className="text-center mb-10 flex flex-col items-center justify-center">
           <ScrollFloat
             as="h2"
-            containerClassName="text-6xl text-gray-900 leading-tight flex justify-center w-full"
-            textClassName="text-6xl leading-tight text-gray-900"
+            containerClassName="text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08] tracking-[-0.03em] font-serif font-medium text-[#0f0f12] flex justify-center w-full"
+            textClassName="text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08] tracking-[-0.03em] font-serif font-medium text-[#0f0f12]"
             highlightWords={["questions"]}
-            style={{ fontFamily: "DM Serif Display", fontWeight: "normal" }}
           >
             Common questions before departure
           </ScrollFloat>
