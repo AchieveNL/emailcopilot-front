@@ -30,6 +30,7 @@ type Theme = {
   badge: string;
   check: string;
   feature: string;
+  infoIcon: string;
   cta: string;
 };
 
@@ -77,6 +78,7 @@ const PLANS: HomepagePlan[] = [
       badge: "bg-indigo-50 text-indigo-600",
       check: "text-indigo-600",
       feature: "text-gray-700",
+      infoIcon: "bg-indigo-600 text-white",
       cta: "bg-indigo-50 text-indigo-600 hover:bg-indigo-100",
     },
   },
@@ -107,6 +109,7 @@ const PLANS: HomepagePlan[] = [
       badge: "bg-white/20 text-white",
       check: "text-white",
       feature: "text-white",
+      infoIcon: "bg-white text-indigo-600",
       cta: "bg-white text-indigo-600 hover:bg-indigo-50",
     },
   },
@@ -136,6 +139,7 @@ const PLANS: HomepagePlan[] = [
       badge: "bg-cyan-50 text-cyan-600",
       check: "text-cyan-500",
       feature: "text-gray-700",
+      infoIcon: "bg-cyan-500 text-white",
       cta: "bg-cyan-50 text-cyan-600 hover:bg-cyan-100",
     },
   },
@@ -165,6 +169,7 @@ const PLANS: HomepagePlan[] = [
       badge: "bg-white text-gray-900 border border-gray-200",
       check: "text-gray-700",
       feature: "text-gray-700",
+      infoIcon: "bg-gray-700 text-white",
       cta: "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50",
     },
   },
@@ -197,6 +202,38 @@ const TRUST_ITEMS: { icon: LucideIcon; title: string; description: string }[] =
         "We spread your sends across the month so your messages land in the inbox, not in spam.",
     },
   ];
+
+/** Short explanations shown behind the (i) icon next to a feature. */
+const FEATURE_INFO: { match: RegExp; text: string }[] = [
+  {
+    match: /copilot/i,
+    text: "A Copilot is one automated outreach campaign. It finds businesses that match your target audience and sends them personalised emails from your own email account, on your schedule.",
+  },
+];
+
+function featureInfo(feature: string) {
+  return FEATURE_INFO.find((info) => info.match.test(feature))?.text;
+}
+
+function InfoTooltip({ text, iconClass }: { text: string; iconClass: string }) {
+  return (
+    <span className="group relative inline-flex">
+      <button
+        type="button"
+        aria-label="More information"
+        className={`inline-flex h-4 w-4 cursor-help items-center justify-center rounded-full font-serif text-[10px] font-bold leading-none ${iconClass}`}
+      >
+        i
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-60 -translate-x-1/2 rounded-lg bg-gray-900 px-3 py-2 text-left text-xs font-normal leading-relaxed text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+      >
+        {text}
+      </span>
+    </span>
+  );
+}
 
 function formatEuro(value: number) {
   return `€${Math.round(value)}`;
@@ -357,12 +394,16 @@ function Pricing() {
 
               {/* Features */}
               <ul className="mt-5 flex flex-1 flex-col gap-3">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2.5">
-                    <CircleCheck size={16} className={`shrink-0 ${t.check}`} />
-                    <span className={`text-xs ${t.feature}`}>{feature}</span>
-                  </li>
-                ))}
+                {plan.features.map((feature) => {
+                  const info = featureInfo(feature);
+                  return (
+                    <li key={feature} className="flex items-center gap-2.5">
+                      <CircleCheck size={16} className={`shrink-0 ${t.check}`} />
+                      <span className={`text-xs ${t.feature}`}>{feature}</span>
+                      {info && <InfoTooltip text={info} iconClass={t.infoIcon} />}
+                    </li>
+                  );
+                })}
               </ul>
 
               {/* CTA */}
