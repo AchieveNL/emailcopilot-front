@@ -204,11 +204,23 @@ export default function DashboardMockup() {
         }}
       >
         <div
-          className="flex h-full w-full overflow-hidden rounded-[18px] border border-gray-200 bg-gray-50 text-gray-900 select-none"
+          className="flex h-full w-full overflow-hidden rounded-[18px] border-[3px] border-white bg-gray-50 outline outline-1 outline-gray-200 text-gray-900 select-none"
           style={{
             transform: "rotateY(-9deg) rotateX(5deg) rotateZ(-1deg)",
-            boxShadow:
-              "0 30px 60px -20px rgba(15,23,42,.25), 0 8px 20px rgba(15,23,42,.06)",
+            // Stacked hard shadows give the card a visible edge (slab look),
+            // matching the 3D inbox card; the last two are the soft drop shadow.
+            boxShadow: [
+              "1px 1px 0 #eceef4",
+              "2px 2px 0 #e8ebf2",
+              "3px 3px 0 #e5e8f0",
+              "4px 4px 0 #e2e5ee",
+              "5px 5px 0 #dfe3ec",
+              "6px 6px 0 #dce0ea",
+              "7px 7px 0 #d9dde8",
+              "8px 8px 0 #d6dae6",
+              "0 30px 60px -20px rgba(15,23,42,.30)",
+              "14px 18px 40px rgba(15,23,42,.10)",
+            ].join(", "),
             fontFamily: "'DM Sans', system-ui, sans-serif",
           }}
         >
