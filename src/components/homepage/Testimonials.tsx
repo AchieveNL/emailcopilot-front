@@ -19,7 +19,7 @@ function Testimonials() {
     <section
       id="testimonials"
       className="max-w-315 w-full z-0 "
-      style={{ padding: "100px 2rem", overflow: "hidden" }}
+      style={{ padding: "51px 2rem 100px", overflow: "hidden" }}
     >
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <div className="text-center mb-10 flex flex-col items-center justify-center">
