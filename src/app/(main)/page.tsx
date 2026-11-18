@@ -5,6 +5,7 @@ import HowItWorks from "@/components/homepage/HowItWorks";
 import Pricing from "@/components/homepage/Pricing";
 import Testimonials from "@/components/homepage/Testimonials";
 import TrustedTeams from "@/components/homepage/TrustedTeams";
+import WhatIsCopilot from "@/components/homepage/WhatIsCopilot";
 import Ribbons from "@/components/homepage/Ribbons";
 
 export default function HomePage() {
@@ -34,6 +35,7 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <HeroSection />
       <TrustedTeams />
+      <WhatIsCopilot />
       <HowItWorks />
 
       {/* ── Testimonials ── */}
