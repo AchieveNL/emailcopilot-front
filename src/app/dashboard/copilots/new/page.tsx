@@ -22,7 +22,7 @@ import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
 import LaunchSideBar from "@/components/ui/NewCopilot/StepSix/LaunchSideBar";
 import { apiErrorMessage, getBrowserTimeZone } from "@/lib/helpers";
-import { copilotQuota } from "@/lib/limits";
+import { copilotQuota, isCopilotLimitError } from "@/lib/limits";
 import { useBilling } from "@/lib/useBilling";
 import { toast } from "sonner";
 
@@ -220,11 +220,17 @@ function NewCopilotPageContent() {
   // opens the upgrade dialog instead of letting them fill the whole wizard
   // only to hit the backend's "Plan limit reached" error at save time.
   useEffect(() => {
+    if (limits && !limits.hasActivePlan) {
+      if (searchParams.get("edit") || searchParams.get("duplicate")) return;
+      router.replace("/dashboard/billing?required=plan");
+      return;
+    }
+
     if (!quota?.atLimit) return;
     if (searchParams.get("edit") || searchParams.get("duplicate")) return;
 
     router.replace("/dashboard/copilots?limit=copilots");
-  }, [quota?.atLimit, searchParams, router]);
+  }, [limits, quota?.atLimit, searchParams, router]);
 
   const getPageTitle = () => {
     if (mode === "edit") return "Edit Copilot";
@@ -237,7 +243,12 @@ function NewCopilotPageContent() {
       await persistDraft();
       toast.success("Draft saved — you can launch anytime.");
       router.push("/dashboard/copilots");
-    } catch {
+    } catch (error) {
+      // Saving a draft creates the copilot, so the same plan limit applies.
+      if (isCopilotLimitError(error)) {
+        router.push("/dashboard/copilots?limit=copilots");
+        return;
+      }
       toast.error("Failed to save draft. Please try again.");
     }
   }, [persistDraft, router]);
@@ -269,6 +280,12 @@ function NewCopilotPageContent() {
       resetStore();
       router.push("/dashboard/copilots");
     } catch (error) {
+      // Backend fallback for the copilot allowance: show the upgrade dialog
+      // instead of a generic failure.
+      if (isCopilotLimitError(error)) {
+        router.push("/dashboard/copilots?limit=copilots");
+        return;
+      }
       toast.error(apiErrorMessage(error, "Failed to launch copilot. Please try again."));
     } finally {
       setLaunching(false);

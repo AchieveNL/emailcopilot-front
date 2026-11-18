@@ -86,6 +86,11 @@ export function useBilling() {
                 throw err;
             }
         },
+        // A pending checkout becomes active through the Mollie webhook, which
+        // can land after the browser returns. Poll until it is confirmed so the
+        // user leaves the billing-only state without a manual reload.
+        refetchInterval: (query) =>
+            query.state.data?.status === "pending" ? 10_000 : false,
     });
 
     const invoicesQuery = useQuery<Invoice[]>({
@@ -96,6 +101,9 @@ export function useBilling() {
     const limitsQuery = useQuery<LimitsResponse>({
         queryKey: billingKeys.limits(),
         queryFn: () => billingApi.getLimits().then((r) => r.data),
+        // Keep the gate in sync with a pending payment being confirmed.
+        refetchInterval: () =>
+            subscriptionQuery.data?.status === "pending" ? 10_000 : false,
     });
 
     // ── Mutations ────────────────────────────────────────────────────────────────
@@ -141,6 +149,11 @@ export function useBilling() {
 
     const subscription = subscriptionQuery.data ?? null;
     const plans = plansQuery.data ?? [];
+    const limits = limitsQuery.data ?? null;
+    // Authoritative access check: matches the backend's isSubscriptionUsable,
+    // unlike the raw subscription status which keeps reporting "active" for an
+    // expired or still-pending row.
+    const hasActivePlan = limits?.hasActivePlan === true;
 
     // Unified loading — true until all four queries have settled at least once
     const loading =
@@ -165,10 +178,13 @@ export function useBilling() {
         plans,
         subscription,
         invoices: invoicesQuery.data ?? [],
-        limits: limitsQuery.data ?? null,
+        limits,
+        hasActivePlan,
 
         // ── State ─────────────────────────────────────────────────────────────────
         loading,
+        limitsLoading: limitsQuery.isLoading,
+        limitsError: (limitsQuery.error as Error | null)?.message ?? null,
         error,
 
         // ── Actions ───────────────────────────────────────────────────────────────

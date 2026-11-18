@@ -25,6 +25,9 @@ export default function BillingPage() {
     subscribe,
     cancel,
     updatePaymentMethod,
+    refresh,
+    refetchLimits,
+    hasActivePlan,
     hasSubscription,
     isPending,
     isCanceling,
@@ -115,9 +118,28 @@ export default function BillingPage() {
       )}
 
       {isPending && (
-        <div className="mb-6 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
-          Your payment is still being processed. This page updates as soon as
-          it&apos;s confirmed.
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
+          <span className="min-w-0 flex-1">
+            Your payment is still being processed. This page updates as soon as
+            it&apos;s confirmed.
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              refetchLimits();
+              refresh();
+            }}
+            className="shrink-0 rounded-lg border border-warning/30 bg-white px-3 py-1.5 text-xs font-semibold text-warning transition-colors hover:bg-warning/5"
+          >
+            Refresh status
+          </button>
+        </div>
+      )}
+
+      {!hasActivePlan && !hasSubscription && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          An active plan is required to use the dashboard. Choose a plan below
+          to get started.
         </div>
       )}
 

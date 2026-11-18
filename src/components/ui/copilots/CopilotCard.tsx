@@ -155,6 +155,10 @@ function CopilotCard({
   const mailTiers = higherTiers(plans, currentPlanId(limits));
   const router = useRouter();
   const handleResume = async () => {
+    if (limits && !limits.hasActivePlan) {
+      router.push("/dashboard/billing?required=plan");
+      return;
+    }
     if (mailQuota?.atLimit) {
       setShowEmailLimit(true);
       return;
