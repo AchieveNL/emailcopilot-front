@@ -36,7 +36,7 @@ const FEATURES = [
 
 function WhatIsCopilot() {
   return (
-    <section className="w-full bg-[#eef0fd] mt-16 py-16 sm:py-20 px-5">
+    <section className="w-full bg-blue-50 mt-16 py-16 sm:py-20 px-5">
       <div className="max-w-5xl mx-auto flex flex-col gap-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10 items-center">
           <div className="flex flex-col gap-4">
@@ -56,14 +56,14 @@ function WhatIsCopilot() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#e3e5f5] p-6 flex flex-col gap-4">
+          <div className="bg-white rounded-2xl border border-blue-100 p-6 flex flex-col gap-4">
             <span className="text-[11px] font-semibold tracking-[0.08em] uppercase text-[#0f0f12]">
               One Copilot, three moves
             </span>
             <ol className="flex flex-col gap-4">
               {STEPS.map((step, i) => (
                 <li key={step.title} className="flex gap-3">
-                  <span className="w-6 h-6 rounded-md bg-primary-light text-primary text-xs font-semibold flex items-center justify-center shrink-0">
+                  <span className="w-6 h-6 rounded-md bg-blue-100/60 text-primary text-xs font-semibold flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
                   <div className="flex flex-col">
@@ -84,9 +84,9 @@ function WhatIsCopilot() {
           {FEATURES.map(({ icon: Icon, title, text }) => (
             <div
               key={title}
-              className="bg-white rounded-2xl border border-[#e3e5f5] p-6 flex flex-col gap-3"
+              className="bg-white rounded-2xl border border-blue-100 p-6 flex flex-col gap-3"
             >
-              <span className="w-9 h-9 rounded-lg bg-primary-light text-primary flex items-center justify-center">
+              <span className="w-9 h-9 rounded-lg bg-blue-100/60 text-primary flex items-center justify-center">
                 <Icon className="w-4 h-4" />
               </span>
               <h3 className="text-[15px] font-semibold text-[#0f0f12] mt-1">
