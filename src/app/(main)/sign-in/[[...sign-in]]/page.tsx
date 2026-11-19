@@ -1,7 +1,17 @@
 import Logo from "@/components/homepage/Logo";
+import { billingRedirectFromSearchParams } from "@/lib/billingIntent";
 import { SignIn } from "@clerk/nextjs";
 
-export default function SignInPage() {
+interface SignInPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const params = await searchParams;
+  const redirectUrl =
+    billingRedirectFromSearchParams(params.plan, params.interval) ??
+    "/dashboard";
+
   return (
     <div
       style={{
@@ -54,7 +64,7 @@ export default function SignInPage() {
       >
         {/* Logo */}
         <Logo />
-        <SignIn  />
+        <SignIn forceRedirectUrl={redirectUrl} />
       </div>
     </div>
   );

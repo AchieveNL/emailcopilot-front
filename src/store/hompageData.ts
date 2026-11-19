@@ -1,5 +1,4 @@
 import {
-  Send,
   Search,
   Mail,
   ListChecks,
@@ -9,8 +8,6 @@ import {
   MessageSquare,
   Database,
   Link as LinkIcon,
-  ChartSpline,
-  Rocket,
 } from "lucide-react";
 
 export const FEATURES = [
@@ -137,62 +134,4 @@ export const INTEGRATIONS = [
   { name: "HubSpot", icon: Database, color: "#ff7a59" },
   { name: "Notion", icon: Database, color: "#000000" },
   { name: "Webhooks", icon: LinkIcon, color: "#6366f1" },
-];
-
-export const PLANS = [
-  {
-    name: "Economy",
-    description: "Perfect for beginners",
-    icon: Send,
-    bgcolor: "#F5F3FF",
-    textcolor: "#4F46E5",
-    price: "€9",
-    estimated: "250 emails (~8/days)",
-    tag: null,
-    volume: "250 emails · ~8/day",
-    features: [
-      "1 Copilot",
-      "1 SMTP account",
-      "Standard delivery speed",
-      "No data export",
-    ],
-    cta: "Subscribe now",
-  },
-  {
-    name: "Business Class",
-    description: "Best for growing business",
-    icon: ChartSpline,
-    bgcolor: "#EFF6FF",
-    textcolor: "#2563EB",
-    price: "€19",
-    estimated: "750 emails (~25/days)",
-    tag: "Most popular",
-    volume: "750 emails · ~25/day",
-    features: [
-      "3 Copilots",
-      "3 SMTP accounts",
-      "Faster delivery speed",
-      "Limited data export",
-    ],
-    cta: "Subscribe now",
-    highlight: true,
-  },
-  {
-    name: "First Class",
-    description: "For large teams & agencies",
-    icon: Rocket,
-    bgcolor: "#F0FDFF",
-    textcolor: "#06B6D4",
-    price: "€39",
-    estimated: "2,000 emails (~65/days)",
-    tag: null,
-    volume: "2,000 emails · ~65/day",
-    features: [
-      "Unlimited Copilots",
-      "Unlimited SMTP accounts",
-      "Priority delivery speed",
-      "Full data export",
-    ],
-    cta: "Subscribe now",
-  },
 ];

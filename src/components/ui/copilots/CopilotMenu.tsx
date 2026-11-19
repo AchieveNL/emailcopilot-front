@@ -9,7 +9,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { copilotsApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/helpers";
-import { currentPlanId, emailQuota, higherTiers } from "@/lib/limits";
+import {
+  currentPlanId,
+  emailQuota,
+  higherTiers,
+  isCopilotLimitError,
+} from "@/lib/limits";
 import { useBilling } from "@/lib/useBilling";
 import EmailLimitDialog from "@/components/ui/limits/EmailLimitDialog";
 
@@ -25,7 +30,9 @@ export default function CopilotMenu({
   const [runningScrape, setRunningScrape] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
   const [showEmailLimit, setShowEmailLimit] = useState(false);
+  const router = useRouter();
   const { limits, plans } = useBilling();
+  const hasNoActivePlan = !!limits && !limits.hasActivePlan;
   const mailQuota = emailQuota(limits);
   const mailTiers = higherTiers(plans, currentPlanId(limits));
   const showLaunchButton =
@@ -78,6 +85,10 @@ export default function CopilotMenu({
 
   async function toggleStatus(next: "active" | "paused") {
     if (next === "active" && !isComplete) return;
+    if (next === "active" && hasNoActivePlan) {
+      router.push("/dashboard/billing?required=plan");
+      return;
+    }
     if (next === "active" && mailQuota?.atLimit) {
       setShowEmailLimit(true);
       return;
@@ -93,6 +104,10 @@ export default function CopilotMenu({
 
   async function handleRunScrape() {
     if (!isComplete) return;
+    if (hasNoActivePlan) {
+      router.push("/dashboard/billing?required=plan");
+      return;
+    }
     if (mailQuota?.atLimit) {
       setShowEmailLimit(true);
       return;
@@ -133,6 +148,10 @@ export default function CopilotMenu({
   }
 
   function handleDuplicate() {
+    if (hasNoActivePlan) {
+      router.push("/dashboard/billing?required=plan");
+      return;
+    }
     if (
       !confirm(
         `Duplicate "${copilot.name}"? This will create a new draft copy.`,
@@ -146,6 +165,11 @@ export default function CopilotMenu({
         toast.success("Copilot duplicated.");
       })
       .catch((error) => {
+        // The backend enforces the copilot allowance on duplicate too.
+        if (isCopilotLimitError(error)) {
+          router.push("/dashboard/copilots?limit=copilots");
+          return;
+        }
         toast.error(apiErrorMessage(error, "Failed to duplicate."));
       })
       .finally(() => {

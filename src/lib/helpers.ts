@@ -171,29 +171,30 @@ export function getDateRange(days = 7): string {
 /* Billing                                                             */
 /* ------------------------------------------------------------------ */
 
-/** Discount applied to annual billing, in percent. */
-export const ANNUAL_DISCOUNT_PERCENT = 20;
-
-// Omar note: Annual pricing is derived on the client (monthly × 12 × 0.8 = "Save 20%") purely so
-// the Billing UI matches the approved design. The backend contract is still monthly-only —
-// POST /billing/subscribe accepts a planId and nothing else — so picking "Annual" and checking
-// out will still create a MONTHLY Mollie subscription at the monthly price. Before this goes
-// live, the backend must expose annual plan/price IDs (or accept an `interval` on
-// /billing/subscribe) and this helper must be replaced by the real price coming from
-// GET /billing/plans.
-export function annualPriceFromMonthly(monthly: number): number {
-  return (
-    Math.round(monthly * 12 * ((100 - ANNUAL_DISCOUNT_PERCENT) / 100) * 100) /
-    100
-  );
-}
-
 export function planAnnualPrice(plan: {
   price: number;
   annual?: { price?: number | null } | null;
 }): number {
   if (plan.annual?.price != null) return plan.annual.price;
-  return annualPriceFromMonthly(plan.price);
+  return plan.price * 12;
+}
+
+export function annualDiscountPercent(plan: {
+  price: number;
+  annual?: { price?: number | null } | null;
+}): number {
+  const annual = plan.annual?.price;
+  if (annual == null || plan.price <= 0) return 0;
+  return Math.max(0, Math.floor((1 - annual / (plan.price * 12)) * 100));
+}
+
+export function maxAnnualDiscountPercent(
+  plans: { price: number; annual?: { price?: number | null } | null }[],
+): number {
+  return plans.reduce(
+    (max, plan) => Math.max(max, annualDiscountPercent(plan)),
+    0,
+  );
 }
 
 const FEATURE_FIXES: Record<string, string> = {

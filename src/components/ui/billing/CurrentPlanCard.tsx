@@ -10,7 +10,6 @@ import {
   planAnnualPrice,
   PLAN_ICONS,
 } from "@/lib/helpers";
-import ActionMenu from "../ActionMenu";
 import ProgressBar from "../ProgressBar";
 import { emailQuota } from "@/lib/limits";
 
@@ -53,22 +52,7 @@ export default function CurrentPlanCard({
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6">
-      <div className="flex items-start justify-between gap-4">
-        <h2 className="text-lg font-bold text-gray-900">Current Plan</h2>
-        {!isCanceling && (
-          <ActionMenu
-            ariaLabel="Subscription actions"
-            items={[
-              {
-                label: "Cancel plan",
-                icon: XCircle,
-                variant: "danger",
-                onSelect: onCancel,
-              },
-            ]}
-          />
-        )}
-      </div>
+      <h2 className="text-lg font-bold text-gray-900">Current Plan</h2>
 
       <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Plan details */}
@@ -102,13 +86,25 @@ export default function CurrentPlanCard({
             ))}
           </ul>
 
-          <button
-            type="button"
-            onClick={onChangePlan}
-            className="btn-cta mt-6 w-full rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold text-white sm:w-auto sm:self-start sm:px-6"
-          >
-            Change plan
-          </button>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              onClick={onChangePlan}
+              className="btn-cta w-full rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold text-white sm:w-auto sm:px-6"
+            >
+              Change plan
+            </button>
+            {!isCanceling && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-error/30 bg-white px-4 py-2.5 text-sm font-semibold text-error transition-colors hover:bg-error/5 sm:w-auto sm:px-6"
+              >
+                <XCircle size={16} />
+                Cancel plan
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Usage */}

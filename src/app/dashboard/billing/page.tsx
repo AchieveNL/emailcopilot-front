@@ -11,7 +11,9 @@ import CurrentPlanCard from "@/components/ui/billing/CurrentPlanCard";
 import InvoicesCard from "@/components/ui/billing/InvoicesCard";
 import NeedHelpCard from "@/components/ui/billing/NeedHelpCard";
 import PlanSelector from "@/components/ui/billing/PlanSelector";
+import PlanStatusCard from "@/components/ui/billing/PlanStatusCard";
 import type { BillingInterval } from "@/components/ui/billing/PlanSelector";
+import { parseBillingIntent } from "@/lib/billingIntent";
 import { useBilling, type PlanId } from "@/lib/useBilling";
 
 export default function BillingPage() {
@@ -25,8 +27,12 @@ export default function BillingPage() {
     subscribe,
     cancel,
     updatePaymentMethod,
+    refresh,
+    refetchLimits,
+    hasActivePlan,
     hasSubscription,
-    isPending,
+    paymentState,
+    attemptedPlan,
     isCanceling,
     isUpdatingPaymentMethod,
     currentPlan,
@@ -38,13 +44,56 @@ export default function BillingPage() {
   const [subscribingPlanId, setSubscribingPlanId] = useState<PlanId | null>(
     null,
   );
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [requestedPlanId, setRequestedPlanId] = useState<PlanId | null>(null);
+  const [requestedInterval, setRequestedInterval] =
+    useState<BillingInterval | null>(null);
+  const inactivePaymentStatus =
+    paymentState === "failed" || paymentState === "pending"
+      ? paymentState
+      : null;
+  const subscriptionBillingInterval: BillingInterval =
+    subscription?.billingInterval === "year" ||
+    subscription?.billingInterval === "annual"
+      ? "annual"
+      : "monthly";
+  const initialBillingInterval =
+    requestedInterval ?? subscriptionBillingInterval;
 
   // Upgrade CTAs elsewhere in the app link here with ?upgrade=<reason> so the
   // plan selector opens straight away instead of the current-plan overview.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("upgrade")) setShowPlans(true);
+
+    const intent = parseBillingIntent(
+      params.get("plan"),
+      params.get("interval"),
+    );
+    if (intent) {
+      setRequestedInterval(intent.interval === "year" ? "annual" : "monthly");
+    }
   }, []);
+
+  // Pricing links carry the selected plan through sign-up. Validate it against
+  // the backend plans once they load, then consume it so a refresh does not
+  // reopen the selector later.
+  useEffect(() => {
+    if (plans.length === 0) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const intent = parseBillingIntent(
+      params.get("plan"),
+      params.get("interval"),
+    );
+    if (!intent) return;
+
+    if (plans.some((plan) => plan.id === intent.plan)) {
+      setRequestedPlanId(intent.plan as PlanId);
+    }
+    setShowPlans(true);
+    window.history.replaceState(null, "", "/dashboard/billing");
+  }, [plans]);
 
   async function handleSubscribe(planId: PlanId, interval: BillingInterval) {
     setSubscribingPlanId(planId);
@@ -60,6 +109,30 @@ export default function BillingPage() {
       );
       setSubscribingPlanId(null);
     }
+  }
+
+  async function handleRetry() {
+    if (!subscription) return;
+
+    setIsRetrying(true);
+    try {
+      const annual =
+        subscription.billingInterval === "year" ||
+        subscription.billingInterval === "annual";
+
+      await subscribe(subscription.planId, annual ? "year" : "month");
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Could not retry payment. Try again.",
+      );
+    } finally {
+      setIsRetrying(false);
+    }
+  }
+
+  function handleRefresh() {
+    refetchLimits();
+    refresh();
   }
 
   async function handleCancel() {
@@ -114,14 +187,31 @@ export default function BillingPage() {
         </div>
       )}
 
-      {isPending && (
-        <div className="mb-6 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
-          Your payment is still being processed. This page updates as soon as
-          it&apos;s confirmed.
+      {inactivePaymentStatus && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
+          <span className="min-w-0 flex-1">
+            {paymentState === "failed"
+              ? "Payment failed. You have not been charged. Your plan is not active yet. Retry the payment below to finish setting it up."
+              : "We have not received payment yet. No charge has been made. Refresh to check the latest status."}
+          </span>
+          <button
+            type="button"
+            onClick={handleRefresh}
+            className="shrink-0 rounded-lg border border-warning/30 bg-white px-3 py-1.5 text-xs font-semibold text-warning transition-colors hover:bg-warning/5"
+          >
+            Refresh status
+          </button>
         </div>
       )}
 
-      {hasSubscription && !showPlans ? (
+      {!hasActivePlan && !hasSubscription && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          An active plan is required to use the dashboard. Choose a plan below
+          to get started.
+        </div>
+      )}
+
+      {hasActivePlan && !showPlans ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Flat grid so each right-hand card shares a row (top edge and
               height) with the card to its left. */}
@@ -140,6 +230,37 @@ export default function BillingPage() {
             <BillingSummaryCard
               plan={currentPlan}
               subscription={subscription}
+              mode="active"
+              onUpdatePaymentMethod={handleUpdatePaymentMethod}
+              isUpdatingPaymentMethod={isUpdatingPaymentMethod}
+            />
+          </div>
+          <div className="min-w-0 lg:col-span-2 *:h-full">
+            <InvoicesCard invoices={invoices} formatAmount={amountDue} />
+          </div>
+          <div className="min-w-0 *:h-full">
+            <NeedHelpCard />
+          </div>
+        </div>
+      ) : inactivePaymentStatus && !showPlans ? (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2 *:h-full">
+            <PlanStatusCard
+              plan={attemptedPlan}
+              subscription={subscription}
+              status={inactivePaymentStatus}
+              onRetry={handleRetry}
+              isRetrying={isRetrying}
+              onRefresh={handleRefresh}
+              onChangePlan={() => setShowPlans(true)}
+            />
+          </div>
+          <div className="min-w-0 *:h-full">
+            <BillingSummaryCard
+              plan={attemptedPlan}
+              subscription={subscription}
+              mode="inactive"
+              paymentState={inactivePaymentStatus}
               onUpdatePaymentMethod={handleUpdatePaymentMethod}
               isUpdatingPaymentMethod={isUpdatingPaymentMethod}
             />
@@ -154,7 +275,13 @@ export default function BillingPage() {
       ) : (
         <PlanSelector
           plans={plans}
-          currentPlanId={subscription?.planId ?? null}
+          currentPlanId={hasActivePlan ? subscription?.planId ?? null : null}
+          attemptedPlanId={
+            inactivePaymentStatus ? subscription?.planId ?? null : null
+          }
+          preselectedPlanId={requestedPlanId}
+          paymentState={paymentState}
+          initialInterval={initialBillingInterval}
           subscribingPlanId={subscribingPlanId}
           onChoose={handleSubscribe}
           onBack={

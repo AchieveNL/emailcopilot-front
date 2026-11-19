@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 import {
   CalendarDays,
   ChartSpline,
@@ -16,6 +17,8 @@ import {
 } from "lucide-react";
 import ScrollFloat from "./ScrollFloat";
 import { BILLING_SUPPORT_EMAIL } from "@/lib/billingFaq";
+import { maxAnnualDiscountPercent } from "@/lib/helpers";
+import type { PublicPlan } from "@/lib/publicPlans";
 
 type Billing = "monthly" | "annual";
 
@@ -35,12 +38,11 @@ type Theme = {
 };
 
 type HomepagePlan = {
+  id: string;
   name: string;
   description: string;
   icon: LucideIcon;
-  /** Monthly price in euros. `null` = custom pricing. */
   price: number | null;
-  /** Price for 12 months when billed yearly, in euros. */
   annualPrice?: number;
   customNote?: string;
   emails: string;
@@ -51,14 +53,16 @@ type HomepagePlan = {
   theme: Theme;
 };
 
-const PLANS: HomepagePlan[] = [
-  {
+type PlanContent = Omit<
+  HomepagePlan,
+  "id" | "price" | "annualPrice" | "emails"
+>;
+
+const PLAN_CONTENT: Record<string, PlanContent> = {
+  starter: {
     name: "Economy",
     description: "Perfect for individuals.",
     icon: Send,
-    price: 19,
-    annualPrice: 179,
-    emails: "500 emails / month",
     features: [
       "1 Copilot",
       "1 connected email account",
@@ -82,13 +86,10 @@ const PLANS: HomepagePlan[] = [
       cta: "bg-indigo-50 text-indigo-600 hover:bg-indigo-100",
     },
   },
-  {
+  growth: {
     name: "Business Class",
     description: "Perfect for growing businesses.",
     icon: ChartSpline,
-    price: 39,
-    annualPrice: 359,
-    emails: "1,200 emails / month",
     features: [
       "3 Copilots",
       "3 connected email accounts",
@@ -113,13 +114,10 @@ const PLANS: HomepagePlan[] = [
       cta: "bg-white text-indigo-600 hover:bg-indigo-50",
     },
   },
-  {
+  scale: {
     name: "First Class",
     description: "For power users and teams",
     icon: Rocket,
-    price: 79,
-    annualPrice: 719,
-    emails: "3000 emails / month",
     features: [
       "8 Copilots",
       "5 connected email accounts",
@@ -143,37 +141,62 @@ const PLANS: HomepagePlan[] = [
       cta: "bg-cyan-50 text-cyan-600 hover:bg-cyan-100",
     },
   },
-  {
-    name: "Private Jet",
-    description: "For agencies and custom needs",
-    icon: Plane,
-    price: null,
-    customNote: "Tell us what you need and we price it with you.",
-    emails: "Beyond 3000 emails / month",
-    features: [
-      "Negotiated Copilots",
-      "Beyond 5 connected email accounts",
-      "CSV export included",
-      "Dedicated support",
-    ],
-    cta: "Contact us",
-    href: `mailto:${BILLING_SUPPORT_EMAIL}?subject=Private%20Jet%20plan`,
-    theme: {
-      card: "bg-slate-50 border border-indigo-100",
-      iconBox: "bg-white text-gray-900",
-      title: "text-gray-900",
-      subtitle: "text-gray-500",
-      divider: "bg-gray-200",
-      price: "text-gray-900",
-      period: "text-gray-500",
-      badge: "bg-white text-gray-900 border border-gray-200",
-      check: "text-gray-700",
-      feature: "text-gray-700",
-      infoIcon: "bg-gray-700 text-white",
-      cta: "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50",
-    },
+};
+
+const PRIVATE_JET: HomepagePlan = {
+  id: "private-jet",
+  name: "Private Jet",
+  description: "For agencies and custom needs",
+  icon: Plane,
+  price: null,
+  customNote: "Tell us what you need and we price it with you.",
+  emails: "Beyond 3,000 emails / month",
+  features: [
+    "Negotiated Copilots",
+    "Beyond 5 connected email accounts",
+    "CSV export included",
+    "Dedicated support",
+  ],
+  cta: "Contact us",
+  href: `mailto:${BILLING_SUPPORT_EMAIL}?subject=Private%20Jet%20plan`,
+  theme: {
+    card: "bg-slate-50 border border-indigo-100",
+    iconBox: "bg-white text-gray-900",
+    title: "text-gray-900",
+    subtitle: "text-gray-500",
+    divider: "bg-gray-200",
+    price: "text-gray-900",
+    period: "text-gray-500",
+    badge: "bg-white text-gray-900 border border-gray-200",
+    check: "text-gray-700",
+    feature: "text-gray-700",
+    infoIcon: "bg-gray-700 text-white",
+    cta: "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50",
   },
-];
+};
+
+function formatEmails(count: number) {
+  return `${count.toLocaleString("en-US")} emails / month`;
+}
+
+function buildPlans(plans: PublicPlan[]): HomepagePlan[] {
+  const apiPlans = plans
+    .map((plan): HomepagePlan | null => {
+      const content = PLAN_CONTENT[plan.id];
+      if (!content) return null;
+
+      return {
+        ...content,
+        id: plan.id,
+        price: plan.price,
+        annualPrice: plan.annual?.price ?? undefined,
+        emails: formatEmails(plan.maxEmailsPerMonth),
+      };
+    })
+    .filter((plan): plan is HomepagePlan => plan !== null);
+
+  return [...apiPlans, PRIVATE_JET];
+}
 
 const TRUST_ITEMS: { icon: LucideIcon; title: string; description: string }[] =
   [
@@ -239,9 +262,19 @@ function formatEuro(value: number) {
   return `€${Math.round(value)}`;
 }
 
-function Pricing() {
+interface PricingProps {
+  plans: PublicPlan[];
+}
+
+function Pricing({ plans }: PricingProps) {
+  const { isSignedIn } = useAuth();
   const [billing, setBilling] = useState<Billing>("monthly");
   const isAnnual = billing === "annual";
+  const intervalParam = isAnnual ? "year" : "month";
+  const displayPlans = buildPlans(plans);
+  const annualDiscount = maxAnnualDiscountPercent(plans);
+  const startingPrice =
+    plans.length > 0 ? Math.min(...plans.map((plan) => plan.price)) : null;
 
   return (
     <section
@@ -257,9 +290,12 @@ function Pricing() {
         >
           Start flying today!
         </ScrollFloat>
-        <p className="mt-3 text-gray-500 text-base md:text-lg">
-          Start as low as €19 / month. Cancel your monthly plan anytime.
-        </p>
+        {startingPrice != null && (
+          <p className="mt-3 text-gray-500 text-base md:text-lg">
+            Start as low as {formatEuro(startingPrice)} / month. Cancel your
+            monthly plan anytime.
+          </p>
+        )}
       </div>
 
       {/* Monthly / Annual toggle */}
@@ -294,16 +330,18 @@ function Pricing() {
             }`}
           >
             Annual
-            <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
-              Save over 20%
-            </span>
+            {annualDiscount > 0 && (
+              <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
+                Save up to {annualDiscount}%
+              </span>
+            )}
           </button>
         </div>
       </div>
 
       {/* Plan cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
-        {PLANS.map((plan) => {
+        {displayPlans.map((plan) => {
           const Icon = plan.icon;
           const t = plan.theme;
           const yearly =
@@ -312,14 +350,20 @@ function Pricing() {
                   full: plan.price * 12,
                   price: plan.annualPrice,
                   perMonth: plan.annualPrice / 12,
-                  saved: plan.price * 12 - plan.annualPrice,
+                  saved: Math.max(0, plan.price * 12 - plan.annualPrice),
                 }
               : null;
           const price = yearly ? yearly.price : plan.price;
+          const href =
+            plan.price === null
+              ? plan.href
+              : isSignedIn
+                ? `/dashboard/billing?plan=${encodeURIComponent(plan.id)}&interval=${intervalParam}`
+                : `/sign-up?plan=${encodeURIComponent(plan.id)}&interval=${intervalParam}`;
 
           return (
             <div
-              key={plan.name}
+              key={plan.id}
               className={`relative flex flex-col rounded-2xl p-5 ${t.card}`}
             >
               {plan.tag && (
@@ -407,7 +451,7 @@ function Pricing() {
 
               {/* CTA */}
               <Link
-                href={plan.href}
+                href={href}
                 className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors ${t.cta}`}
               >
                 {plan.cta}

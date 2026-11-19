@@ -67,6 +67,11 @@ export default function CopilotsPage() {
   const tiers = higherTiers(plans, planId);
 
   async function handleCreate() {
+    if (limits && !limits.hasActivePlan) {
+      router.push("/dashboard/billing?required=plan");
+      return;
+    }
+
     if (quota?.atLimit) {
       setLimitDialogOpen(true);
       return;
