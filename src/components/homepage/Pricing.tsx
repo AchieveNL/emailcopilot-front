@@ -258,7 +258,9 @@ function Pricing() {
           Start flying today!
         </ScrollFloat>
         <p className="mt-3 text-gray-500 text-base md:text-lg">
-          Start as low as €19 / month. Cancel your monthly plan anytime.
+          {isAnnual
+            ? "Start as low as €179/year. Lock in your progress for a full year at our best rate."
+            : "Start as low as €19 / month. Cancel your monthly plan anytime."}
         </p>
       </div>
 
