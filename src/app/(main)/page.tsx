@@ -7,8 +7,11 @@ import Testimonials from "@/components/homepage/Testimonials";
 import TrustedTeams from "@/components/homepage/TrustedTeams";
 import WhatIsCopilot from "@/components/homepage/WhatIsCopilot";
 import Ribbons from "@/components/homepage/Ribbons";
+import { getPublicPlans } from "@/lib/publicPlans";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const plans = await getPublicPlans();
+
   return (
     <div
       style={{
@@ -43,7 +46,7 @@ export default function HomePage() {
       <Testimonials />
 
       {/* ── Pricing ── */}
-      <Pricing />
+      <Pricing plans={plans} />
 
       {/* ── FAQ ── */}
       <Faqs />

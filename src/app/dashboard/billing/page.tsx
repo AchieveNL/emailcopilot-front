@@ -41,6 +41,10 @@ export default function BillingPage() {
   const [subscribingPlanId, setSubscribingPlanId] = useState<PlanId | null>(
     null,
   );
+  const [isRetrying, setIsRetrying] = useState(false);
+  const latestInvoice = invoices[0] ?? null;
+  const paymentFailed =
+    isPending && latestInvoice?.status === "failed";
 
   // Upgrade CTAs elsewhere in the app link here with ?upgrade=<reason> so the
   // plan selector opens straight away instead of the current-plan overview.
@@ -62,6 +66,25 @@ export default function BillingPage() {
         e instanceof Error ? e.message : "Could not start checkout. Try again.",
       );
       setSubscribingPlanId(null);
+    }
+  }
+
+  async function handleRetry() {
+    if (!subscription) return;
+
+    setIsRetrying(true);
+    try {
+      const annual =
+        subscription.billingInterval === "year" ||
+        subscription.billingInterval === "annual";
+
+      await subscribe(subscription.planId, annual ? "year" : "month");
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Could not retry payment. Try again.",
+      );
+    } finally {
+      setIsRetrying(false);
     }
   }
 
@@ -120,9 +143,21 @@ export default function BillingPage() {
       {isPending && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
           <span className="min-w-0 flex-1">
-            Your payment is still being processed. This page updates as soon as
-            it&apos;s confirmed.
+            {paymentFailed
+              ? "Your last payment didn't go through. Your plan is not active yet. Retry the payment to finish setting it up."
+              : "Your payment is still being processed. This page updates as soon as it's confirmed."}
           </span>
+          {paymentFailed && (
+            <button
+              type="button"
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg bg-warning px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-warning/90 disabled:opacity-60"
+            >
+              {isRetrying && <Loader2 size={12} className="animate-spin" />}
+              {isRetrying ? "Starting checkout" : "Retry payment"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => {

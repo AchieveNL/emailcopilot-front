@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 export interface SegmentedControlOption<T extends string> {
   value: T;
   label: string;
-  /** Optional trailing chip, e.g. a "Save 20%" badge. */
+  /** Optional trailing chip, e.g. an annual savings badge. */
   badge?: ReactNode;
 }
 

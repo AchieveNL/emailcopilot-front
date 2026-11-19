@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import type { Plan, PlanId } from "@/lib/useBilling";
-import { ANNUAL_DISCOUNT_PERCENT } from "@/lib/helpers";
+import { maxAnnualDiscountPercent } from "@/lib/helpers";
 import SegmentedControl from "../SegmentedControl";
 import PlanCard from "./PlanCard";
 import PlanTrustStrip from "./PlanTrustStrip";
@@ -27,6 +27,7 @@ export default function PlanSelector({
   onBack,
 }: PlanSelectorProps) {
   const [interval, setInterval] = useState<BillingInterval>("monthly");
+  const annualDiscount = maxAnnualDiscountPercent(plans);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 sm:p-8">
@@ -58,11 +59,12 @@ export default function PlanSelector({
             {
               value: "annual",
               label: "Annual",
-              badge: (
-                <span className="rounded-md bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-                  Save {ANNUAL_DISCOUNT_PERCENT}%
-                </span>
-              ),
+              badge:
+                annualDiscount > 0 ? (
+                  <span className="rounded-md bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
+                    Save up to {annualDiscount}%
+                  </span>
+                ) : undefined,
             },
           ]}
         />

@@ -7,6 +7,7 @@ import type { Plan, PlanId } from "@/lib/useBilling";
 import {
   formatPlanFeature,
   handlePlanNameChange,
+  maxAnnualDiscountPercent,
   planAnnualPrice,
   planTagline,
 } from "@/lib/helpers";
@@ -64,6 +65,7 @@ export default function LimitUpgradeDialog({
   if (!open) return null;
 
   const canUpgrade = tiers.length > 0;
+  const annualDiscount = maxAnnualDiscountPercent(tiers);
 
   return (
     <>
@@ -108,7 +110,11 @@ export default function LimitUpgradeDialog({
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  {option === "month" ? "Monthly" : "Yearly (save 20%)"}
+                  {option === "month"
+                    ? "Monthly"
+                    : annualDiscount > 0
+                      ? `Yearly (save up to ${annualDiscount}%)`
+                      : "Yearly"}
                 </button>
               ))}
             </div>
