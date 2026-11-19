@@ -50,10 +50,10 @@ function Nav() {
             className="nav-links hidden lg:flex"
           >
             {[
-              { label: "How it works", href: "#how-it-works" },
-              { label: "Testimonials", href: "#testimonials" },
-              { label: "Pricing", href: "#pricing" },
-              { label: "FAQs", href: "#faqs" },
+              { label: "How it works", href: "/#how-it-works" },
+              { label: "Testimonials", href: "/#testimonials" },
+              { label: "Pricing", href: "/#pricing" },
+              { label: "FAQs", href: "/#faqs" },
             ].map((l) => (
               <a
                 key={l.label}
@@ -103,7 +103,7 @@ function Nav() {
                   </button>
                 </SignUpButton>
                 <Link
-                  href="#pricing"
+                  href="/#pricing"
                   className="btn-main btn-cta "
                   style={{ padding: "9px 20px", fontSize: "0.85rem" }}
                 >
@@ -157,10 +157,10 @@ function Nav() {
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { label: "How it works", href: "#how-it-works" },
-              { label: "Testimonials", href: "#testimonials" },
-              { label: "Pricing", href: "#pricing" },
-              { label: "FAQs", href: "#faqs" },
+              { label: "How it works", href: "/#how-it-works" },
+              { label: "Testimonials", href: "/#testimonials" },
+              { label: "Pricing", href: "/#pricing" },
+              { label: "FAQs", href: "/#faqs" },
             ].map((l) => (
               <a
                 key={l.label}
@@ -214,7 +214,7 @@ function Nav() {
                   </button>
                 </SignUpButton>
                 <Link
-                  href="#pricing"
+                  href="/#pricing"
                   onClick={() => setMobileMenuOpen(false)}
                   className="btn-main btn-cta"
                   style={{
