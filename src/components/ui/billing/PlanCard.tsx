@@ -16,6 +16,7 @@ interface PlanCardProps {
   isCurrent: boolean;
   attemptState?: "failed" | "pending" | null;
   isSubscribing: boolean;
+  isSelected?: boolean;
   highlighted: boolean;
   onChoose: (planId: PlanId, interval: BillingInterval) => void;
 }
@@ -26,6 +27,7 @@ export default function PlanCard({
   isCurrent,
   attemptState = null,
   isSubscribing,
+  isSelected = false,
   highlighted,
   onChoose,
 }: PlanCardProps) {
@@ -38,9 +40,11 @@ export default function PlanCard({
       ? "Payment failed"
       : attemptState === "pending"
         ? "Awaiting payment"
-        : highlighted
-          ? "Most Popular"
-          : null;
+        : isSelected
+          ? "Selected"
+          : highlighted
+            ? "Most Popular"
+            : null;
   const badgeClass =
     isCurrent || (!attemptState && highlighted)
       ? "bg-primary"
@@ -66,12 +70,14 @@ export default function PlanCard({
         ? "Starting checkout"
         : attemptState === "failed"
           ? "Retry payment"
-          : "Choose plan";
+          : isSelected
+            ? "Continue to checkout"
+            : "Choose plan";
   const buttonClass = isCurrent
     ? "cursor-default bg-gray-100 text-gray-400"
     : attemptState === "pending"
       ? "cursor-default bg-warning/10 text-warning"
-      : attemptState === "failed"
+      : attemptState === "failed" || isSelected
         ? "bg-primary text-white hover:bg-primary-hover"
         : "bg-primary/5 text-primary hover:bg-primary/10";
 

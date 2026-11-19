@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 import {
   CalendarDays,
   ChartSpline,
@@ -266,8 +267,10 @@ interface PricingProps {
 }
 
 function Pricing({ plans }: PricingProps) {
+  const { isSignedIn } = useAuth();
   const [billing, setBilling] = useState<Billing>("monthly");
   const isAnnual = billing === "annual";
+  const intervalParam = isAnnual ? "year" : "month";
   const displayPlans = buildPlans(plans);
   const annualDiscount = maxAnnualDiscountPercent(plans);
   const startingPrice =
@@ -351,6 +354,12 @@ function Pricing({ plans }: PricingProps) {
                 }
               : null;
           const price = yearly ? yearly.price : plan.price;
+          const href =
+            plan.price === null
+              ? plan.href
+              : isSignedIn
+                ? `/dashboard/billing?plan=${encodeURIComponent(plan.id)}&interval=${intervalParam}`
+                : `/sign-up?plan=${encodeURIComponent(plan.id)}&interval=${intervalParam}`;
 
           return (
             <div
@@ -442,7 +451,7 @@ function Pricing({ plans }: PricingProps) {
 
               {/* CTA */}
               <Link
-                href={plan.href}
+                href={href}
                 className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors ${t.cta}`}
               >
                 {plan.cta}

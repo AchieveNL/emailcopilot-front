@@ -14,6 +14,7 @@ interface PlanSelectorProps {
   plans: Plan[];
   currentPlanId?: PlanId | null;
   attemptedPlanId?: PlanId | null;
+  preselectedPlanId?: PlanId | null;
   paymentState?: PaymentState;
   initialInterval?: BillingInterval;
   subscribingPlanId?: PlanId | null;
@@ -26,6 +27,7 @@ export default function PlanSelector({
   plans,
   currentPlanId,
   attemptedPlanId,
+  preselectedPlanId,
   paymentState,
   initialInterval = "monthly",
   subscribingPlanId,
@@ -34,6 +36,10 @@ export default function PlanSelector({
 }: PlanSelectorProps) {
   const [interval, setInterval] = useState<BillingInterval>(initialInterval);
   const annualDiscount = maxAnnualDiscountPercent(plans);
+  const hasPreselection =
+    preselectedPlanId != null &&
+    currentPlanId == null &&
+    attemptedPlanId == null;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 sm:p-8">
@@ -49,9 +55,13 @@ export default function PlanSelector({
       )}
 
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Choose your plan</h2>
+        <h2 className="text-2xl font-bold text-gray-900">
+          {hasPreselection ? "Review your plan" : "Choose your plan"}
+        </h2>
         <p className="mt-1 text-sm text-gray-500">
-          Cancel anytime. No long-term commitments.
+          {hasPreselection
+            ? "Your plan and billing interval are ready. Continue to checkout when you are ready."
+            : "Cancel anytime. No long-term commitments."}
         </p>
       </div>
 
@@ -83,6 +93,10 @@ export default function PlanSelector({
             (paymentState === "failed" || paymentState === "pending")
               ? paymentState
               : null;
+          const isSelected =
+            plan.id === preselectedPlanId &&
+            currentPlanId == null &&
+            attemptedPlanId == null;
 
           return (
             <PlanCard
@@ -92,12 +106,14 @@ export default function PlanSelector({
               isCurrent={plan.id === currentPlanId}
               attemptState={attemptState}
               isSubscribing={subscribingPlanId === plan.id}
+              isSelected={isSelected}
               highlighted={
                 currentPlanId != null
                   ? plan.id === currentPlanId
                   : attemptedPlanId != null
                     ? plan.id === attemptedPlanId
-                    : (plan.highlight ?? false)
+                    : isSelected ||
+                      (!hasPreselection && (plan.highlight ?? false))
               }
               onChoose={onChoose}
             />

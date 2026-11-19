@@ -13,6 +13,7 @@ import NeedHelpCard from "@/components/ui/billing/NeedHelpCard";
 import PlanSelector from "@/components/ui/billing/PlanSelector";
 import PlanStatusCard from "@/components/ui/billing/PlanStatusCard";
 import type { BillingInterval } from "@/components/ui/billing/PlanSelector";
+import { parseBillingIntent } from "@/lib/billingIntent";
 import { useBilling, type PlanId } from "@/lib/useBilling";
 
 export default function BillingPage() {
@@ -44,22 +45,55 @@ export default function BillingPage() {
     null,
   );
   const [isRetrying, setIsRetrying] = useState(false);
+  const [requestedPlanId, setRequestedPlanId] = useState<PlanId | null>(null);
+  const [requestedInterval, setRequestedInterval] =
+    useState<BillingInterval | null>(null);
   const inactivePaymentStatus =
     paymentState === "failed" || paymentState === "pending"
       ? paymentState
       : null;
-  const initialBillingInterval: BillingInterval =
+  const subscriptionBillingInterval: BillingInterval =
     subscription?.billingInterval === "year" ||
     subscription?.billingInterval === "annual"
       ? "annual"
       : "monthly";
+  const initialBillingInterval =
+    requestedInterval ?? subscriptionBillingInterval;
 
   // Upgrade CTAs elsewhere in the app link here with ?upgrade=<reason> so the
   // plan selector opens straight away instead of the current-plan overview.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("upgrade")) setShowPlans(true);
+
+    const intent = parseBillingIntent(
+      params.get("plan"),
+      params.get("interval"),
+    );
+    if (intent) {
+      setRequestedInterval(intent.interval === "year" ? "annual" : "monthly");
+    }
   }, []);
+
+  // Pricing links carry the selected plan through sign-up. Validate it against
+  // the backend plans once they load, then consume it so a refresh does not
+  // reopen the selector later.
+  useEffect(() => {
+    if (plans.length === 0) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const intent = parseBillingIntent(
+      params.get("plan"),
+      params.get("interval"),
+    );
+    if (!intent) return;
+
+    if (plans.some((plan) => plan.id === intent.plan)) {
+      setRequestedPlanId(intent.plan as PlanId);
+    }
+    setShowPlans(true);
+    window.history.replaceState(null, "", "/dashboard/billing");
+  }, [plans]);
 
   async function handleSubscribe(planId: PlanId, interval: BillingInterval) {
     setSubscribingPlanId(planId);
@@ -245,6 +279,7 @@ export default function BillingPage() {
           attemptedPlanId={
             inactivePaymentStatus ? subscription?.planId ?? null : null
           }
+          preselectedPlanId={requestedPlanId}
           paymentState={paymentState}
           initialInterval={initialBillingInterval}
           subscribingPlanId={subscribingPlanId}
