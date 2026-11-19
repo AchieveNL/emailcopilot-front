@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { MoreVertical, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { isAxiosError } from "axios";
 import Stepper from "@/components/ui/NewCopilot/Stepper";
 import CopilotSummary from "@/components/ui/NewCopilot/StepOne/CopilotSummary";
 import EmailProfileSidebar from "@/components/ui/NewCopilot/StepTwo/EmailProfileSidebar";
@@ -17,6 +18,7 @@ import EmailTemplateStep from "@/components/ui/NewCopilot/StepFour/EmailTemplate
 import { copilotsApi } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import CopilotFooter from "@/components/ui/NewCopilot/CopilotFooter";
+import CopilotNotFound from "@/components/ui/copilots/CopilotNotFound";
 import EmailTemplateSidbar from "@/components/ui/NewCopilot/StepFour/EmailTemplateSidbar";
 import ScheduleStep from "@/components/ui/NewCopilot/StepFive/ScheduleStep";
 import ScheduleSideBar from "@/components/ui/NewCopilot/StepFive/ScheduleSideBar";
@@ -43,6 +45,7 @@ function NewCopilotPageContent() {
 
   const [launching, setLaunching] = useState(false);
   const [loadingCopilot, setLoadingCopilot] = useState(false);
+  const [copilotNotFound, setCopilotNotFound] = useState(false);
 
   const { limits } = useBilling();
   const quota = copilotQuota(limits);
@@ -110,8 +113,15 @@ function NewCopilotPageContent() {
     const connected = searchParams.get("connected");
     const provider = searchParams.get("provider");
 
+    setCopilotNotFound(false);
+
     if (editId) {
       const id = parseInt(editId, 10);
+      if (Number.isNaN(id)) {
+        setCopilotNotFound(true);
+        setLoadingCopilot(false);
+        return;
+      }
       setLoadingCopilot(true);
       copilotsApi
         .getById(id)
@@ -161,13 +171,22 @@ function NewCopilotPageContent() {
             }
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          if (isAxiosError(error) && error.response?.status === 404) {
+            setCopilotNotFound(true);
+            return;
+          }
           toast.error("Failed to load copilot. Please try again.");
           router.push("/dashboard/copilots");
         })
         .finally(() => setLoadingCopilot(false));
     } else if (duplicateId) {
       const id = parseInt(duplicateId, 10);
+      if (Number.isNaN(id)) {
+        setCopilotNotFound(true);
+        setLoadingCopilot(false);
+        return;
+      }
       setLoadingCopilot(true);
       copilotsApi
         .getById(id)
@@ -202,7 +221,11 @@ function NewCopilotPageContent() {
             "duplicate",
           );
         })
-        .catch(() => {
+        .catch((error) => {
+          if (isAxiosError(error) && error.response?.status === 404) {
+            setCopilotNotFound(true);
+            return;
+          }
           toast.error("Failed to load copilot. Please try again.");
           router.push("/dashboard/copilots");
         })
@@ -291,6 +314,10 @@ function NewCopilotPageContent() {
       setLaunching(false);
     }
   }, [copilotData, draftId, router, resetStore, user]);
+
+  if (copilotNotFound) {
+    return <CopilotNotFound />;
+  }
 
   if (loadingCopilot) {
     return (

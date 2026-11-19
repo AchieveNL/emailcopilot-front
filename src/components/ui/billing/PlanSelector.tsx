@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
-import type { Plan, PlanId } from "@/lib/useBilling";
+import type { PaymentState, Plan, PlanId } from "@/lib/useBilling";
 import { maxAnnualDiscountPercent } from "@/lib/helpers";
 import SegmentedControl from "../SegmentedControl";
 import PlanCard from "./PlanCard";
@@ -13,20 +13,26 @@ export type BillingInterval = "monthly" | "annual";
 interface PlanSelectorProps {
   plans: Plan[];
   currentPlanId?: PlanId | null;
+  attemptedPlanId?: PlanId | null;
+  paymentState?: PaymentState;
+  initialInterval?: BillingInterval;
   subscribingPlanId?: PlanId | null;
   onChoose: (planId: PlanId, interval: BillingInterval) => void;
-  /** Rendered only when the selector was opened from an active subscription. */
+  /** Rendered only when the selector was opened from a subscription. */
   onBack?: () => void;
 }
 
 export default function PlanSelector({
   plans,
   currentPlanId,
+  attemptedPlanId,
+  paymentState,
+  initialInterval = "monthly",
   subscribingPlanId,
   onChoose,
   onBack,
 }: PlanSelectorProps) {
-  const [interval, setInterval] = useState<BillingInterval>("monthly");
+  const [interval, setInterval] = useState<BillingInterval>(initialInterval);
   const annualDiscount = maxAnnualDiscountPercent(plans);
 
   return (
@@ -71,21 +77,32 @@ export default function PlanSelector({
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-        {plans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            interval={interval}
-            isCurrent={plan.id === currentPlanId}
-            isSubscribing={subscribingPlanId === plan.id}
-            highlighted={
-              currentPlanId != null
-                ? plan.id === currentPlanId
-                : (plan.highlight ?? false)
-            }
-            onChoose={onChoose}
-          />
-        ))}
+        {plans.map((plan) => {
+          const attemptState =
+            plan.id === attemptedPlanId &&
+            (paymentState === "failed" || paymentState === "pending")
+              ? paymentState
+              : null;
+
+          return (
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              interval={interval}
+              isCurrent={plan.id === currentPlanId}
+              attemptState={attemptState}
+              isSubscribing={subscribingPlanId === plan.id}
+              highlighted={
+                currentPlanId != null
+                  ? plan.id === currentPlanId
+                  : attemptedPlanId != null
+                    ? plan.id === attemptedPlanId
+                    : (plan.highlight ?? false)
+              }
+              onChoose={onChoose}
+            />
+          );
+        })}
       </div>
 
       <div className="mt-8">

@@ -11,6 +11,7 @@ import CurrentPlanCard from "@/components/ui/billing/CurrentPlanCard";
 import InvoicesCard from "@/components/ui/billing/InvoicesCard";
 import NeedHelpCard from "@/components/ui/billing/NeedHelpCard";
 import PlanSelector from "@/components/ui/billing/PlanSelector";
+import PlanStatusCard from "@/components/ui/billing/PlanStatusCard";
 import type { BillingInterval } from "@/components/ui/billing/PlanSelector";
 import { useBilling, type PlanId } from "@/lib/useBilling";
 
@@ -29,7 +30,8 @@ export default function BillingPage() {
     refetchLimits,
     hasActivePlan,
     hasSubscription,
-    isPending,
+    paymentState,
+    attemptedPlan,
     isCanceling,
     isUpdatingPaymentMethod,
     currentPlan,
@@ -42,9 +44,15 @@ export default function BillingPage() {
     null,
   );
   const [isRetrying, setIsRetrying] = useState(false);
-  const latestInvoice = invoices[0] ?? null;
-  const paymentFailed =
-    isPending && latestInvoice?.status === "failed";
+  const inactivePaymentStatus =
+    paymentState === "failed" || paymentState === "pending"
+      ? paymentState
+      : null;
+  const initialBillingInterval: BillingInterval =
+    subscription?.billingInterval === "year" ||
+    subscription?.billingInterval === "annual"
+      ? "annual"
+      : "monthly";
 
   // Upgrade CTAs elsewhere in the app link here with ?upgrade=<reason> so the
   // plan selector opens straight away instead of the current-plan overview.
@@ -86,6 +94,11 @@ export default function BillingPage() {
     } finally {
       setIsRetrying(false);
     }
+  }
+
+  function handleRefresh() {
+    refetchLimits();
+    refresh();
   }
 
   async function handleCancel() {
@@ -140,30 +153,16 @@ export default function BillingPage() {
         </div>
       )}
 
-      {isPending && (
+      {inactivePaymentStatus && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
           <span className="min-w-0 flex-1">
-            {paymentFailed
-              ? "Your last payment didn't go through. Your plan is not active yet. Retry the payment to finish setting it up."
-              : "Your payment is still being processed. This page updates as soon as it's confirmed."}
+            {paymentState === "failed"
+              ? "Payment failed. You have not been charged. Your plan is not active yet. Retry the payment below to finish setting it up."
+              : "We have not received payment yet. No charge has been made. Refresh to check the latest status."}
           </span>
-          {paymentFailed && (
-            <button
-              type="button"
-              onClick={handleRetry}
-              disabled={isRetrying}
-              className="flex shrink-0 items-center gap-1.5 rounded-lg bg-warning px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-warning/90 disabled:opacity-60"
-            >
-              {isRetrying && <Loader2 size={12} className="animate-spin" />}
-              {isRetrying ? "Starting checkout" : "Retry payment"}
-            </button>
-          )}
           <button
             type="button"
-            onClick={() => {
-              refetchLimits();
-              refresh();
-            }}
+            onClick={handleRefresh}
             className="shrink-0 rounded-lg border border-warning/30 bg-white px-3 py-1.5 text-xs font-semibold text-warning transition-colors hover:bg-warning/5"
           >
             Refresh status
@@ -178,7 +177,7 @@ export default function BillingPage() {
         </div>
       )}
 
-      {hasSubscription && !showPlans ? (
+      {hasActivePlan && !showPlans ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Flat grid so each right-hand card shares a row (top edge and
               height) with the card to its left. */}
@@ -197,6 +196,37 @@ export default function BillingPage() {
             <BillingSummaryCard
               plan={currentPlan}
               subscription={subscription}
+              mode="active"
+              onUpdatePaymentMethod={handleUpdatePaymentMethod}
+              isUpdatingPaymentMethod={isUpdatingPaymentMethod}
+            />
+          </div>
+          <div className="min-w-0 lg:col-span-2 *:h-full">
+            <InvoicesCard invoices={invoices} formatAmount={amountDue} />
+          </div>
+          <div className="min-w-0 *:h-full">
+            <NeedHelpCard />
+          </div>
+        </div>
+      ) : inactivePaymentStatus && !showPlans ? (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2 *:h-full">
+            <PlanStatusCard
+              plan={attemptedPlan}
+              subscription={subscription}
+              status={inactivePaymentStatus}
+              onRetry={handleRetry}
+              isRetrying={isRetrying}
+              onRefresh={handleRefresh}
+              onChangePlan={() => setShowPlans(true)}
+            />
+          </div>
+          <div className="min-w-0 *:h-full">
+            <BillingSummaryCard
+              plan={attemptedPlan}
+              subscription={subscription}
+              mode="inactive"
+              paymentState={inactivePaymentStatus}
               onUpdatePaymentMethod={handleUpdatePaymentMethod}
               isUpdatingPaymentMethod={isUpdatingPaymentMethod}
             />
@@ -211,7 +241,12 @@ export default function BillingPage() {
       ) : (
         <PlanSelector
           plans={plans}
-          currentPlanId={subscription?.planId ?? null}
+          currentPlanId={hasActivePlan ? subscription?.planId ?? null : null}
+          attemptedPlanId={
+            inactivePaymentStatus ? subscription?.planId ?? null : null
+          }
+          paymentState={paymentState}
+          initialInterval={initialBillingInterval}
           subscribingPlanId={subscribingPlanId}
           onChoose={handleSubscribe}
           onBack={

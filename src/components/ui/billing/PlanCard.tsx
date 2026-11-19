@@ -14,6 +14,7 @@ interface PlanCardProps {
   plan: Plan;
   interval: BillingInterval;
   isCurrent: boolean;
+  attemptState?: "failed" | "pending" | null;
   isSubscribing: boolean;
   highlighted: boolean;
   onChoose: (planId: PlanId, interval: BillingInterval) => void;
@@ -23,6 +24,7 @@ export default function PlanCard({
   plan,
   interval,
   isCurrent,
+  attemptState = null,
   isSubscribing,
   highlighted,
   onChoose,
@@ -30,20 +32,60 @@ export default function PlanCard({
   const isAnnual = interval === "annual";
   const price = isAnnual ? planAnnualPrice(plan) : plan.price;
   const period = isAnnual ? "/ year" : "/ month";
+  const badgeLabel = isCurrent
+    ? "Current plan"
+    : attemptState === "failed"
+      ? "Payment failed"
+      : attemptState === "pending"
+        ? "Awaiting payment"
+        : highlighted
+          ? "Most Popular"
+          : null;
+  const badgeClass =
+    isCurrent || (!attemptState && highlighted)
+      ? "bg-primary"
+      : attemptState === "failed"
+        ? "bg-error"
+        : "bg-warning";
+  const borderClass =
+    attemptState === "failed"
+      ? "border-error"
+      : attemptState === "pending"
+        ? "border-warning"
+        : isCurrent || highlighted
+          ? "border-primary"
+          : "border-gray-200";
+  const isEmphasized = badgeLabel !== null;
+  const isDisabled =
+    isCurrent || isSubscribing || attemptState === "pending";
+  const buttonLabel = isCurrent
+    ? "Current plan"
+    : attemptState === "pending"
+      ? "Awaiting payment"
+      : isSubscribing
+        ? "Starting checkout"
+        : attemptState === "failed"
+          ? "Retry payment"
+          : "Choose plan";
+  const buttonClass = isCurrent
+    ? "cursor-default bg-gray-100 text-gray-400"
+    : attemptState === "pending"
+      ? "cursor-default bg-warning/10 text-warning"
+      : attemptState === "failed"
+        ? "bg-primary text-white hover:bg-primary-hover"
+        : "bg-primary/5 text-primary hover:bg-primary/10";
 
   return (
     <div
       className={`relative flex flex-col rounded-xl bg-white p-6 transition-all ${
-        highlighted ? "pt-12 " : ""
-      }${
-        highlighted
-          ? "border-2 border-primary shadow-sm"
-          : "border border-gray-200"
-      }`}
+        isEmphasized ? "border-2 pt-12" : "border"
+      } ${borderClass}`}
     >
-      {highlighted && (
-        <span className="absolute left-1/2 top-0 -translate-x-1/2 whitespace-nowrap rounded-b-lg bg-primary px-6 py-1.5 text-sm font-semibold text-white">
-          {isCurrent ? "Current plan" : "Most Popular"}
+      {badgeLabel && (
+        <span
+          className={`absolute left-1/2 top-0 -translate-x-1/2 whitespace-nowrap rounded-b-lg px-6 py-1.5 text-sm font-semibold text-white ${badgeClass}`}
+        >
+          {badgeLabel}
         </span>
       )}
 
@@ -53,22 +95,20 @@ export default function PlanCard({
       <p className="mt-1 text-sm text-gray-500">{planTagline(plan.id)}</p>
 
       <div className="mt-4 flex items-baseline gap-2">
-        <span className="text-4xl font-bold text-gray-900">€{isAnnual ? Math.floor(price) : price}</span>
+        <span className="text-4xl font-bold text-gray-900">
+          €{isAnnual ? Math.floor(price) : price}
+        </span>
         <span className="text-sm text-gray-500">{period}</span>
       </div>
 
       <button
         type="button"
         onClick={() => onChoose(plan.id, interval)}
-        disabled={isCurrent || isSubscribing}
-        className={`mt-5 flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition-colors ${
-          isCurrent
-            ? "cursor-default bg-gray-100 text-gray-400"
-            : "bg-primary/5 text-primary hover:bg-primary/10"
-        } disabled:opacity-60`}
+        disabled={isDisabled}
+        className={`mt-5 flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition-colors ${buttonClass} disabled:opacity-60`}
       >
         {isSubscribing && <Loader2 size={14} className="animate-spin" />}
-        {isCurrent ? "Current plan" : "Choose plan"}
+        {buttonLabel}
       </button>
 
       <p className="mt-6 text-sm font-bold text-gray-900">Included:</p>
@@ -79,7 +119,9 @@ export default function PlanCard({
               size={18}
               className="shrink-0 fill-primary text-white"
             />
-            <span className="text-sm text-gray-700">{formatPlanFeature(feature)}</span>
+            <span className="text-sm text-gray-700">
+              {formatPlanFeature(feature)}
+            </span>
           </li>
         ))}
       </ul>
