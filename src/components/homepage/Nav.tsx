@@ -7,6 +7,12 @@ import Link from "next/dist/client/link";
 import Logo from "./Logo";
 import { Menu, X } from "lucide-react";
 
+const sectionLinks = [
+  { label: "Testimonials", href: "/#testimonials" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQs", href: "/#faqs" },
+];
+
 function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -83,11 +89,7 @@ function Nav() {
             >
               How it works
             </HowItWorksButton>
-            {[
-              { label: "Testimonials", href: "#testimonials" },
-              { label: "Pricing", href: "#pricing" },
-              { label: "FAQs", href: "#faqs" },
-            ].map((l) => (
+            {sectionLinks.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
@@ -136,7 +138,7 @@ function Nav() {
                   </button>
                 </SignUpButton>
                 <Link
-                  href="#pricing"
+                  href="/#pricing"
                   className="btn-main btn-cta "
                   style={{ padding: "9px 20px", fontSize: "0.85rem" }}
                 >
@@ -195,11 +197,7 @@ function Nav() {
             >
               How it works
             </HowItWorksButton>
-            {[
-              { label: "Testimonials", href: "#testimonials" },
-              { label: "Pricing", href: "#pricing" },
-              { label: "FAQs", href: "#faqs" },
-            ].map((l) => (
+            {sectionLinks.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
@@ -252,7 +250,7 @@ function Nav() {
                   </button>
                 </SignUpButton>
                 <Link
-                  href="#pricing"
+                  href="/#pricing"
                   onClick={() => setMobileMenuOpen(false)}
                   className="btn-main btn-cta"
                   style={{
