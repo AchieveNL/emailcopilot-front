@@ -4,7 +4,7 @@ import ScrollFloat from "./ScrollFloat";
 
 function Cta() {
   return (
-    <section className="relative mx-auto mb-20 max-w-315 w-full overflow-hidden rounded-3xl px-6 py-20 text-center">
+    <section className="relative mx-auto mb-20 max-w-315 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] lg:w-full overflow-hidden rounded-3xl px-6 pt-[76px] pb-20 text-center">
       {/* Background gradient background: linear-gradient(87.84deg, #4F46E5 0%, #2563EB 57.04%, #06B6D4 98.86%);
        */}
       <div

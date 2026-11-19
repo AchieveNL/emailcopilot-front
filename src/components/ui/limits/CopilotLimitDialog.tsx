@@ -18,7 +18,6 @@ interface CopilotLimitDialogProps {
 export default function CopilotLimitDialog({
   open,
   currentPlanId,
-  used,
   max,
   tiers,
   onClose,
@@ -35,8 +34,8 @@ export default function CopilotLimitDialog({
       description={
         <>
           Your {planName} plan includes {max} copilot
-          {max === 1 ? "" : "s"} and you are using all {used}. Delete one of your
-          copilots to free a slot, or upgrade to add more.
+          {max === 1 ? "" : "s"} and you are using all {max}. Delete one of your
+          copilots to free a slot{tiers.length > 0 ? ", or upgrade to add more" : ""}.
         </>
       }
       currentPlanId={currentPlanId}

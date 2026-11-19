@@ -58,7 +58,7 @@ export const STATS = [
   { value: "10–50", label: "emails per day" },
   { value: "2×", label: "daily scrape runs" },
   { value: "100%", label: "your own data" },
-  { value: "€9", label: "starting price" },
+  { value: "€19", label: "starting price" },
 ];
 
 export const TESTIMONIALS = [
@@ -124,7 +124,7 @@ export const FAQS = [
 
   {
     q: "Is there a free test flight?",
-    a: "Yes. We figured asking people to trust an AI copilot without a test flight would be slightly insane. You can explore the dashboard for free before spending a single euro. Paid plans start at €9/month.",
+    a: "Yes. We figured asking people to trust an AI copilot without a test flight would be slightly insane. You can explore the dashboard for free before spending a single euro. Paid plans start at €19/month.",
   },
 ];
 

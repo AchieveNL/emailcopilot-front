@@ -44,7 +44,7 @@ function PricingCard() {
         <div className="flex items-center gap-2">
           <StepBadge number={1} color="primary" />
           <span className="text-[13.5px] font-bold text-primary">
-            Starting at €9/month
+            Starting at €19/month
           </span>
         </div>
 
@@ -54,7 +54,7 @@ function PricingCard() {
               <sup className="text-xl font-semibold align-top mt-2 inline-block">
                 €
               </sup>
-              9
+              19
             </span>
             <span className="text-sm text-gray-500 font-normal">/ month</span>
           </div>
@@ -392,7 +392,7 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative scroll-mt-20 py-16 px-4 max-w-315 w-full overflow-hidden"
+      className="relative scroll-mt-20 py-16 lg:pt-[132px] px-4 max-w-315 w-full overflow-hidden"
     >
       {/* Decorative dot grid (top-left) */}
       <div
@@ -421,10 +421,9 @@ export default function HowItWorks() {
         <div className="text-center mb-10 flex flex-col items-center justify-center">
           <ScrollFloat
             as="h2"
-            containerClassName="text-6xl text-gray-900 leading-tight flex justify-center w-full"
-            textClassName="text-6xl leading-tight text-gray-900"
+            containerClassName="text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08] tracking-[-0.03em] font-serif font-medium text-[#0f0f12] flex justify-center w-full"
+            textClassName="text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08] tracking-[-0.03em] font-serif font-medium text-[#0f0f12]"
             highlightWords={["Copilot"]}
-            style={{ fontFamily: "DM Serif Display", fontWeight: "normal" }}
           >
             Sit back, let your Copilot take over
           </ScrollFloat>

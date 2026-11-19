@@ -249,7 +249,7 @@ function TargetAudienceTable({
 
         {/* Desktop Table Header */}
         <div
-          className="hidden lg:grid px-5 py-3 border-b border-[#E2E8F0]"
+          className="hidden lg:grid sticky top-0 z-30 bg-white px-5 py-3 border-b border-[#E2E8F0]"
           style={{ gridTemplateColumns: COLUMNS }}
         >
           {TABLE_HEADERS.map((col) => (

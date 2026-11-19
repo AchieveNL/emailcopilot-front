@@ -1,6 +1,5 @@
 import HeroCopy from "./HeroCopy";
 import HeroVisuals from "./HeroVisuals";
-import Threads from "./Threads";
 export default function HeroSection() {
   return (
     <>
@@ -12,8 +11,9 @@ export default function HeroSection() {
         px-5 sm:px-6 lg:px-4
         pt-10 pb-0 mt-6
         sm:pt-16 sm:pb-14 sm:mt-10
-        lg:pt-20 lg:pb-15
+        lg:pt-20 lg:pb-1
         min-h-[calc(100vh-73px)] lg:min-h-auto
+        max-sm:pb-4!
         
       "
       >
@@ -23,7 +23,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right — centred on mobile, allow overflow for floating elements */}
-        <div className="flex  justify-center lg:justify-end overflow-visible">
+        <div className="flex justify-center lg:justify-end overflow-visible lg:mt-20">
           <div className="w-full relative max-w-[420px] sm:max-w-[500px] lg:max-w-[560px]">
             {/* Decorative floating orb */}
             {/* <div className="absolute top-1/4 -right-16 lg:top-1/4 w-90 h-90 md:w-100 md:h-100 -translate-y-1/2  pointer-events-none z-0">
@@ -36,15 +36,6 @@ export default function HeroSection() {
               />
             </div> */}
             <HeroVisuals />
-            <div className="w-full relative h-54 sm:h-62 opacity-10 ">
-              <div className="absolute z-9999999999 right-0 h-full w-1/2 bg-linear-to-l from-primary-light to-transparent" />
-              <Threads
-                amplitude={2.7}
-                distance={0}
-                color={[43, 96, 235]}
-                enableMouseInteraction
-              />
-            </div>
           </div>
         </div>
       </section>

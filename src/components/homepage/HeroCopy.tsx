@@ -12,7 +12,7 @@ const TRUST_ITEMS = [
         strokeWidth={2.5}
       />
     ),
-    label: "No credit card",
+    label: "Your own inbox",
   },
   {
     icon: (
@@ -22,7 +22,7 @@ const TRUST_ITEMS = [
         strokeWidth={2.5}
       />
     ),
-    label: "Free trial available",
+    label: "Cancel anytime",
   },
   {
     icon: (
@@ -50,7 +50,7 @@ function HeroCopy() {
       "
       >
         <span className="w-1.5 h-1.5 rounded-full  bg-primary shadow-[0_0_6px_#22c55e] animate-[pulse_2s_ease-in-out_infinite]" />
-        Starting from €9 month
+        Starting from €19/month
       </div>
 
       {/* Headline */}

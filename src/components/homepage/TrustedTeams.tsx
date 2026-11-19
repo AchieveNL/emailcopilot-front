@@ -16,11 +16,13 @@ const TEAM_LOGOS = [
 
 function TrustedTeams() {
     return (
-        <section className='flex flex-col z-0 max-w-315 w-full gap-5 my-2 overflow-hidden'>
+        <section className='flex flex-col z-0 max-w-315 w-full gap-5 my-2 overflow-hidden max-sm:pt-6!'>
             {/* make the h2 element vertically centered between the two sections */}
-            <ScrollFloat 
-              containerClassName="text-2xl font-bold text-center mb-10 flex justify-center" 
-              textClassName="text-2xl font-bold"
+            <ScrollFloat
+              as="h2"
+              containerClassName="text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08] tracking-[-0.03em] font-serif font-medium text-[#0f0f12] text-center mb-10 flex justify-center w-full"
+              textClassName="text-[clamp(1.85rem,5.5vw,3.6rem)] leading-[1.08] tracking-[-0.03em] font-serif font-medium text-[#0f0f12]"
+              highlightWords={["growth-focused"]}
             >
               Trusted by growth-focused teams worldwide
             </ScrollFloat>

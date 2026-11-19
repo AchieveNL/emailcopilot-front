@@ -118,7 +118,7 @@ export default function GradientText({
 
   return (
     <motion.div
-      className={`relative mx-auto flex max-w-fit flex-row items-center justify-center rounded-[1.25rem] font-medium backdrop-blur transition-shadow duration-500 overflow-hidden cursor-pointer ${showBorder ? "py-1 px-2" : ""} ${className}`}
+      className={`relative mx-auto flex max-w-fit flex-row items-center justify-center rounded-[1.25rem] font-medium backdrop-blur transition-shadow duration-500 cursor-pointer ${showBorder ? "overflow-hidden py-1 px-2" : ""} ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={style}
@@ -146,6 +146,10 @@ export default function GradientText({
           ...gradientStyle,
           backgroundPosition,
           WebkitBackgroundClip: "text",
+          // Extra room so descenders (g, y, p) and serif overhangs (d) are not cut
+          // off by background-clip; negative margins keep the layout box unchanged.
+          padding: "0 0.1em 0.3em",
+          margin: "0 -0.1em -0.15em",
         }}
       >
         {children}
